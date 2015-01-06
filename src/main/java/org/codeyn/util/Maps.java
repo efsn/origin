@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.codeyn.util.yn.StrYn;
+
 public final class Maps<K, V>{
 
     public static Map<String, String> toMap(String str, String s, String delim){
@@ -24,5 +26,28 @@ public final class Maps<K, V>{
         }
         return sb.toString();
     }
+    
+    /**
+     * Convert as URL parameter, for example:escape=true&resid=13%2524RLLMJ
+     */
+    public static <K, V> String toUrlParams(Map<K, V> m){
+        if(m.isEmpty()) return null;
+        StringBuffer sb = new StringBuffer(m.size()<<7);
+        for(Iterator<Map.Entry<K, V>> itr = m.entrySet().iterator(); itr.hasNext();){
+            Map.Entry<K, V> entry = itr.next();
+            if(sb.length() > 0){
+                sb.append("&");
+            }
+            sb.append(entry.getKey()).append("=");
+            sb.append(StrYn.encodeURIComponent(StrYn.isNull((String)entry.getValue()) ? "" : (String)entry.getValue()));
+        }
+        return sb.toString();
+    }
+    
+    
+    
+    
+    
+    
     
 }

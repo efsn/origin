@@ -25,7 +25,7 @@ import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.file.FileYn;
 import org.springframework.scheduling.config.Task;
 
-public class JspYn{
+public class WebYn{
 
     static final char[] HEXCHAR = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
             '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -492,7 +492,7 @@ public class JspYn{
         if (error instanceof NullPointerException || error.getMessage() == null
                 || error.getMessage().length() == 0) msg = "空指针异常!";
         printErrorMsg(out, path, new String[] {msg}, error);
-//        IReportServer.handleException(error);
+        // IReportServer.handleException(error);
         throw error;
     }
 
@@ -550,7 +550,7 @@ public class JspYn{
                 + imgPath + "images/open.gif border=0>关 闭</a></td>");
         sw.write("</tr></table></td></tr></table>");
         out.print(sw.toString());
-//        IReportServer.handleException(error);
+        // IReportServer.handleException(error);
         throw error;
     }
 
@@ -617,8 +617,8 @@ public class JspYn{
      * @return
      */
     public static final String printCallStack(){
-        String result = ArrYn.array2Str(new Throwable().getStackTrace(),
-                "\r\n");
+        String result = ArrYn
+                .array2Str(new Throwable().getStackTrace(), "\r\n");
         System.out.println("调试信息:\r\n" + result);
         System.out.println();
         return result;
@@ -715,10 +715,11 @@ public class JspYn{
         try {
             int _fiSize = fi.available();
 
-            response.setContentType(JspYn.getContentType(FileYn
+            response.setContentType(WebYn.getContentType(FileYn
                     .extractFileExt(fn)));
             response.setContentLength(_fiSize);
-            String path = "filename=\"" + java.net.URLEncoder.encode(fn, "UTF-8") + "\"";
+            String path = "filename=\""
+                    + java.net.URLEncoder.encode(fn, "UTF-8") + "\"";
             path = SecurityYn.checkHttpHeader(null, path);
             response.setHeader("Content-Disposition", path);
             OutputStream ostr = response.getOutputStream();
@@ -1191,7 +1192,7 @@ public class JspYn{
 
     /**
      * 根据用户名密码创建一个LOGIN,当正确的时候会返回一个Login,它会覆盖你当前会话的Login</br>
-     * 因此你只需要创建一次即可,后续的获取可以通过{@link JspYn#getLogin(HttpServletRequest)} 来获取</br>
+     * 因此你只需要创建一次即可,后续的获取可以通过{@link WebYn#getLogin(HttpServletRequest)} 来获取</br>
      * 
      * 如果错误则会抛出以下异常</br> <li>登录失败 用户名或者密码错误</li> <li>登录失败 机构被禁用</li> <li>登录失败
      * 用户被禁用</li> <li>登录失败 用户过期</li>

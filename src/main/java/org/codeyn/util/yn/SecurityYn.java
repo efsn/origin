@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codeyn.util.Maps;
 import org.codeyn.util.i18n.I18N;
 
 /**
@@ -207,7 +208,7 @@ public class SecurityYn {
         String urlPath = value.substring(0,p);
         String urlQueryStr = value.substring(p+1);
         checkParam(null, urlPath, URLPATH, false);//先检查urlPath有没有script脚本。
-                value = urlPath + "?" + new StringMap(urlQueryStr, "&", "=").toUrlParams();
+                value = urlPath + "?" + Maps.toUrlParams(Maps.toMap(urlQueryStr, "=", "&"));
     }else{
             checkParam(null, value, URLPATH, false);//先检查有没有script脚本。
     }
