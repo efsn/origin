@@ -1,11 +1,11 @@
-package com.blue.sys.dao.impl;
+package org.blue.sys.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-import com.blue.sys.dao.EssayCheckDao;
+import org.blue.sys.dao.EssayCheckDao;
 
 public class ImplEssayCheckDao implements EssayCheckDao {
 

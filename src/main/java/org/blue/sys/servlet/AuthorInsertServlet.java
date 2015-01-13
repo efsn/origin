@@ -1,8 +1,7 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,11 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.blue.sys.dao.proxy.PryInsertDao;
-import com.blue.sys.factory.PryFactory;
-import com.blue.sys.vo.Author;
-import com.blue.util.ReturnError;
-import com.blue.util.VerifyInfo;
+import org.blue.sys.dao.proxy.PryInsertDao;
+import org.blue.sys.factory.PryFactory;
+import org.blue.sys.vo.Author;
+import org.blue.util.ReturnError;
+import org.blue.util.VerifyInfo;
 
 public class AuthorInsertServlet extends HttpServlet {
     /**
@@ -88,9 +87,7 @@ public class AuthorInsertServlet extends HttpServlet {
             else{
                 response.sendRedirect("/sys/error/pnameRepeat.jsp");
             }
-        } catch(SQLException e){
-            e.printStackTrace();
-        } catch(ClassNotFoundException e){
+        } catch(Exception e){
             e.printStackTrace();
         }
     }

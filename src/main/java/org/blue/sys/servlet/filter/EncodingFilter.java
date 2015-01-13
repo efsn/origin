@@ -1,4 +1,4 @@
-package com.blue.sys.servlet.filter;
+package org.blue.sys.servlet.filter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

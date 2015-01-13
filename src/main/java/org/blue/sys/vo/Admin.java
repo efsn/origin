@@ -1,10 +1,13 @@
-package com.blue.sys.vo;
-
-import org.svip.db.anno.meta.*;
-import org.svip.db.enumeration.mysql.DbType;
+package org.blue.sys.vo;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import org.svip.db.anno.meta.Column;
+import org.svip.db.anno.meta.Constraint;
+import org.svip.db.anno.meta.Index;
+import org.svip.db.anno.meta.Table;
+import org.svip.db.enumeration.mysql.DbType;
 
 @Table(index = {@Index(name = "adminIdIdx", column = "adminId")})
 public class Admin {

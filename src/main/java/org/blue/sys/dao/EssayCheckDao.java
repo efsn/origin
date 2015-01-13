@@ -1,4 +1,4 @@
-package com.blue.sys.dao;
+package org.blue.sys.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;

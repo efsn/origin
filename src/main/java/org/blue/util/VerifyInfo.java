@@ -13,10 +13,8 @@ import org.blue.sys.vo.Essay;
 import org.blue.sys.vo.Expert;
 
 public class VerifyInfo {
-    public static boolean isValid(List<String> list) throws SQLException,
-            IOException, ClassNotFoundException {
-        Map<String, List<String>> map = PryFactory.getPryQueryDao()
-                .verifyAuthorInfo(list);
+    public static boolean isValid(List<String> list) throws Exception {
+        Map<String, List<String>> map = PryFactory.getPryQueryDao().verifyAuthorInfo(list);
 
         if(map.containsKey(list.get(0))){
             if(!map.get(list.get(0)).contains(list.get(1))){
@@ -38,8 +36,7 @@ public class VerifyInfo {
         }
     }
 
-    public static boolean isRepeat(Author author) throws SQLException,
-            IOException, ClassNotFoundException {
+    public static boolean isRepeat(Author author) throws Exception {
         Map<String, String> map = PryFactory.getPryQueryDao().getAuthor();
         if(map.containsKey(author.getAuthorPname())){
             return true;
@@ -47,8 +44,7 @@ public class VerifyInfo {
         return false;
     }
 
-    public static boolean isRepeat(Editor editor) throws SQLException,
-            IOException, ClassNotFoundException {
+    public static boolean isRepeat(Editor editor) throws Exception {
         Map<String, String> map = PryFactory.getPryQueryDao().getEditor();
         if(map.containsKey(editor.getEditorPname())){
             return true;
@@ -56,8 +52,7 @@ public class VerifyInfo {
         return false;
     }
 
-    public static boolean isRepeat(Expert expert) throws SQLException,
-            IOException, ClassNotFoundException {
+    public static boolean isRepeat(Expert expert) throws Exception {
         Map<String, String> map = PryFactory.getPryQueryDao().getExpert();
         if(map.containsKey(expert.getExpert_pname())){
             return true;
@@ -65,8 +60,7 @@ public class VerifyInfo {
         return false;
     }
 
-    public static boolean isRepeat(Essay essay) throws SQLException,
-            IOException, ClassNotFoundException {
+    public static boolean isRepeat(Essay essay) throws Exception {
         Map<String, String> map = PryFactory.getPryQueryDao().getEssay();
         if(map.containsKey(essay.getEssayName())){
             return true;

@@ -1,4 +1,4 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -12,17 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.blue.sys.vo.Essay;
+import org.blue.sys.vo.Essay;
 
 public class UploadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) {
         HttpSession session = request.getSession();
-        String user = ((Essay) session.getAttribute("essay"))
-                .getAuthor_pname();
-        String essayName = ((Essay) session.getAttribute("essay"))
-                .getEssay_name();
-
+        String user = ((Essay) session.getAttribute("essay")).getAuthorInfo();
+        String essayName = ((Essay) session.getAttribute("essay")).getEssayName();
         int MAX_SIZE = 102400 * 102400;
         String rootPath;
         DataInputStream in = null;

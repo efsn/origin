@@ -1,48 +1,40 @@
-package com.blue.sys.dao.proxy;
+package org.blue.sys.dao.proxy;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
-import org.blue.sys.dbc.MySQLConnection;
-
-import com.blue.sys.dao.InsertDao;
-import com.blue.sys.dao.impl.ImplInsertDao;
-import com.blue.sys.vo.*;
+import org.blue.sys.dao.InsertDao;
+import org.blue.sys.dao.impl.ImplInsertDao;
+import org.blue.sys.vo.Author;
+import org.blue.sys.vo.CheckEssay;
+import org.blue.sys.vo.Editor;
+import org.blue.sys.vo.Essay;
+import org.blue.sys.vo.Expert;
+import org.svip.pool.db.ConnMgr;
 
 public class PryInsertDao {
+    
+    private InsertDao impl;
+    
     public PryInsertDao() {
         impl = new ImplInsertDao();
     }
 
-    // ����DBʵ��Authorע�����Ĳ���
-    public boolean doAuthor(Author author) throws SQLException, IOException,
-            ClassNotFoundException {
-        return impl.doAuthor(MySQLConnection.getConnection(), author);
+    public boolean doAuthor(Author author) throws Exception {
+        return impl.doAuthor(ConnMgr.getConnection(), author);
     }
 
-    // ����DBʵ��Editorע�����Ĳ���
-    public boolean doEditor(Editor editor) throws SQLException, IOException,
-            ClassNotFoundException {
-        return impl.doEditor(MySQLConnection.getConnection(), editor);
+    public boolean doEditor(Editor editor) throws Exception {
+        return impl.doEditor(ConnMgr.getConnection(), editor);
     }
 
-    // ����DBʵ��Expertע�����Ĳ���
-    public boolean doExpert(Expert expert) throws SQLException, IOException,
-            ClassNotFoundException {
-        return impl.doExpert(MySQLConnection.getConnection(), expert);
+    public boolean doExpert(Expert expert) throws Exception {
+        return impl.doExpert(ConnMgr.getConnection(), expert);
     }
 
-    // ����DBʵ��Essayע�����Ĳ���
-    public boolean doEssay(Essay essay) throws SQLException, IOException,
-            ClassNotFoundException {
-        return impl.doEssay(MySQLConnection.getConnection(), essay);
+    public boolean doEssay(Essay essay) throws Exception {
+        return impl.doEssay(ConnMgr.getConnection(), essay);
     }
 
-    public boolean doCheckEssay(CheckEssay checkEssay) throws SQLException,
-            IOException, ClassNotFoundException {
-        return impl.doCheckEssay(MySQLConnection.getConnection(), checkEssay);
+    public boolean doCheckEssay(CheckEssay checkEssay) throws Exception {
+        return impl.doCheckEssay(ConnMgr.getConnection(), checkEssay);
     }
-
-    private InsertDao impl;
 
 }

@@ -1,11 +1,11 @@
-package com.blue.sys.dao.impl;
+package org.blue.sys.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-import com.blue.sys.dao.InfoUpdateDao;
+import org.blue.sys.dao.InfoUpdateDao;
 
 public class ImplInfoUpdateDao implements InfoUpdateDao {
 

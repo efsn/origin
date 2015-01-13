@@ -1,15 +1,12 @@
-package com.blue.sys.servlet;
-
-import java.io.IOException;
-import java.sql.SQLException;
+package org.blue.sys.servlet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blue.sys.factory.PryFactory;
-import com.blue.sys.vo.EssayType;
-import com.blue.util.VerifyInfo;
+import org.blue.sys.factory.PryFactory;
+import org.blue.sys.vo.EssayType;
+import org.blue.util.VerifyInfo;
 
 public class TypeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
@@ -31,11 +28,7 @@ public class TypeServlet extends HttpServlet {
                         response.sendRedirect("/sys/error/typeInsertError.jsp");
                     }
                 }
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(IOException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }

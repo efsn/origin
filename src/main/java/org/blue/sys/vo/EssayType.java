@@ -1,4 +1,4 @@
-package com.blue.sys.vo;
+package org.blue.sys.vo;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

@@ -1,12 +1,15 @@
-package com.blue.sys.dao.impl;
+package org.blue.sys.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import com.blue.sys.dao.InsertDao;
-import com.blue.sys.vo.*;
-import com.blue.sys.vo.Essay;
+import org.blue.sys.dao.InsertDao;
+import org.blue.sys.vo.Author;
+import org.blue.sys.vo.CheckEssay;
+import org.blue.sys.vo.Editor;
+import org.blue.sys.vo.Essay;
+import org.blue.sys.vo.Expert;
 
 public class ImplInsertDao implements InsertDao {
     public boolean doAuthor(Connection conn, Author author)

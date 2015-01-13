@@ -1,68 +1,57 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blue.sys.factory.PryFactory;
+import org.blue.sys.factory.PryFactory;
 
-public class FindPWDServlet extends HttpServlet {
+public class FindPWDServlet extends HttpServlet{
     protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletResponse response){
         String pname = request.getParameter("pname");
         String user = request.getParameter("user");
 
         List<String> list = new ArrayList<String>();
 
-        try{
-            if(null != pname && !"".equals(pname)){
+        try {
+            if (null != pname && !"".equals(pname)) {
                 list = PryFactory.getPryQueryDao().getPwd(pname, user);
 
                 request.setAttribute("list", list);
-                if("author".equals(user)){
+                if ("author".equals(user)) {
                     user = "Ͷ����";
                 }
-                if("editor".equals(user)){
+                if ("editor".equals(user)) {
                     user = "�༭";
                 }
-                if("expert".equals(user)){
+                if ("expert".equals(user)) {
                     user = "ר��";
                 }
-                if("admin".equals(user)){
+                if ("admin".equals(user)) {
                     user = "����";
                 }
                 request.setAttribute("user", user);
 
-                if(2 == list.size()){
+                if (2 == list.size()) {
                     request.getRequestDispatcher("/findPassword.jsp").forward(
                             request, response);
-                }
-                else{
+                } else {
                     response.sendRedirect("error/notUser.jsp");
                 }
-            }
-            else{
+            } else {
                 response.sendRedirect("error/notUser.jsp");
             }
-        } catch(SQLException e){
-            e.printStackTrace();
-        } catch(IOException e){
-            e.printStackTrace();
-        } catch(ClassNotFoundException e){
-            e.printStackTrace();
-        } catch(ServletException e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletResponse response){
         doGet(request, response);
     }
 }

@@ -1,7 +1,5 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blue.sys.factory.PryFactory;
+import org.blue.sys.factory.PryFactory;
 
 public class LayoutSetServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
@@ -45,11 +43,7 @@ public class LayoutSetServlet extends HttpServlet {
             else{
                 response.sendRedirect("/sys/error/essayError.jsp");
             }
-        } catch(SQLException e){
-            e.printStackTrace();
-        } catch(IOException e){
-            e.printStackTrace();
-        } catch(ClassNotFoundException e){
+        } catch(Exception e){
             e.printStackTrace();
         }
     }

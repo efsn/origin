@@ -1,12 +1,12 @@
-package com.blue.sys.factory;
+package org.blue.sys.factory;
 
-import com.blue.sys.dao.proxy.PryDeleteDao;
-import com.blue.sys.dao.proxy.PryEssayCheckDao;
-import com.blue.sys.dao.proxy.PryInfoUpdateDao;
-import com.blue.sys.dao.proxy.PryInsertDao;
-import com.blue.sys.dao.proxy.PryQueryAllDao;
-import com.blue.sys.dao.proxy.PryQueryDao;
-import com.blue.sys.dao.proxy.PryTypeDao;
+import org.blue.sys.dao.proxy.PryDeleteDao;
+import org.blue.sys.dao.proxy.PryEssayCheckDao;
+import org.blue.sys.dao.proxy.PryInfoUpdateDao;
+import org.blue.sys.dao.proxy.PryInsertDao;
+import org.blue.sys.dao.proxy.PryQueryAllDao;
+import org.blue.sys.dao.proxy.PryQueryDao;
+import org.blue.sys.dao.proxy.PryTypeDao;
 
 public class PryFactory {
     public static PryInsertDao getPryInsertDao() {

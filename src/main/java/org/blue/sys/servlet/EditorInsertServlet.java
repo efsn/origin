@@ -1,7 +1,6 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,11 +8,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.blue.sys.dao.proxy.PryInsertDao;
-import com.blue.sys.factory.PryFactory;
-import com.blue.sys.vo.Editor;
-import com.blue.util.ReturnError;
-import com.blue.util.VerifyInfo;
+import org.blue.sys.dao.proxy.PryInsertDao;
+import org.blue.sys.factory.PryFactory;
+import org.blue.sys.vo.Editor;
+import org.blue.util.ReturnError;
+import org.blue.util.VerifyInfo;
 
 public class EditorInsertServlet extends HttpServlet {
     /**
@@ -33,7 +32,7 @@ public class EditorInsertServlet extends HttpServlet {
         String email = request.getParameter("email");
 
         if(ReturnError.isLength(pname)){
-            editor.setEditor_pname(pname);
+            editor.setEditorPname(pname);
         }
         else{
             RequestDispatcher dp = request
@@ -43,7 +42,7 @@ public class EditorInsertServlet extends HttpServlet {
         }
 
         if(ReturnError.isLength(pwd) && ReturnError.isEquals(pwd, rePwd)){
-            editor.setEditor_pwd(pwd);
+            editor.setEditorPwd(pwd);
         }
         else if(!ReturnError.isEquals(pwd, rePwd)){
             RequestDispatcher dp = request
@@ -58,9 +57,9 @@ public class EditorInsertServlet extends HttpServlet {
             return;
         }
 
-        editor.setEditor_name(name);
-        editor.setEditor_email(email);
-        editor.setEditor_telephone(telephone);
+        editor.setEditorName(name);
+        editor.setEditorEmail(email);
+        editor.setEditorTelephone(telephone);
 
         PryInsertDao pard = PryFactory.getPryInsertDao();
 
@@ -76,9 +75,7 @@ public class EditorInsertServlet extends HttpServlet {
             // {
             // response.sendRedirect("/sys/*.jsp");
             // }
-        } catch(SQLException e){
-            e.printStackTrace();
-        } catch(ClassNotFoundException e){
+        } catch(Exception e){
             e.printStackTrace();
         }
     }

@@ -1,48 +1,41 @@
-package com.blue.sys.dao.proxy;
+package org.blue.sys.dao.proxy;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Map;
 
-import org.blue.sys.dbc.MySQLConnection;
-
-import com.blue.sys.dao.InfoUpdateDao;
-import com.blue.sys.dao.impl.ImplInfoUpdateDao;
+import org.blue.sys.dao.InfoUpdateDao;
+import org.blue.sys.dao.impl.ImplInfoUpdateDao;
+import org.svip.pool.db.ConnMgr;
 
 public class PryInfoUpdateDao {
+    
+    private InfoUpdateDao impl;
+    
     public PryInfoUpdateDao() {
         impl = new ImplInfoUpdateDao();
     }
 
-    public boolean doAuthorUpdate(Map<String, String> value)
-            throws SQLException, IOException, ClassNotFoundException {
-        return impl.doAuthorUpdate(MySQLConnection.getConnection(), value);
+    public boolean doAuthorUpdate(Map<String, String> value) throws Exception {
+        return impl.doAuthorUpdate(ConnMgr.getConnection(), value);
     }
 
-    public boolean doEditorUpdate(Map<String, String> value)
-            throws SQLException, IOException, ClassNotFoundException {
-        return impl.doEditorUpdate(MySQLConnection.getConnection(), value);
+    public boolean doEditorUpdate(Map<String, String> value) throws Exception {
+        return impl.doEditorUpdate(ConnMgr.getConnection(), value);
     }
 
-    public boolean doExpertUpdate(Map<String, String> value)
-            throws SQLException, IOException, ClassNotFoundException {
-        return impl.doExpertUpdate(MySQLConnection.getConnection(), value);
+    public boolean doExpertUpdate(Map<String, String> value) throws Exception {
+        return impl.doExpertUpdate(ConnMgr.getConnection(), value);
     }
 
-    public boolean doAdminUpdate(Map<String, String> value)
-            throws SQLException, IOException, ClassNotFoundException {
-        return impl.doAdminUpdate(MySQLConnection.getConnection(), value);
+    public boolean doAdminUpdate(Map<String, String> value) throws Exception {
+        return impl.doAdminUpdate(ConnMgr.getConnection(), value);
     }
 
-    public boolean doPublishUpdate(Map<String, String> value)
-            throws SQLException, IOException, ClassNotFoundException {
-        return impl.doPublishUpdate(MySQLConnection.getConnection(), value);
+    public boolean doPublishUpdate(Map<String, String> value) throws Exception {
+        return impl.doPublishUpdate(ConnMgr.getConnection(), value);
     }
 
-    public boolean doEssayUpload(Map<String, String> value)
-            throws SQLException, IOException, ClassNotFoundException {
-        return impl.doEssayUpload(MySQLConnection.getConnection(), value);
+    public boolean doEssayUpload(Map<String, String> value) throws Exception {
+        return impl.doEssayUpload(ConnMgr.getConnection(), value);
     }
 
-    private InfoUpdateDao impl;
 }

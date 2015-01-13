@@ -1,4 +1,4 @@
-package com.blue.sys.vo;
+package org.blue.sys.vo;
 
 import org.svip.db.anno.meta.*;
 import org.svip.db.enumeration.mysql.DbType;

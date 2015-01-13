@@ -1,7 +1,6 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.blue.sys.factory.PryFactory;
-import com.blue.util.ReturnError;
+import org.blue.sys.factory.PryFactory;
+import org.blue.util.ReturnError;
 
 public class PwdAlterServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
@@ -75,9 +74,7 @@ public class PwdAlterServlet extends HttpServlet {
 
         if("author".equals(user)){
             try{
-                Map<String, String> map = PryFactory.getPryQueryDao()
-                        .getAuthor();
-
+                Map<String, String> map = PryFactory.getPryQueryDao().getAuthor();
                 if(!map.get(pname).equals(authorPW0)){
                     response.sendRedirect("/sys/error/authorPwdAlterError.jsp");
                 }
@@ -86,9 +83,7 @@ public class PwdAlterServlet extends HttpServlet {
                         response.sendRedirect("success/authorPwdAlterSucess.jsp");
                     }
                 }
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }
@@ -106,9 +101,7 @@ public class PwdAlterServlet extends HttpServlet {
                         response.sendRedirect("success/editorPwdAlterSucess.jsp");
                     }
                 }
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }
@@ -126,9 +119,7 @@ public class PwdAlterServlet extends HttpServlet {
                         response.sendRedirect("success/expertPwdAlterSucess.jsp");
                     }
                 }
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }
@@ -146,9 +137,7 @@ public class PwdAlterServlet extends HttpServlet {
                         response.sendRedirect("success/adminPwdAlterSucess.jsp");
                     }
                 }
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }

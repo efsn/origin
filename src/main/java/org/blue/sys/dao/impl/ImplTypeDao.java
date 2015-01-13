@@ -1,4 +1,4 @@
-package com.blue.sys.dao.impl;
+package org.blue.sys.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,8 +8,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.blue.sys.dao.TypeDao;
-import com.blue.sys.vo.EssayType;
+import org.blue.sys.dao.TypeDao;
+import org.blue.sys.vo.EssayType;
 
 public class ImplTypeDao implements TypeDao {
 

@@ -1,15 +1,12 @@
-package com.blue.sys.servlet;
-
-import java.io.IOException;
-import java.sql.SQLException;
+package org.blue.sys.servlet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.blue.sys.factory.PryFactory;
-import com.blue.sys.vo.CheckEssay;
+import org.blue.sys.factory.PryFactory;
+import org.blue.sys.vo.CheckEssay;
 
 public class ExpertCheckServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
@@ -30,9 +27,9 @@ public class ExpertCheckServlet extends HttpServlet {
         }
 
         CheckEssay checkEssay = new CheckEssay();
-        checkEssay.setEssay_id(essayId);
-        checkEssay.setExpert_name(expertName);
-        checkEssay.setCheck_content(check);
+        checkEssay.setEssayId(essayId);
+        checkEssay.setExpertName(expertName);
+        checkEssay.setCheckContent(check);
 
         if(null != essayName && !"".equals(essayName)){
             try{
@@ -45,11 +42,7 @@ public class ExpertCheckServlet extends HttpServlet {
                 else{
                     response.sendRedirect("/sys/error/expertCheckFail.jsp");
                 }
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(IOException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }

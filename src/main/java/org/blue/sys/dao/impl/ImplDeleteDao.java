@@ -1,13 +1,13 @@
-package com.blue.sys.dao.impl;
-
-import com.blue.sys.dao.DeleteDao;
-import com.blue.sys.vo.Author;
-import com.blue.sys.vo.Editor;
-import com.blue.sys.vo.Expert;
+package org.blue.sys.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import org.blue.sys.dao.DeleteDao;
+import org.blue.sys.vo.Author;
+import org.blue.sys.vo.Editor;
+import org.blue.sys.vo.Expert;
 
 public class ImplDeleteDao implements DeleteDao {
 

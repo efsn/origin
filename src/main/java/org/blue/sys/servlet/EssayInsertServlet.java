@@ -1,4 +1,4 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.blue.sys.factory.PryFactory;
-import com.blue.sys.vo.Essay;
-import com.blue.util.VerifyInfo;
+import org.blue.sys.factory.PryFactory;
+import org.blue.sys.vo.Essay;
+import org.blue.util.VerifyInfo;
 
 public class EssayInsertServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
@@ -26,12 +26,12 @@ public class EssayInsertServlet extends HttpServlet {
         String content2 = request.getParameter("essay_content2");
         String authorInfo = request.getParameter("authorInfo");
 
-        essay.setAuthor_pname(author_pname);
-        essay.setType_id(Integer.parseInt(typeId));
-        essay.setEssay_name(ename);
-        essay.setEssay_keywords(keywords);
-        essay.setEssay_content2(content2);
-        essay.setAuthor_info(authorInfo);
+        essay.setAuthorPname(author_pname);
+        essay.setTypeId(Integer.parseInt(typeId));
+        essay.setEssayName(ename);
+        essay.setEssayKeywords(keywords);
+        essay.setEssayContent2(content2);
+        essay.setAuthorInfo(authorInfo);
 
         session.setAttribute("essay", essay);
 
@@ -44,9 +44,7 @@ public class EssayInsertServlet extends HttpServlet {
             else{
                 response.sendRedirect("/sys/error/essayNameRepeat.jsp");
             }
-        } catch(SQLException e){
-            e.printStackTrace();
-        } catch(ClassNotFoundException e){
+        } catch(Exception e){
             e.printStackTrace();
         }
 

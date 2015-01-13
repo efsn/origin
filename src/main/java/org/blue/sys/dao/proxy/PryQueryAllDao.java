@@ -1,13 +1,13 @@
-package com.blue.sys.dao.proxy;
-
-import com.blue.sys.dao.QueryAllDao;
-import com.blue.sys.dao.impl.ImplQueryAllDao;
+package org.blue.sys.dao.proxy;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import org.blue.sys.dao.QueryAllDao;
+import org.blue.sys.dao.impl.ImplQueryAllDao;
 
 public class PryQueryAllDao {
     Connection con;

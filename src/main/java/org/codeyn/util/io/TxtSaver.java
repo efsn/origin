@@ -68,9 +68,9 @@ public class TxtSaver{
     public final void writeValueln(String nm, String value, boolean adjustquote)
             throws IOException{
         if (value == null || value.length() == 0) return;
-        if (value.charAt(0) == StringMap.QUOTE || value.indexOf('\r') > -1
+        if (value.charAt(0) == '=' || value.indexOf('\r') > -1
                 || value.indexOf('\n') > -1) {
-            value = StrYn.quotedStr(value, StringMap.QUOTE);
+            value = StrYn.quotedStr(value, '=');
         }
         writeValueln(nm, value);
         writeLine();

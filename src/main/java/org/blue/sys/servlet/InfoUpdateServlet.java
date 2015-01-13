@@ -1,7 +1,6 @@
-package com.blue.sys.servlet;
+package org.blue.sys.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.blue.sys.factory.PryFactory;
+import org.blue.sys.factory.PryFactory;
 
 public class InfoUpdateServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
@@ -50,9 +49,7 @@ public class InfoUpdateServlet extends HttpServlet {
                     response.sendRedirect("error/authorInfoUpdateError.jsp");
                 }
 
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }
@@ -68,9 +65,7 @@ public class InfoUpdateServlet extends HttpServlet {
                     response.sendRedirect("error/editorInfoUpdateError.jsp");
                 }
 
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }
@@ -86,9 +81,7 @@ public class InfoUpdateServlet extends HttpServlet {
                     response.sendRedirect("error/expertInfoUpdateError.jsp");
                 }
 
-            } catch(SQLException e){
-                e.printStackTrace();
-            } catch(ClassNotFoundException e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
         }

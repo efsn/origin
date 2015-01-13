@@ -1,10 +1,10 @@
-package com.blue.sys.dao;
+package org.blue.sys.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import com.blue.sys.vo.EssayType;
+import org.blue.sys.vo.EssayType;
 
 public interface TypeDao {
     // insert type

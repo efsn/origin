@@ -1,17 +1,22 @@
 package org.efsn.web.controller;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.LastModified;
 
 /**
  * @author Chan
  * @version 1.0
  * Created on 2014/11/10
  */
-public class HwController implements Controller{
+public class HwController extends AbstractController implements LastModified{
+    
+    private long lastModified;
+    
+    /*
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception{
         // get/valid param
         // bind param to command obj
@@ -22,6 +27,34 @@ public class HwController implements Controller{
         // set logic view name
         mav.setViewName("hello");
         return mav;
+    }
+    */
+
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        /*
+         * get/valid parameter
+         * bind args to command obj
+         * next page
+         */
+        
+        /*
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("msg", "Fuck hello World!");
+        mv.setViewName("hello");
+        return mv;
+        */
+        response.getWriter().write("<a href=''>this</a>");
+        return null;
+        
+    }
+
+    @Override
+    public long getLastModified(HttpServletRequest request){
+        if(lastModified == 0){
+            lastModified = System.currentTimeMillis();
+        }
+        return lastModified;
     }
 
 }

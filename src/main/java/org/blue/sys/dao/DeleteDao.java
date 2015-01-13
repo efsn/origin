@@ -1,11 +1,11 @@
-package com.blue.sys.dao;
-
-import com.blue.sys.vo.Author;
-import com.blue.sys.vo.Editor;
-import com.blue.sys.vo.Expert;
+package org.blue.sys.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.blue.sys.vo.Author;
+import org.blue.sys.vo.Editor;
+import org.blue.sys.vo.Expert;
 
 public interface DeleteDao {
     

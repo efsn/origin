@@ -1,4 +1,4 @@
-package com.blue.sys.servlet.filter;
+package org.blue.sys.servlet.filter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

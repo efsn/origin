@@ -1,14 +1,14 @@
-package com.blue.sys.vo;
+package org.blue.sys.vo;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import org.svip.db.anno.meta.Column;
 import org.svip.db.anno.meta.Constraint;
 import org.svip.db.anno.meta.Index;
 import org.svip.db.anno.meta.Table;
 import org.svip.db.enumeration.mysql.DbType;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 
 @Table(index = @Index(name = "essayIdIdx", column = "essayId"))
 public class Essay{
@@ -70,7 +70,7 @@ public class Essay{
     }
 
     public void setEssayId(int essayId) {
-        essayId = essayId;
+        this.essayId = essayId;
     }
 
     public int getTypeId() {
@@ -86,7 +86,7 @@ public class Essay{
     }
 
     public void setEssayName(String essayName) {
-        essayName = essayName;
+        this.essayName = essayName;
     }
 
     public String getEssayContent1() {
@@ -94,7 +94,7 @@ public class Essay{
     }
 
     public void setEssayContent1(String essayContent1) {
-        essayContent1 = essayContent1;
+        this.essayContent1 = essayContent1;
     }
 
     public String getEssayContent2() {
@@ -102,14 +102,14 @@ public class Essay{
     }
 
     public void setEssayContent2(String essayContent2) {
-        essayContent2 = essayContent2;
+        this.essayContent2 = essayContent2;
     }
 
-    public String getPublishTime() {
+    public Timestamp getPublishTime() {
         return publishTime;
     }
 
-    public void setPublishTime(String publishTime) {
+    public void setPublishTime(Timestamp publishTime) {
         this.publishTime = publishTime;
     }
 
@@ -134,7 +134,7 @@ public class Essay{
     }
 
     public void setAuthorPname(String authorPname) {
-        authorPname = authorPname;
+        this.authorPname = authorPname;
     }
 
     public String getEssayNums() {
@@ -161,7 +161,7 @@ public class Essay{
         this.authorInfo = authorInfo;
     }
 
-    public String getRegisterDate() {
+    public Timestamp getRegisterDate() {
         return registerDate;
     }
 

@@ -1,4 +1,4 @@
-package com.blue.sys.vo;
+package org.blue.sys.vo;
 
 import org.svip.db.anno.meta.Column;
 import org.svip.db.anno.meta.Constraint;

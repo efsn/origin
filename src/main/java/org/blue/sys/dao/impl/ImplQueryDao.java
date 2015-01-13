@@ -1,4 +1,4 @@
-package com.blue.sys.dao.impl;
+package org.blue.sys.dao.impl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.blue.sys.dao.QueryDao;
+import org.blue.sys.dao.QueryDao;
 
 public class ImplQueryDao implements QueryDao {
 
