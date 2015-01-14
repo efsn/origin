@@ -16,7 +16,7 @@ public class HwController extends AbstractController implements LastModified{
     
     private long lastModified;
     
-    /*
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception{
         // get/valid param
         // bind param to command obj
@@ -28,7 +28,6 @@ public class HwController extends AbstractController implements LastModified{
         mav.setViewName("hello");
         return mav;
     }
-    */
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception{
@@ -38,14 +37,14 @@ public class HwController extends AbstractController implements LastModified{
          * next page
          */
         
-        /*
+        
         ModelAndView mv = new ModelAndView();
         mv.addObject("msg", "Fuck hello World!");
         mv.setViewName("hello");
         return mv;
-        */
-        response.getWriter().write("<a href=''>this</a>");
-        return null;
+        
+//        response.getWriter().write("<a href='http://www.baidu.com'>this</a>");
+//        return null;
         
     }
 
