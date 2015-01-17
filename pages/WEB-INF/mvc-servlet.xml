@@ -12,10 +12,17 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
-    <bean name="/origin/hello" class="org.efsn.web.controller.HwController"/>
+    <bean name="/hello.do" class="org.efsn.web.controller.HwController">
+<!--     	<property name="supportedMethods" value="POST"/> -->
+    	<property name="requireSession" value="false"/>
+    	<property name="cacheSeconds" value="5"/>
+    	
+    </bean>
 
 
-
+	<bean name="/f.do" class="org.springframework.web.servlet.mvc.ServletForwardingController">
+		<property name="servletName" value="forwarding"/>
+	</bean>
 
 
 

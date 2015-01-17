@@ -24,7 +24,6 @@ public class CommandController extends AbstractCommandController{
         ModelAndView mv = new ModelAndView();
         mv.setViewName("command");
         mv.addObject(user);
-        mv.addObject(user);
         return mv;
     }
     

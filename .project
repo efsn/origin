@@ -3,6 +3,7 @@
 	<name>origin</name>
 	<comment></comment>
 	<projects>
+		<project>spring-framework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

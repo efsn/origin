@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.LastModified;
 public class HwController extends AbstractController implements LastModified{
     
     private long lastModified;
-    
+    /*
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception{
         // get/valid param
@@ -27,7 +27,7 @@ public class HwController extends AbstractController implements LastModified{
         // set logic view name
         mav.setViewName("hello");
         return mav;
-    }
+    }*/
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception{
@@ -38,13 +38,12 @@ public class HwController extends AbstractController implements LastModified{
          */
         
         
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("msg", "Fuck hello World!");
-        mv.setViewName("hello");
-        return mv;
-        
-//        response.getWriter().write("<a href='http://www.baidu.com'>this</a>");
-//        return null;
+//        ModelAndView mv = new ModelAndView();
+//        mv.addObject("msg", "Fuck hello World!");
+//        mv.setViewName("hello");
+//        return mv;
+        response.getWriter().write("<a href='http://www.baidu.com'>this</a>");
+        return null;
         
     }
 

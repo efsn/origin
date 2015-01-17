@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="org/codeyn/util/io/TxtLoader.java|org/codeyn/util/io/TxtSaver.java|org/codeyn/util/yn/SqlYn.java|org/codeyn/util/yn/WebYn.java" kind="src" output="pages/WEB-INF/classes" path="src/main/java">
+	<classpathentry excluding="org/codeyn/util/yn/SqlYn.java|org/codeyn/util/yn/WebYn.java|org/codeyn/util/io/TxtLoader.java|org/codeyn/util/io/TxtSaver.java" kind="src" output="pages/WEB-INF/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
