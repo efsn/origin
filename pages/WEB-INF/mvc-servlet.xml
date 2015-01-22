@@ -18,7 +18,13 @@
     	<property name="cacheSeconds" value="5"/>
     	
     </bean>
-
+    
+    <bean name="/form.do" class="org.efsn.web.controller.FormController">
+    	<property name="formView" value="register"/>
+    	<property name="successView" value="redirect:/command.do"/>
+    	<property name="commandClass" value="template.bean.User"/>
+    </bean>
+    
 
 	<bean name="/f.do" class="org.springframework.web.servlet.mvc.ServletForwardingController">
 		<property name="servletName" value="forwarding"/>

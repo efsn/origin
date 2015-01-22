@@ -16,10 +16,10 @@ public class CommandController extends AbstractCommandController{
                                   HttpServletResponse resp,
                                   Object obj,
                                   BindException e)throws Exception{
-        User user = (User)obj;
+        User u = (User)obj;
         ModelAndView mv = new ModelAndView();
         mv.setViewName("command");
-        mv.addObject(user);
+        mv.addObject(u);
         return mv;
     }
     
