@@ -25,7 +25,9 @@
 	</bean>
 
 
-
+	<bean name="/command.do" class="org.efsn.web.controller.CommandController">
+		<property name="commandClass" value="template.bean.User"/>
+	</bean>
 
 
 

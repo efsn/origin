@@ -23,12 +23,17 @@
             <param-name>encoding</param-name>
             <param-value>utf-8</param-value>
         </init-param>
+        <init-param>
+        	<param-name>forceEncoding</param-name>
+        	<param-value>true</param-value>
+        </init-param>
     </filter>
 
 
 	<filter-mapping>
 		<filter-name>etag</filter-name>
-		<url-pattern>*.do</url-pattern>
+		<servlet-name>mvc</servlet-name>
+		<!-- <url-pattern>*.do</url-pattern>  -->
 	</filter-mapping>
 
     <filter-mapping>

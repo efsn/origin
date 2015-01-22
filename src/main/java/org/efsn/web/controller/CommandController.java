@@ -11,10 +11,6 @@ import template.bean.User;
 
 public class CommandController extends AbstractCommandController{
     
-    public CommandController(){
-        this.setCommandClass(User.class);
-    }
-
     @Override
     protected ModelAndView handle(HttpServletRequest req,
                                   HttpServletResponse resp,
