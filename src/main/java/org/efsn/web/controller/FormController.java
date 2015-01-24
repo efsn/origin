@@ -6,11 +6,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
 
 import template.bean.User;
 
-public class FormController extends SimpleFormController{
+public class FormController extends CancellableFormController{
     @Override
     protected void doSubmitAction(Object command) throws Exception{
         User user = (User)command;
@@ -21,7 +22,7 @@ public class FormController extends SimpleFormController{
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception{
         User user = new User();
-        user.setUsername("Please enter your username!");
+        user.setUsername("Please enter your username");
         return user;
     }
     
@@ -31,5 +32,11 @@ public class FormController extends SimpleFormController{
         map.put("address", Arrays.asList("New York, Hong Kong"));
         return map;
     }
+    
+//    @Override
+//    protected ModelAndView onCancel(Object command) throws Exception{
+//        this.doSubmitAction(command);
+//        return null;
+//    }
     
 }

@@ -3,6 +3,6 @@
     	 pageEncoding="UTF-8"%>
 <html>
 	<body>
-		${user.username}:${user.password}
+		${command.username}:${command.password}
 	</body>
 </html>

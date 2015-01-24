@@ -23,6 +23,22 @@
     	<property name="formView" value="register"/>
     	<property name="successView" value="redirect:/command.do"/>
     	<property name="commandClass" value="template.bean.User"/>
+    	<property name="cancelView" value="redirect:/hello.do"/>
+    </bean>
+    
+    <bean name="/wizard.do" class="org.efsn.web.controller.WizardFormController">
+    	<property name="commandName" value="user"/>
+    	<property name="commandClass" value="template.bean.User"/>
+    	<property name="finishView" value="redirect:/command.do"/>
+    	<property name="cancelView" value="redirect:/hello.do"/>
+    	<property name="pages">
+    		<list>
+    			<value>wizard/base</value>
+    			<value>wizard/school</value>
+    			<value>wizard/work</value>
+    		</list>
+    	</property>
+    	
     </bean>
     
 
