@@ -1,0 +1,16 @@
+A:link {
+ color: #000000;
+ TEXT-DECORATION: none
+}
+A:visited {
+ COLOR: #000000;
+ TEXT-DECORATION: none
+}
+A:hover {
+ COLOR: #ff7f24;
+ text-decoration: none;
+}
+A:active {
+ COLOR: #ff7f24;  
+ text-decoration: none;
+}
