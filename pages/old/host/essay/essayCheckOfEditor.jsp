@@ -1,0 +1,231 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=utf-8"%>
+
+<%@ page import="sys.dao.*" %>
+<%@ page import="sys.dao.impl.*" %>
+<%@ page import="sys.dao.proxy.*" %>
+<%@ page import="sys.factory.*" %>
+<%@ page import="sys.dbc.*" %>
+
+
+
+<html>
+  <head>
+  	<title>
+  	   	Essay Check Of Editor!'
+  	</title>
+  	<link rel="stylesheet" type="text/css" href="/sys/css/a.css" />
+  </head>
+  
+  <body>		
+		<center>
+		<table width="700px" style="font-size:11px" border="0">
+			<tr>				
+				<td width="100%" align="center" height="30">
+					<form action="/sys/host/essayCheckOfEditor.jsp" method="post">
+					<strong><font size="3">稿件名：</font></strong>
+					<input type="text" name="essayName"/>&nbsp;&nbsp;&nbsp;
+					<strong><font size="3">作者名：</font></strong>
+					<input type="text" name="authorpName"/>&nbsp;&nbsp;&nbsp;
+					<input type="submit" value="查询"/>
+					</form>
+				</td>
+			</tr>
+			
+			<tr>
+				<td align="center">
+				
+					<table width="700px" style="font-size:11px" border="0">
+	  	  				<tr>
+	  	  					<td align="center" width="20%" height="30" bgcolor="lemonchiffon">
+	  	  					<font size="3" color="blue">稿件名</font>	  	  						
+	  	  					</td>
+	  	  					<td align="center" width="20%" height="30" bgcolor="lemonchiffon">
+	  	  					<font size="3" color="blue">投稿日期</font>	  	  						
+	  	  					</td>
+	  	  					<td align="center" width="10%" height="30" bgcolor="lemonchiffon">
+	  	  					<font size="3" color="blue">作者</font>	  	  						
+	  	  					</td>
+	  	  					<td align="center" width="10%" height="30" bgcolor="lemonchiffon">
+	  	  					<font size="3" color="blue">下载稿件</font>	  	  						
+	  	  					</td>	  	  					
+	  	  					<td align="center" width="10%" height="30" bgcolor="lemonchiffon">
+	  	  					<font size="3" color="blue">审核</font>  	  						
+	  	  					</td>	  	  						  	  					
+	  	  				</tr>
+	  	  					  	  	  					 			
+	  	  				 <%
+	
+		  	  				 String essayName = request.getParameter("essayName");
+	  	  				 	 String authorpName = request.getParameter("authorpName");
+  	  				 	 
+							 Map<Integer, List<String>> value = PryFactory.getPryQueryAllDao().getEssayNotCheck(essayName,authorpName);
+	  	  				 	   	  				 	 	  	  				 
+	  	  					 int param = 0;
+	  	  				 	 if(null != request.getParameter("pageNow"))
+	  	  				 	 {
+	  	  				 		param = Integer.parseInt(request.getParameter("pageNow"));
+	  	  				 	 } 
+						  	 int pageSize = 5;
+						  	 int pageNow = 1;
+						  	 int pageCount;//total pages
+						  	 int rowCount = value.keySet().size();//total rows
+						  	 List<Integer> listKey = new ArrayList<Integer>();
+						  	 List<List<String>> listValue = new ArrayList<List<String>>();
+						  
+						  	 if(0 == rowCount%pageSize)
+						  	 {
+						  		pageCount = rowCount/pageSize; 
+						  	 }
+						  	 else
+						  	 {
+						  		 pageCount = rowCount/pageSize + 1 ;
+						  	 } 
+						  	 
+						  	 for(Integer key : value.keySet())
+						  	 {
+						  		 listKey.add(key);
+						  	 }
+						  	 
+						  	 for(List<String> str : value.values())
+						  	 {
+							 	listValue.add(str);
+						 	 }
+						  	 
+						 	if(0 != param)
+	  	  					 {
+						 		pageNow = param; 
+	  	  					 }							  	 						  	 						  	 
+						  	 
+							if(listValue.isEmpty() || value.isEmpty())
+	  	  				 	{
+						 	   response.sendRedirect("/sys/error/editorCheckError.jsp");
+						 	   return;
+	  	  				 	}
+						 	
+						  	 if(pageNow == pageCount)
+						  	 {
+						  		 for(int j = 0; j < (pageCount-1)*pageSize; j++)
+						  		 {
+						  			 value.remove(listKey.get(j));
+						  		 }
+						  		 
+						  		 for(Integer x : value.keySet())
+						  		 {
+									out.println("<tr>");
+							  									  		
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println(value.get(x).get(1));
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");
+	  								
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println(value.get(x).get(11));
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");
+	  								
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println(value.get(x).get(7));
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");	  								  								
+	  									  
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println("<a href=" + "/sys/download.jsp?filePath="+ value.get(x).get(7)+"/" + "&disName=" + value.get(x).get(1) + ".txt" +  ">下载</a>");
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");	
+	  								
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println("<a href=" + "/sys/host/essay/essayCheckOfEditorTo.jsp?essayId=" + x + "&essayName=" + value.get(x).get(1) + ">审稿</a>");
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");	  								
+	  									  								
+	  								out.println("</tr>"); 
+						  		 }
+						  	 }
+						  	 else
+						  	 {
+						  		for(int i = (pageNow-1)*pageSize; i < pageNow*pageSize; i++)
+							  	 {
+						  			out.println("<tr>");
+								  		
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println(listValue.get(i).get(1));
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");
+	  								
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println(listValue.get(i).get(11));
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");
+	  								
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println(listValue.get(i).get(7));
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");	  								  								
+	  									  
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								
+	  								
+	  								out.println("</td>");	
+	  								
+	  								out.println("<td height=" + "30 align=" + "center" + ">");
+	  								out.println("<font size='3'>");
+	  								out.println("<a href=" + "/sys/host/essay/essayCheckOfEditorTo.jsp?essayId=" + listKey.get(i)  + "&essayName=" + listValue.get(i).get(1) + ">审稿</a>");
+	  								out.println("</font>");
+	  								
+	  								out.println("</td>");	  								
+	  									  								
+	  								out.println("</tr>"); 
+						  	 } 
+					  	 }						  	  	 
+  					
+	  	  				%>   	  	  				
+	  	  				
+	  	  				<td colspan = "5" align="center" height="30" bgcolor="lemonchiffon">
+	  	  				<font size='3'>
+	  	  					<%
+								//上一页
+								if(pageNow!=1)
+								{
+									out.println("<a href=essayCheckOfEditor.jsp?pageNow="+(pageNow-1)+">上一页</a>");
+								}
+								//显示超链接
+								for(int i=1;i<=pageCount;i++)
+								{
+									out.println("<a href=essayCheckOfEditor.jsp?pageNow="+i+">["+i+"]</a>");
+								}
+								//下一页
+								if(pageNow!=pageCount)
+								{
+									out.println("<a href=essayCheckOfEditor.jsp?pageNow="+(pageNow+1)+">下一页</a>");
+								}
+							%>
+	  	  				</font>
+	  	  				</td>	  	  							  	  				
+	  	  		</table>				
+				</td>
+			</tr>			
+	  	  	</table>				
+			</td>
+			</tr>
+		</table>
+		</center>			
+	</body>
+</html>
+
