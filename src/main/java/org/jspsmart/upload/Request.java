@@ -4,54 +4,47 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class Request{
-    private Hashtable m_parameters = new Hashtable();
-    private int m_counter = 0;
+    
+    private Hashtable<String, Hashtable<Integer, String>> hts = new Hashtable<String, Hashtable<Integer, String>>();
+    private int count;
 
-    protected void putParameter(String paramString1, String paramString2){
-        if (paramString1 == null)
-            throw new IllegalArgumentException(
-                    "The name of an element cannot be null.");
-        Hashtable localHashtable;
-        if (this.m_parameters.containsKey(paramString1)) {
-            localHashtable = (Hashtable) this.m_parameters.get(paramString1);
-            localHashtable
-                    .put(new Integer(localHashtable.size()), paramString2);
+    protected void putParameter(String name, String content){
+        if (name == null)
+            throw new IllegalArgumentException("The name of an element cannot be null");
+        Hashtable<Integer, String> ht;
+        if (hts.containsKey(name)) {
+            ht = hts.get(name);
+            ht.put(ht.size(), content);
         } else {
-            localHashtable = new Hashtable();
-            localHashtable.put(new Integer(0), paramString2);
-            this.m_parameters.put(paramString1, localHashtable);
-            this.m_counter += 1;
+            ht = new Hashtable<Integer, String>();
+            ht.put(0, content);
+            hts.put(name, ht);
+            count += 1;
         }
     }
 
-    public String getParameter(String paramString){
-        if (paramString == null) {
-            throw new IllegalArgumentException(
-                    "Form's name is invalid or does not exist (1305).");
+    public String getParameter(String name){
+        if (name == null) {
+            throw new IllegalArgumentException("Form's name is invalid or does not exist");
         }
-
-        Hashtable localHashtable = (Hashtable) this.m_parameters
-                .get(paramString);
-        if (localHashtable == null) return null;
-        return (String) localHashtable.get(new Integer(0));
+        Hashtable<Integer, String> ht = hts.get(name);
+        if (ht == null) return null;
+        return ht.get(0);
     }
 
-    public Enumeration getParameterNames(){
-        return this.m_parameters.keys();
+    public Enumeration<String> getParameterNames(){
+        return hts.keys();
     }
 
-    public String[] getParameterValues(String paramString){
-        if (paramString == null) {
-            throw new IllegalArgumentException(
-                    "Form's name is invalid or does not exist (1305).");
+    public String[] getParameterValues(String name){
+        if (name == null) {
+            throw new IllegalArgumentException("Form's name is invalid or does not exist");
         }
-
-        Hashtable localHashtable = (Hashtable) this.m_parameters
-                .get(paramString);
-        if (localHashtable == null) return null;
-        String[] arrayOfString = new String[localHashtable.size()];
-        for (int i = 0; i < localHashtable.size(); i++)
-            arrayOfString[i] = ((String) localHashtable.get(new Integer(i)));
-        return arrayOfString;
+        Hashtable<Integer, String> ht = hts.get(name);
+        if (ht == null) return null;
+        String[] fileContents = new String[ht.size()];
+        for (int i = 0; i < ht.size(); i++)
+            fileContents[i] = ht.get(i);
+        return fileContents;
     }
 }

@@ -6,52 +6,46 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class Files{
-    private SmartUpload m_parent;
-    private Hashtable m_files = new Hashtable();
-    private int m_counter = 0;
+    
+    private Hashtable<Integer, File> files = new Hashtable<Integer, File>();
+    private int count;
 
     protected void addFile(File paramFile){
         if (paramFile == null) {
-            throw new IllegalArgumentException("newFile cannot be null.");
+            throw new IllegalArgumentException("newFile cannot be null");
         }
-
-        this.m_files.put(new Integer(this.m_counter), paramFile);
-        this.m_counter += 1;
+        files.put(count, paramFile);
+        count += 1;
     }
 
     public File getFile(int paramInt){
         if (paramInt < 0) {
-            throw new IllegalArgumentException(
-                    "File's index cannot be a negative value (1210).");
+            throw new IllegalArgumentException("File's index cannot be a negative value");
         }
-
-        File localFile = (File) this.m_files.get(new Integer(paramInt));
-
-        if (localFile == null) {
-            throw new IllegalArgumentException(
-                    "Files' name is invalid or does not exist (1205).");
+        File file = files.get(paramInt);
+        if (file == null) {
+            throw new IllegalArgumentException("Files' name is invalid or does not exist");
         }
-
-        return localFile;
+        return file;
     }
 
     public int getCount(){
-        return this.m_counter;
+        return count;
     }
 
     public long getSize() throws IOException{
         long l = 0L;
-        for (int i = 0; i < this.m_counter; i++) {
+        for (int i = 0; i < this.count; i++) {
             l += getFile(i).getSize();
         }
         return l;
     }
 
-    public Collection getCollection(){
-        return this.m_files.values();
+    public Collection<File> getCollection(){
+        return files.values();
     }
 
-    public Enumeration getEnumeration(){
-        return this.m_files.elements();
+    public Enumeration<File> getEnumeration(){
+        return files.elements();
     }
 }

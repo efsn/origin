@@ -4,230 +4,148 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Vector;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
+import org.codeyn.util.yn.StrYn;
+
 public class SmartUpload{
-    protected byte[] m_binArray;
-    protected HttpServletRequest m_request;
-    protected HttpServletResponse m_response;
-    protected ServletContext m_application;
-    private int m_totalBytes = 0;
-    private int m_currentIndex = 0;
-    private int m_startData = 0;
-    private int m_endData = 0;
-    private String m_boundary = new String();
-    private long m_totalMaxFileSize = 0L;
-    private long m_maxFileSize = 0L;
-    private Vector m_deniedFilesList = new Vector();
-    private Vector m_allowedFilesList = new Vector();
-    private boolean m_denyPhysicalPath = false;
-    private boolean m_forcePhysicalPath = false;
-    private String m_contentDisposition = new String();
-    public static final int SAVE_AUTO = 0;
-    public static final int SAVE_VIRTUAL = 1;
-    public static final int SAVE_PHYSICAL = 2;
-    private Files m_files = new Files();
+    
+    protected byte[] binaryArray;
+    protected HttpServletRequest request;
+    protected HttpServletResponse response;
+    protected ServletContext application;
+    
+    private int totalBytes;
+    private int currentIndex;
+    private int startData;
+    private int endData;
+    private long totalMaxFileSize;
+    private long maxFileSize;
+    private String boundary;
+    private Vector<String> deniedFilesList;
+    private Vector<String> allowedFilesList;
+    private boolean denyPhysicalPath;
+    private boolean forcePhysicalPath;
+    private String contentDisposition;
+    private Files files;
 
-    private Request m_formRequest = new Request();
-
-    /** @deprecated */
-    public final void init(ServletConfig paramServletConfig)
-            throws ServletException{
-        this.m_application = paramServletConfig.getServletContext();
-    }
-
-    /** @deprecated */
-    public void service(HttpServletRequest paramHttpServletRequest,
-            HttpServletResponse paramHttpServletResponse)
-            throws ServletException, IOException{
-        this.m_request = paramHttpServletRequest;
-        this.m_response = paramHttpServletResponse;
-    }
+    private Request formRequest = new Request();
 
     public final void initialize(ServletConfig paramServletConfig,
             HttpServletRequest paramHttpServletRequest,
             HttpServletResponse paramHttpServletResponse)
             throws ServletException{
-        this.m_application = paramServletConfig.getServletContext();
-        this.m_request = paramHttpServletRequest;
-        this.m_response = paramHttpServletResponse;
+        application = paramServletConfig.getServletContext();
+        request = paramHttpServletRequest;
+        response = paramHttpServletResponse;
     }
 
-    public final void initialize(PageContext paramPageContext)
-            throws ServletException{
-        this.m_application = paramPageContext.getServletContext();
-        this.m_request = ((HttpServletRequest) paramPageContext.getRequest());
-        this.m_response = ((HttpServletResponse) paramPageContext.getResponse());
+    public final void initialize(PageContext paramPageContext)throws ServletException{
+        application = paramPageContext.getServletContext();
+        request = ((HttpServletRequest) paramPageContext.getRequest());
+        response = ((HttpServletResponse) paramPageContext.getResponse());
     }
 
-    /** @deprecated */
-    public final void initialize(ServletContext paramServletContext,
-            HttpSession paramHttpSession,
-            HttpServletRequest paramHttpServletRequest,
-            HttpServletResponse paramHttpServletResponse,
-            JspWriter paramJspWriter) throws ServletException{
-        this.m_application = paramServletContext;
-        this.m_request = paramHttpServletRequest;
-        this.m_response = paramHttpServletResponse;
-    }
-
-    public void upload() throws ServletException, IOException,
-            SmartUploadException{
-        int i = 0;
-        int j = 0;
+    public void upload() throws Exception{
+        int i = 0, j = 0, k = 0;
         long l = 0L;
-        int k = 0;
-        String str1 = new String();
-        String str2 = new String();
-        String str3 = new String();
-        String str4 = new String();
-        String str5 = new String();
-        String str6 = new String();
-        String str7 = new String();
-        String str8 = new String();
-        String str9 = new String();
-        int m = 0;
-
-        this.m_totalBytes = this.m_request.getContentLength();
-
-        this.m_binArray = new byte[this.m_totalBytes];
-
-        while (i < this.m_totalBytes) {
+        totalBytes = request.getContentLength();
+        binaryArray = new byte[totalBytes];
+        while (i < totalBytes) {
             try {
-                this.m_request.getInputStream();
-                j = this.m_request.getInputStream().read(this.m_binArray, i,
-                        this.m_totalBytes - i);
+                request.getInputStream();
+                j = request.getInputStream().read(binaryArray, i, totalBytes - i);
             } catch (Exception localException) {
-                throw new SmartUploadException("Unable to upload.");
+                throw new SmartUploadException("Unable to upload");
             }
             i += j;
         }
-
-        while ((k == 0) && (this.m_currentIndex < this.m_totalBytes)) {
-            if (this.m_binArray[this.m_currentIndex] == 13)
+        while ((k == 0) && (currentIndex < totalBytes)) {
+            if (binaryArray[currentIndex] == 13)
                 k = 1;
             else
-                this.m_boundary += (char) this.m_binArray[this.m_currentIndex];
-            this.m_currentIndex += 1;
+                boundary += (char) binaryArray[currentIndex];
+            currentIndex += 1;
         }
-
-        if (this.m_currentIndex == 1) {
+        if (currentIndex == 1) {
             return;
         }
-
-        this.m_currentIndex += 1;
-
-        while (this.m_currentIndex < this.m_totalBytes) {
-            str1 = getDataHeader();
-
-            this.m_currentIndex += 2;
-
-            m = str1.indexOf("filename") > 0 ? 1 : 0;
-
-            str2 = getDataFieldValue(str1, "name");
-
+        currentIndex += 1;
+        while (currentIndex < totalBytes) {
+            String head = this.getDataHeader();
+            currentIndex += 2;
+            int m = head.indexOf("filename") > 0 ? 1 : 0;
+            String fieldName = this.getDataFieldValue(head, "name");
             if (m != 0) {
-                str5 = getDataFieldValue(str1, "filename");
-                str3 = getFileName(str5);
-                str4 = getFileExt(str3);
-                str6 = getContentType(str1);
-                str7 = getContentDisp(str1);
-                str8 = getTypeMIME(str6);
-                str9 = getSubTypeMIME(str6);
-            }
-
-            getDataSection();
-
-            if (m != 0) {
-                if (str3.length() > 0) {
-                    if (this.m_deniedFilesList.contains(str4) == true) {
-                        throw new SecurityException(
-                                "The extension of the file is denied to be uploaded (1015).");
+                String path = this.getDataFieldValue(head, "filename");
+                String fileName = this.getFileName(path);
+                String fileExt = this.getFileExt(fileName);
+                String type = this.getContentType(head);
+                String disp = this.getContentDisp(head);
+                String mime = this.getTypeMIME(type);
+                String subTypeMemi = this.getSubTypeMIME(type);
+                this.getDataSection();
+                if (fileName.length() > 0) {
+                    if (deniedFilesList.contains(fileExt) == true) {
+                        throw new SecurityException("The extension of the file is denied to be uploaded");
                     }
-
-                    if ((!this.m_allowedFilesList.isEmpty())
-                            && (!this.m_allowedFilesList.contains(str4))) {
-                        throw new SecurityException(
-                                "The extension of the file is not allowed to be uploaded (1010).");
+                    if ((!allowedFilesList.isEmpty()) && (!allowedFilesList.contains(fileExt))) {
+                        throw new SecurityException("The extension of the file is not allowed to be uploaded");
                     }
-
-                    if ((this.m_maxFileSize > 0L)
-                            && (this.m_endData - this.m_startData + 1 > this.m_maxFileSize)) {
-                        throw new SecurityException(
-                                "Size exceeded for this file : " + str3
-                                        + " (1105).");
+                    if ((maxFileSize > 0L) && (endData - startData + 1 > maxFileSize)) {
+                        throw new SecurityException("Size exceeded for this file : " + fileName);
                     }
-
-                    l += this.m_endData - this.m_startData + 1;
-                    if ((this.m_totalMaxFileSize > 0L)
-                            && (l > this.m_totalMaxFileSize)) {
-                        throw new SecurityException(
-                                "Total File Size exceeded (1110).");
+                    l += endData - startData + 1;
+                    if ((totalMaxFileSize > 0L) && (l > totalMaxFileSize)) {
+                        throw new SecurityException("Total File Size exceeded");
                     }
                 }
-            }
-            Object localObject;
-            if (m != 0) {
-                localObject = new File();
-
-                ((File) localObject).setParent(this);
-                ((File) localObject).setFieldName(str2);
-                ((File) localObject).setFileName(str3);
-                ((File) localObject).setFileExt(str4);
-                ((File) localObject).setFilePathName(str5);
-                ((File) localObject).setIsMissing(str5.length() == 0);
-                ((File) localObject).setContentType(str6);
-                ((File) localObject).setContentDisp(str7);
-                ((File) localObject).setTypeMIME(str8);
-                ((File) localObject).setSubTypeMIME(str9);
-
-                if (str6.indexOf("application/x-macbinary") > 0) {
-                    this.m_startData += 128;
+                File file = new File();
+                file.setParent(this);
+                file.setFieldName(fieldName);
+                file.setFileName(fileName);
+                file.setFileExt(fileExt);
+                file.setFilePathName(path);
+                file.setIsMissing(path.length() == 0);
+                file.setContentType(type);
+                file.setContentDisp(disp);
+                file.setTypeMIME(mime);
+                file.setSubTypeMIME(subTypeMemi);
+                if (type.indexOf("application/x-macbinary") > 0) {
+                    startData += 128;
                 }
-                ((File) localObject).setSize(this.m_endData - this.m_startData
-                        + 1);
-                ((File) localObject).setStartData(this.m_startData);
-                ((File) localObject).setEndData(this.m_endData);
-
-                this.m_files.addFile((File) localObject);
+                file.setSize(endData - startData + 1);
+                file.setStartData(startData);
+                file.setEndData(endData);
+                files.addFile(file);
             } else {
-                localObject = new String(this.m_binArray, this.m_startData,
-                        this.m_endData - this.m_startData + 1);
-
-                this.m_formRequest.putParameter(str2, (String) localObject);
+                formRequest.putParameter(fieldName, new String(binaryArray, startData, endData - startData + 1));
             }
-
-            if ((char) this.m_binArray[(this.m_currentIndex + 1)] == '-') {
+            if ((char) binaryArray[(currentIndex + 1)] == '-') {
                 break;
             }
-            this.m_currentIndex += 2;
+            currentIndex += 2;
         }
     }
 
-    public int save(String paramString) throws ServletException, IOException,
-            SmartUploadException{
+    public int save(String paramString) throws Exception{
         return save(paramString, 0);
     }
 
-    public int save(String paramString, int paramInt) throws ServletException,
-            IOException, SmartUploadException{
+    public int save(String paramString, int paramInt) throws Exception{
         int i = 0;
 
         if (paramString == null) {
-            paramString = this.m_application.getRealPath("/");
+            paramString = application.getRealPath("/");
         }
 
         if (paramString.indexOf("/") != -1) {
@@ -236,10 +154,10 @@ public class SmartUpload{
         } else if (paramString.charAt(paramString.length() - 1) != '\\') {
             paramString = paramString + "\\";
         }
-        for (int j = 0; j < this.m_files.getCount(); j++) {
-            if (!this.m_files.getFile(j).isMissing()) {
-                this.m_files.getFile(j).saveAs(
-                        paramString + this.m_files.getFile(j).getFileName(),
+        for (int j = 0; j < files.getCount(); j++) {
+            if (!files.getFile(j).isMissing()) {
+                files.getFile(j).saveAs(
+                        paramString + files.getFile(j).getFileName(),
                         paramInt);
 
                 i++;
@@ -249,531 +167,364 @@ public class SmartUpload{
     }
 
     public int getSize(){
-        return this.m_totalBytes;
+        return totalBytes;
     }
 
-    public byte getBinaryData(int paramInt){
-        int i;
-        try {
-            i = this.m_binArray[paramInt];
-        } catch (Exception localException) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "Index out of range (1005).");
-        }
-
-        return i;
+    public byte getBinaryData(int paramInt) {
+        return binaryArray[paramInt];
+    }
+    
+    public byte[] getBinaryArray(){
+        return binaryArray;
     }
 
     public Files getFiles(){
-        return this.m_files;
+        return files;
     }
 
     public Request getRequest(){
-        return this.m_formRequest;
+        return formRequest;
     }
 
-    public void downloadFile(String paramString) throws ServletException,
-            IOException, SmartUploadException{
-        downloadFile(paramString, null, null);
+    public void downloadFile(String path) throws Exception{
+        downloadFile(path, null, null);
     }
 
-    public void downloadFile(String paramString1, String paramString2)
-            throws ServletException, IOException, SmartUploadException,
-            SmartUploadException{
-        downloadFile(paramString1, paramString2, null);
+    public void downloadFile(String path, String type) throws Exception{
+        downloadFile(path, type, null);
     }
 
-    public void downloadFile(String paramString1, String paramString2,
-            String paramString3) throws ServletException, IOException,
-            SmartUploadException{
-        downloadFile(paramString1, paramString2, paramString3, 65000);
+    public void downloadFile(String path, String type, String disposition) throws Exception{
+        downloadFile(path, type, disposition, 0xFDE8);
     }
 
-    public void downloadFile(String paramString1, String paramString2,
-            String paramString3, int paramInt) throws ServletException,
-            IOException, SmartUploadException{
-        if (paramString1 == null)
-            throw new IllegalArgumentException("File '" + paramString1
-                    + "' not found (1040).");
-
-        if (paramString1.equals(""))
-            throw new IllegalArgumentException("File '" + paramString1
-                    + "' not found (1040).");
-
-        if ((!isVirtual(paramString1)) && (this.m_denyPhysicalPath)) {
-            throw new SecurityException("Physical path is denied (1035).");
+    public void downloadFile(String path, 
+                             String type,
+                             String disposition, 
+                             int offset) throws Exception{
+        if (StrYn.isNull(path))
+            throw new IllegalArgumentException("File '" + path + "' not found");
+        if ((!isVirtual(path)) && (denyPhysicalPath)) {
+            throw new SecurityException("Physical path is denied");
         }
-
-        if (isVirtual(paramString1))
-            paramString1 = this.m_application.getRealPath(paramString1);
-
-        java.io.File localFile = new java.io.File(paramString1);
-        FileInputStream localFileInputStream = new FileInputStream(localFile);
-
-        long l = localFile.length();
-        int i = 0;
-        int j = 0;
-        byte[] arrayOfByte = new byte[paramInt];
-
-        if (paramString2 == null)
-            this.m_response.setContentType("application/x-msdownload");
-        else if (paramString2.length() == 0)
-            this.m_response.setContentType("application/x-msdownload");
+        if (isVirtual(path)) path = application.getRealPath(path);
+        java.io.File file = new java.io.File(path);
+        FileInputStream in = new FileInputStream(file);
+        long len = file.length();
+        byte[] arrayOfByte = new byte[offset];
+        if (StrYn.isNull(type))
+            response.setContentType("application/x-msdownload");
         else {
-            this.m_response.setContentType(paramString2);
+            response.setContentType(type);
         }
-
-        this.m_response.setContentLength((int) l);
-
-        this.m_contentDisposition = (this.m_contentDisposition == null ? "attachment;"
-                : this.m_contentDisposition);
-
-        if (paramString3 == null)
-            this.m_response.setHeader("Content-Disposition",
-                    this.m_contentDisposition + " filename="
-                            + getFileName(paramString1));
-        else if (paramString3.length() == 0)
-            this.m_response.setHeader("Content-Disposition",
-                    this.m_contentDisposition);
+        response.setContentLength((int) len);
+        contentDisposition = (contentDisposition == null ? "attachment;" : contentDisposition);
+        if (disposition == null)
+            response.setHeader("Content-Disposition", contentDisposition + " filename=" + getFileName(path));
+        else if (disposition.length() == 0)
+            response.setHeader("Content-Disposition", contentDisposition);
         else {
-            this.m_response.setHeader("Content-Disposition",
-                    this.m_contentDisposition + " filename=" + paramString3);
+            response.setHeader("Content-Disposition", contentDisposition + " filename=" + URLEncoder.encode(disposition, "UTF-8"));
         }
-
-        while (j < l) {
-            i = localFileInputStream.read(arrayOfByte, 0, paramInt);
-            j += i;
-            this.m_response.getOutputStream().write(arrayOfByte, 0, i);
+        for(int i = 0; i < len;){
+            int count = in.read(arrayOfByte, 0, offset);
+            response.getOutputStream().write(arrayOfByte, 0, count);
+            i += count;
         }
-        localFileInputStream.close();
+        in.close();
     }
 
-    public void downloadField(ResultSet paramResultSet, String paramString1,
-            String paramString2, String paramString3) throws ServletException,
-            IOException, SQLException{
-        if (paramResultSet == null)
-            throw new IllegalArgumentException(
-                    "The RecordSet cannot be null (1045).");
-
-        if (paramString1 == null)
-            throw new IllegalArgumentException(
-                    "The columnName cannot be null (1050).");
-
-        if (paramString1.length() == 0)
-            throw new IllegalArgumentException(
-                    "The columnName cannot be empty (1055).");
-
-        byte[] arrayOfByte = paramResultSet.getBytes(paramString1);
-
-        if (paramString2 == null)
-            this.m_response.setContentType("application/x-msdownload");
-        else if (paramString2.length() == 0)
-            this.m_response.setContentType("application/x-msdownload");
+    public void downloadField(ResultSet resultSet, 
+                              String path,
+                              String type, 
+                              String disposition) throws Exception{
+        if (resultSet == null)
+            throw new IllegalArgumentException("The resultSet cannot be null");
+        if (StrYn.isNull(path))
+            throw new IllegalArgumentException("The columnName cannot be null or empty");
+        byte[] arrayOfByte = resultSet.getBytes(path);
+        if (StrYn.isNull(type))
+            response.setContentType("application/x-msdownload");
         else {
-            this.m_response.setContentType(paramString2);
+            response.setContentType(type);
         }
-
-        this.m_response.setContentLength(arrayOfByte.length);
-
-        if (paramString3 == null)
-            this.m_response.setHeader("Content-Disposition", "attachment;");
-        else if (paramString3.length() == 0)
-            this.m_response.setHeader("Content-Disposition", "attachment;");
+        response.setContentLength(arrayOfByte.length);
+        if (StrYn.isNull(disposition))
+            response.setHeader("Content-Disposition", "attachment;");
         else {
-            this.m_response.setHeader("Content-Disposition",
-                    "attachment; filename=" + paramString3);
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(disposition, "UTF-8"));
         }
-
-        this.m_response.getOutputStream().write(arrayOfByte, 0,
-                arrayOfByte.length);
+        response.getOutputStream().write(arrayOfByte, 0, arrayOfByte.length);
     }
 
-    public void fieldToFile(ResultSet paramResultSet, String paramString1,
-            String paramString2) throws ServletException, IOException,
-            SmartUploadException, SQLException{
+    public void fieldToFile(ResultSet resultSet, String field, String path) throws Exception{
+        InputStream in = null;
+        FileOutputStream out = null;
         try {
-            if (this.m_application.getRealPath(paramString2) != null) {
-                paramString2 = this.m_application.getRealPath(paramString2);
+            if (application.getRealPath(path) != null) {
+                path = application.getRealPath(path);
             }
-
-            InputStream localInputStream = paramResultSet
-                    .getBinaryStream(paramString1);
-
-            FileOutputStream localFileOutputStream = new FileOutputStream(
-                    paramString2);
-            int i;
-            while ((i = localInputStream.read()) != -1)
-                localFileOutputStream.write(i);
-            localFileOutputStream.close();
-        } catch (Exception localException) {
-            throw new SmartUploadException(
-                    "Unable to save file from the DataBase (1020).");
+            in = resultSet.getBinaryStream(field);
+            out = new FileOutputStream(path);
+            int i = -1;
+            while ((i = in.read()) != -1) out.write(i);
+        } catch (Exception e) {
+            throw new SmartUploadException("Unable to save file from the DataBase");
+        }finally{
+            if(in != null) in.close();
+            if(out != null) out.close();
         }
     }
 
-    private String getDataFieldValue(String paramString1, String paramString2){
-        String str1 = new String();
-        String str2 = new String();
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int m = 0;
-
-        str1 = paramString2 + "=" + '"';
-        i = paramString1.indexOf(str1);
-
+    private String getDataFieldValue(String head, String field){
+        String str = field + "=" + '"';
+        int i = head.indexOf(str);
         if (i > 0) {
-            j = i + str1.length();
-            k = j;
-            str1 = "\"";
-            m = paramString1.indexOf(str1, j);
-            if ((k > 0) && (m > 0)) str2 = paramString1.substring(k, m);
-        }
-        return str2;
-    }
-
-    private String getFileExt(String paramString){
-        String str = new String();
-        int i = 0;
-        int j = 0;
-
-        if (paramString == null) {
-            return null;
-        }
-
-        i = paramString.lastIndexOf('.') + 1;
-        j = paramString.length();
-        str = paramString.substring(i, j);
-        if (paramString.lastIndexOf('.') > 0) {
-            return str;
+            int j = i + str.length();
+            str = "\"";
+            int m = head.indexOf(str, j);
+            if ((j > 0) && (m > 0)) return head.substring(j, m);
         }
         return "";
     }
 
-    private String getContentType(String paramString){
-        String str1 = new String();
-        String str2 = new String();
-        int i = 0;
-        int j = 0;
-
-        str1 = "Content-Type:";
-        i = paramString.indexOf(str1) + str1.length();
-
-        if (i != -1) {
-            j = paramString.length();
-            str2 = paramString.substring(i, j);
+    private String getFileExt(String fileName){
+        if (StrYn.isNull(fileName)) {
+            return fileName;
         }
-        return str2;
+        return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
     }
 
-    private String getTypeMIME(String paramString){
-        String str = new String();
-        int i = 0;
-
-        i = paramString.indexOf("/");
-
-        if (i != -1) {
-            return paramString.substring(1, i);
+    private String getContentType(String type){
+        if(StrYn.isNull(type)){
+            return type;
         }
-        return paramString;
+        String ct = "Content-Type:";
+        int i = type.indexOf(ct) + ct.length();
+        if (i > -1) {
+            return type.substring(i, type.length());
+        }
+        return "";
     }
 
-    private String getSubTypeMIME(String paramString){
-        String str = new String();
-        int i = 0;
-        int j = 0;
-
-        i = paramString.indexOf("/") + 1;
-        if (i != -1) {
-            j = paramString.length();
-            return paramString.substring(i, j);
+    private String getTypeMIME(String mime){
+        if(StrYn.isNull(mime)){
+            return mime;
         }
-        return paramString;
+        int i = mime.indexOf("/");
+        if (i > 1) {
+            return mime.substring(1, i);
+        }
+        return mime;
     }
 
-    private String getContentDisp(String paramString){
-        String str = new String();
-        int i = 0;
-        int j = 0;
+    private String getSubTypeMIME(String mime){
+        if(StrYn.isNull(mime)){
+            return mime;
+        }
+        int i = mime.indexOf("/") + 1;
+        if (i > 0) {
+            return mime.substring(i);
+        }
+        return mime;
+    }
 
-        i = paramString.indexOf(":") + 1;
-        j = paramString.indexOf(";");
-        str = paramString.substring(i, j);
-        return str;
+    private String getContentDisp(String content){
+        return content.substring(content.indexOf(":") + 1, content.indexOf(";"));
     }
 
     private void getDataSection(){
-        int i = 0;
-        String str = new String();
-        int j = this.m_currentIndex;
-        int k = 0;
-        int m = this.m_boundary.length();
-        this.m_startData = this.m_currentIndex;
-        this.m_endData = 0;
-
-        while (j < this.m_totalBytes) {
-            if (this.m_binArray[j] == (byte) this.m_boundary.charAt(k)) {
+        int m = boundary.length();
+        startData = currentIndex;
+        for (int i = currentIndex; i < totalBytes; i++) {
+            int k = 0;
+            if (binaryArray[i] == (byte) boundary.charAt(k)) {
                 if (k == m - 1) {
-                    this.m_endData = (j - m + 1 - 3);
+                    endData = i - m - 1;
                     break;
                 }
-                j++;
                 k++;
             } else {
-                j++;
                 k = 0;
             }
         }
-
-        this.m_currentIndex = (this.m_endData + m + 3);
+        currentIndex = endData + m + 3;
     }
 
     private String getDataHeader(){
-        int i = this.m_currentIndex;
-        int j = 0;
-        int k = 0;
-        int m = 0;
-
+        int i = currentIndex, j = 0, m = 0;
         while (m == 0) {
-            if ((this.m_binArray[this.m_currentIndex] == 13)
-                    && (this.m_binArray[(this.m_currentIndex + 2)] == 13)) {
+            if ((binaryArray[currentIndex] == 13) && (binaryArray[currentIndex + 2] == 13)) {
                 m = 1;
-                j = this.m_currentIndex - 1;
-                this.m_currentIndex += 2;
+                j = currentIndex - 1;
+                currentIndex += 2;
             } else {
-                this.m_currentIndex += 1;
+                currentIndex += 1;
             }
         }
-        String str = new String(this.m_binArray, i, j - i + 1);
-        return str;
+        return new String(binaryArray, i, j - i + 1);
     }
 
-    private String getFileName(String paramString){
-        String str1 = new String();
-        String str2 = new String();
+    public void setDeniedFilesList(String path) throws Exception{
+        this.setFilesList(path, deniedFilesList);
+    }
+    
+    public void setAllowedFilesList(String path){
+        this.setFilesList(path, allowedFilesList);
+    }
+
+    public void setDenyPhysicalPath(boolean denyPhysicalPath){
+        this.denyPhysicalPath = denyPhysicalPath;
+    }
+
+    public void setForcePhysicalPath(boolean forcePhysicalPath){
+        this.forcePhysicalPath = forcePhysicalPath;
+    }
+
+    public void setContentDisposition(String contentDisposition){
+        this.contentDisposition = contentDisposition;
+    }
+
+    public void setTotalMaxFileSize(long totalMaxFileSize){
+        this.totalMaxFileSize = totalMaxFileSize;
+    }
+
+    public void setMaxFileSize(long maxFileSize){
+        this.maxFileSize = maxFileSize;
+    }
+
+    protected String getPhysicalPath(String path, int offset)throws IOException{
+        String parent = null;
+        String name = null;
+        String separator = System.getProperty("file.separator");
         int i = 0;
-        int j = 0;
-        int k = 0;
-        int m = 0;
-
-        i = paramString.lastIndexOf('/');
-        if (i != -1) return paramString.substring(i + 1, paramString.length());
-        i = paramString.lastIndexOf('\\');
-        if (i != -1) {
-            return paramString.substring(i + 1, paramString.length());
+        if (StrYn.isNull(path))
+            throw new IllegalArgumentException("There is no specified destination file");
+        if (path.lastIndexOf("\\") >= 0) {
+            parent = path.substring(0, path.lastIndexOf("\\"));
+            name = path.substring(path.lastIndexOf("\\") + 1);
         }
-        return paramString;
-    }
-
-    public void setDeniedFilesList(String paramString) throws ServletException,
-            IOException, SQLException{
-        String str = "";
-
-        if (paramString != null) {
-            str = "";
-            for (int i = 0; i < paramString.length(); i++) {
-                if (paramString.charAt(i) == ',') {
-                    if (!this.m_deniedFilesList.contains(str))
-                        this.m_deniedFilesList.addElement(str);
-                    str = "";
-                } else {
-                    str = str + paramString.charAt(i);
-                }
-            }
-            if (str != "") this.m_deniedFilesList.addElement(str);
-        } else {
-            this.m_deniedFilesList = null;
+        if (path.lastIndexOf("/") >= 0) {
+            parent = path.substring(0, path.lastIndexOf("/"));
+            name = path.substring(path.lastIndexOf("/") + 1);
         }
-    }
-
-    public void setAllowedFilesList(String paramString){
-        String str = "";
-
-        if (paramString != null) {
-            str = "";
-            for (int i = 0; i < paramString.length(); i++) {
-                if (paramString.charAt(i) == ',') {
-                    if (!this.m_allowedFilesList.contains(str))
-                        this.m_allowedFilesList.addElement(str);
-                    str = "";
-                } else {
-                    str = str + paramString.charAt(i);
-                }
-            }
-            if (str != "") this.m_allowedFilesList.addElement(str);
-        } else {
-            this.m_allowedFilesList = null;
-        }
-    }
-
-    public void setDenyPhysicalPath(boolean paramBoolean){
-        this.m_denyPhysicalPath = paramBoolean;
-    }
-
-    public void setForcePhysicalPath(boolean paramBoolean){
-        this.m_forcePhysicalPath = paramBoolean;
-    }
-
-    public void setContentDisposition(String paramString){
-        this.m_contentDisposition = paramString;
-    }
-
-    public void setTotalMaxFileSize(long paramLong){
-        this.m_totalMaxFileSize = paramLong;
-    }
-
-    public void setMaxFileSize(long paramLong){
-        this.m_maxFileSize = paramLong;
-    }
-
-    protected String getPhysicalPath(String paramString, int paramInt)
-            throws IOException{
-        String str1 = new String();
-        String str2 = new String();
-        String str3 = new String();
-        int i = 0;
-        str3 = System.getProperty("file.separator");
-
-        if (paramString == null)
-            throw new IllegalArgumentException(
-                    "There is no specified destination file (1140).");
-
-        if (paramString.equals(""))
-            throw new IllegalArgumentException(
-                    "There is no specified destination file (1140).");
-
-        if (paramString.lastIndexOf("\\") >= 0) {
-            str1 = paramString.substring(0, paramString.lastIndexOf("\\"));
-            str2 = paramString.substring(paramString.lastIndexOf("\\") + 1);
-        }
-        if (paramString.lastIndexOf("/") >= 0) {
-            str1 = paramString.substring(0, paramString.lastIndexOf("/"));
-            str2 = paramString.substring(paramString.lastIndexOf("/") + 1);
-        }
-        str1 = str1.length() == 0 ? "/" : str1;
-
-        java.io.File localFile = new java.io.File(str1);
+        parent = parent.length() == 0 ? "/" : parent;
+        java.io.File localFile = new java.io.File(parent);
         if (localFile.exists()) i = 1;
-
-        if (paramInt == 0) {
-            if (isVirtual(str1)) {
-                str1 = this.m_application.getRealPath(str1);
-                if (str1.endsWith(str3))
-                    str1 = str1 + str2;
+        if (offset == 0) {
+            if (isVirtual(parent)) {
+                parent = application.getRealPath(parent);
+                if (parent.endsWith(separator))
+                    parent = parent + name;
                 else {
-                    str1 = str1 + str3 + str2;
+                    parent = parent + separator + name;
                 }
-                return str1;
+                return parent;
             }
             if (i != 0) {
-                if (this.m_denyPhysicalPath) {
-                    throw new IllegalArgumentException(
-                            "Physical path is denied (1125).");
+                if (denyPhysicalPath) {
+                    throw new IllegalArgumentException("Physical path is denied");
                 }
-
-                return paramString;
+                return path;
             }
-
-            throw new IllegalArgumentException(
-                    "This path does not exist (1135).");
+            throw new IllegalArgumentException("This path does not exist");
         }
 
-        if (paramInt == 1) {
-            if (isVirtual(str1)) {
-                str1 = this.m_application.getRealPath(str1);
-                if (str1.endsWith(str3))
-                    str1 = str1 + str2;
+        if (offset == 1) {
+            if (isVirtual(parent)) {
+                parent = application.getRealPath(parent);
+                if (parent.endsWith(separator))
+                    parent = parent + name;
                 else {
-                    str1 = str1 + str3 + str2;
+                    parent = parent + separator + name;
                 }
-                return str1;
+                return parent;
             }
             if (i != 0) {
-                throw new IllegalArgumentException(
-                        "The path is not a virtual path.");
+                throw new IllegalArgumentException("The path is not a virtual path");
             }
-
-            throw new IllegalArgumentException(
-                    "This path does not exist (1135).");
+            throw new IllegalArgumentException("This path does not exist");
         }
 
-        if (paramInt == 2) {
+        if (offset == 2) {
             if (i != 0) {
-                if (this.m_denyPhysicalPath) {
-                    throw new IllegalArgumentException(
-                            "Physical path is denied (1125).");
+                if (denyPhysicalPath) {
+                    throw new IllegalArgumentException("Physical path is denied");
                 }
-
-                return paramString;
+                return path;
             }
-
-            if (isVirtual(str1)) {
-                throw new IllegalArgumentException(
-                        "The path is not a physical path.");
+            if (isVirtual(parent)) {
+                throw new IllegalArgumentException("The path is not a physical path");
             }
-
-            throw new IllegalArgumentException(
-                    "This path does not exist (1135).");
+            throw new IllegalArgumentException("This path does not exist");
         }
-
         return null;
     }
 
-    public void uploadInFile(String paramString) throws IOException,
-            SmartUploadException{
-        int i = 0;
-        int j = 0;
-        int k = 0;
-
-        if (paramString == null)
-            throw new IllegalArgumentException(
-                    "There is no specified destination file (1025).");
-
-        if (paramString.length() == 0)
-            throw new IllegalArgumentException(
-                    "There is no specified destination file (1025).");
-
-        if ((!isVirtual(paramString)) && (this.m_denyPhysicalPath)) {
-            throw new SecurityException("Physical path is denied (1035).");
+    public void uploadInFile(String path) throws Exception{
+        if (StrYn.isNull(path))
+            throw new IllegalArgumentException("There is no specified destination file");
+        if ((!isVirtual(path)) && (denyPhysicalPath)) {
+            throw new SecurityException("Physical path is denied");
         }
-
-        i = this.m_request.getContentLength();
-
-        this.m_binArray = new byte[i];
-
+        int i = request.getContentLength();
+        binaryArray = new byte[i];
+        int j = 0, k = 0;
         while (j < i) {
             try {
-                k = this.m_request.getInputStream().read(this.m_binArray, j,
-                        i - j);
-            } catch (Exception localException1) {
-                throw new SmartUploadException("Unable to upload.");
+                k = request.getInputStream().read(binaryArray, j, i - j);
+            } catch (Exception e) {
+                throw new SmartUploadException("Unable to upload");
             }
             j += k;
         }
-
-        if (isVirtual(paramString))
-            paramString = this.m_application.getRealPath(paramString);
-
+        if (isVirtual(path))
+            path = application.getRealPath(path);
         try {
-            java.io.File localFile = new java.io.File(paramString);
-
-            FileOutputStream localFileOutputStream = new FileOutputStream(
-                    localFile);
-            localFileOutputStream.write(this.m_binArray);
-            localFileOutputStream.close();
-        } catch (Exception localException2) {
-            throw new SmartUploadException(
-                    "The Form cannot be saved in the specified file (1030).");
+            java.io.File localFile = new java.io.File(path);
+            FileOutputStream out = new FileOutputStream(localFile);
+            out.write(binaryArray);
+            out.close();
+        } catch (Exception e) {
+            throw new SmartUploadException("The Form cannot be saved in the specified file");
+        }
+    }
+    
+    private void setFilesList(String path, Vector<String> list){
+        if(StrYn.isNull(path)){
+            list = null;
+        }else{
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < path.length(); i++) {
+                if (path.charAt(i) == ',') {
+                    if (!list.contains(sb.toString())){
+                        list.addElement(sb.toString());
+                    }
+                    sb.delete(0, sb.length());
+                } else {
+                    sb.append(path.charAt(i));
+                }
+            }
+            list.addElement(sb.toString());
         }
     }
 
-    private boolean isVirtual(String paramString){
-        if (this.m_application.getRealPath(paramString) != null) {
-            java.io.File localFile = new java.io.File(
-                    this.m_application.getRealPath(paramString));
-
-            return localFile.exists();
+    private boolean isVirtual(String path){
+        if (application.getRealPath(path) != null) {
+            return new java.io.File(application.getRealPath(path)).exists();
         }
         return false;
+    }
+    
+    private String getFileName(String name){
+        if(StrYn.isNull(name))
+            return null;
+        int i = name.lastIndexOf('/');
+        if (i != -1) return name.substring(i + 1, name.length());
+        i = name.lastIndexOf('\\');
+        if (i != -1) {
+            return name.substring(i + 1);
+        }
+        return name;
     }
 }

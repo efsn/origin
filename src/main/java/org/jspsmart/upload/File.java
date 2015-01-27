@@ -6,212 +6,186 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.servlet.ServletException;
+
+import org.codeyn.util.yn.StrYn;
 
 public class File{
+    
     private SmartUpload sUpload;
-    private int m_startData = 0;
-    private int m_endData = 0;
-    private int m_size = 0;
-    private String m_fieldname = new String();
-    private String m_filename = new String();
-    private String m_fileExt = new String();
-    private String m_filePathName = new String();
-    private String m_contentType = new String();
-    private String m_contentDisp = new String();
-    private String m_typeMime = new String();
-    private String m_subTypeMime = new String();
-    private String m_contentString = new String();
-    private boolean m_isMissing = true;
-    public static final int SAVEAS_AUTO = 0;
-    public static final int SAVEAS_VIRTUAL = 1;
-    public static final int SAVEAS_PHYSICAL = 2;
+    private int startData;
+    private int endData;
+    private int size;
+    private String fieldName;
+    private String filenNme;
+    private String fileExt;
+    private String filePathName;
+    private String contentType;
+    private String contentDisp;
+    private String typeMime;
+    private String subTypeMime;
+//    private String contentString;
+    private boolean isMissing = true;
 
-    public void saveAs(String paramString) throws IOException,
-            SmartUploadException{
-        saveAs(paramString, 0);
+    public void saveAs(String path) throws Exception{
+        saveAs(path, 0);
     }
 
-    public void saveAs(String paramString, int paramInt) throws IOException, SmartUploadException{
-        String str = this.sUpload.getPhysicalPath(paramString, paramInt);
+    public void saveAs(String path, int offset) throws Exception{
+        String str = sUpload.getPhysicalPath(path, offset);
         if (str == null) {
-            throw new IllegalArgumentException("There is no specified destination file (1140).");
+            throw new IllegalArgumentException("There is no specified destination file");
         }
+        FileOutputStream out = null;
         try {
-            java.io.File localFile = new java.io.File(str);
-            FileOutputStream localFileOutputStream = new FileOutputStream(localFile);
-            localFileOutputStream.write(this.sUpload.m_binArray, this.m_startData, this.m_size);
-            localFileOutputStream.close();
+            java.io.File file = new java.io.File(str);
+            out = new FileOutputStream(file);
+            out.write(sUpload.getBinaryArray(), startData, size);
         } catch (IOException localIOException) {
-            throw new SmartUploadException("File can't be saved (1120).");
+            throw new SmartUploadException("File can't be saved");
+        }finally{
+            if(out != null){
+                out.close();
+            }
         }
     }
 
-    public void fileToField(ResultSet paramResultSet, String paramString)
-            throws ServletException, IOException, SmartUploadException,
-            SQLException{
-        long l = 0L;
-        int i = 65536;
-        int j = 0;
-
-        int k = this.m_startData;
-
-        if (paramResultSet == null)
-            throw new IllegalArgumentException("The RecordSet cannot be null (1145).");
-        if (paramString == null)
-            throw new IllegalArgumentException("The columnName cannot be null (1150).");
-        if (paramString.length() == 0)
-            throw new IllegalArgumentException("The columnName cannot be empty (1155).");
-
-        l = BigInteger.valueOf(this.m_size).divide(BigInteger.valueOf(i)).longValue();
-
-        j = BigInteger.valueOf(this.m_size).mod(BigInteger.valueOf(i))
-                .intValue();
+    public void fileToField(ResultSet rs, String paramString)throws Exception{
+        int i = 0x10000;
+        int k = startData;
+        if (rs == null)
+            throw new IllegalArgumentException("The resultSet cannot be null");
+        if (StrYn.isNull(paramString))
+            throw new IllegalArgumentException("The columnName cannot be null or empty");
+        long l = BigInteger.valueOf(size).divide(BigInteger.valueOf(i)).longValue();
+        int j = BigInteger.valueOf(size).mod(BigInteger.valueOf(i)).intValue();
         try {
             for (int m = 1; m < l; m++) {
-                paramResultSet
-                        .updateBinaryStream(paramString,
-                                new ByteArrayInputStream(
-                                        this.sUpload.m_binArray, k, i), i);
-
+                rs.updateBinaryStream(paramString,new ByteArrayInputStream(sUpload.getBinaryArray(), k, i), i);
                 k = k == 0 ? 1 : k;
-
-                k = m * i + this.m_startData;
+                k = m * i + startData;
             }
-
             if (j > 0) {
-                paramResultSet
-                        .updateBinaryStream(paramString,
-                                new ByteArrayInputStream(
-                                        this.sUpload.m_binArray, k, j), j);
+                rs.updateBinaryStream(paramString,new ByteArrayInputStream(sUpload.getBinaryArray(), k, j), j);
             }
-
         } catch (SQLException localSQLException) {
-            byte[] arrayOfByte = new byte[this.m_size];
-            System.arraycopy(this.sUpload.m_binArray, this.m_startData,
-                    arrayOfByte, 0, this.m_size);
-
-            paramResultSet.updateBytes(paramString, arrayOfByte);
+            byte[] arrayOfByte = new byte[size];
+            System.arraycopy(sUpload.getBinaryArray(), startData, arrayOfByte, 0, size);
+            rs.updateBytes(paramString, arrayOfByte);
         } catch (Exception localException) {
-            throw new SmartUploadException(
-                    "Unable to save file in the DataBase (1130).");
+            throw new SmartUploadException("Unable to save file in the DataBase");
         }
     }
 
     public boolean isMissing(){
-        return this.m_isMissing;
+        return isMissing;
     }
 
     public String getFieldName(){
-        return this.m_fieldname;
+        return fieldName;
     }
 
     public String getFileName(){
-        return this.m_filename;
+        return filenNme;
     }
 
     public String getFilePathName(){
-        return this.m_filePathName;
+        return filePathName;
     }
 
     public String getFileExt(){
-        return this.m_fileExt;
+        return fileExt;
     }
 
     public String getContentType(){
-        return this.m_contentType;
+        return contentType;
     }
 
     public String getContentDisp(){
-        return this.m_contentDisp;
+        return contentDisp;
     }
 
     public String getContentString(){
-        String str = new String(this.sUpload.m_binArray, this.m_startData,
-                this.m_size);
-        return str;
+        return new String(sUpload.getBinaryArray(), startData, size);
     }
 
     public String getTypeMIME() throws IOException{
-        return this.m_typeMime;
+        return typeMime;
     }
 
     public String getSubTypeMIME(){
-        return this.m_subTypeMime;
+        return subTypeMime;
     }
 
     public int getSize(){
-        return this.m_size;
+        return size;
     }
 
     protected int getStartData(){
-        return this.m_startData;
+        return startData;
     }
 
     protected int getEndData(){
-        return this.m_endData;
+        return endData;
     }
 
     protected void setParent(SmartUpload paramSmartUpload){
-        this.sUpload = paramSmartUpload;
+        sUpload = paramSmartUpload;
     }
 
     protected void setStartData(int paramInt){
-        this.m_startData = paramInt;
+        startData = paramInt;
     }
 
     protected void setEndData(int paramInt){
-        this.m_endData = paramInt;
+        endData = paramInt;
     }
 
     protected void setSize(int paramInt){
-        this.m_size = paramInt;
+        size = paramInt;
     }
 
     protected void setIsMissing(boolean paramBoolean){
-        this.m_isMissing = paramBoolean;
+        isMissing = paramBoolean;
     }
 
     protected void setFieldName(String paramString){
-        this.m_fieldname = paramString;
+        fieldName = paramString;
     }
 
     protected void setFileName(String paramString){
-        this.m_filename = paramString;
+        filenNme = paramString;
     }
 
     protected void setFilePathName(String paramString){
-        this.m_filePathName = paramString;
+        filePathName = paramString;
     }
 
     protected void setFileExt(String paramString){
-        this.m_fileExt = paramString;
+        fileExt = paramString;
     }
 
     protected void setContentType(String paramString){
-        this.m_contentType = paramString;
+        contentType = paramString;
     }
 
     protected void setContentDisp(String paramString){
-        this.m_contentDisp = paramString;
+        contentDisp = paramString;
     }
 
     protected void setTypeMIME(String paramString){
-        this.m_typeMime = paramString;
+        typeMime = paramString;
     }
 
     protected void setSubTypeMIME(String paramString){
-        this.m_subTypeMime = paramString;
+        subTypeMime = paramString;
     }
 
     public byte getBinaryData(int paramInt){
-        if (this.m_startData + paramInt > this.m_endData) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "Index Out of range (1115).");
+        if (startData + paramInt > endData) {
+            throw new ArrayIndexOutOfBoundsException("Index Out of range");
         }
-
-        if (this.m_startData + paramInt <= this.m_endData)
-            return this.sUpload.m_binArray[(this.m_startData + paramInt)];
+        if (startData + paramInt <= endData)
+            return sUpload.getBinaryArray()[(startData + paramInt)];
         return 0;
     }
 }
