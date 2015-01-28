@@ -1,5 +1,5 @@
-<%@ page contentType="text/html; charset=UTF-8" 
-import="com.jspsmart.upload.*" %><%
+<%@ page contentType="text/html; charset=UTF-8" import="org.jspsmart.upload.*" %>
+<%
 	
 	//获取路径 
 	String filePath = request.getParameter("filePath");

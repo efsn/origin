@@ -9,10 +9,11 @@ import org.svip.db.enumeration.mysql.DbType;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-@Table(index = {@Index(name = "editorIdIdx", column = "editorId")})
+@Table(index = {@Index(name = "editorIdIdx", column = {"editorId"})})
 public class Editor{
 
-    @Column(type = DbType.INT, length = 11,
+    @Column(type = DbType.INT,
+            length = 11, 
             constraint = @Constraint(autoIncrement = true, primary = true))
     private int editorId;
 
@@ -31,11 +32,11 @@ public class Editor{
     @Column(type = DbType.VARCHAR, length = 50)
     private String editorEmail;
 
-    public void setIdStatementValue(PreparedStatement pstm) throws SQLException {
+    public void setIdStatementValue(PreparedStatement pstm) throws SQLException{
         pstm.setInt(1, editorId);
     }
 
-    public void setStatementValue(PreparedStatement pstm) throws SQLException {
+    public void setStatementValue(PreparedStatement pstm) throws SQLException{
         pstm.setString(1, editorPname);
         pstm.setString(2, editorPwd);
         pstm.setString(3, editorName);
@@ -43,52 +44,52 @@ public class Editor{
         pstm.setString(5, editorTelephone);
     }
 
-    public int getEditorId() {
+    public int getEditorId(){
         return editorId;
     }
 
-    public void setEditorId(int editorId) {
-        editorId = editorId;
+    public void setEditorId(int editorId){
+        this.editorId = editorId;
     }
 
-    public String getEditorPname() {
+    public String getEditorPname(){
         return editorPname;
     }
 
-    public void setEditorPname(String editorPname) {
-        editorPname = editorPname;
+    public void setEditorPname(String editorPname){
+        this.editorPname = editorPname;
     }
 
-    public String getEditorPwd() {
+    public String getEditorPwd(){
         return editorPwd;
     }
 
-    public void setEditorPwd(String editorPwd) {
-        editorPwd = editorPwd;
+    public void setEditorPwd(String editorPwd){
+        this.editorPwd = editorPwd;
     }
 
-    public String getEditorName() {
+    public String getEditorName(){
         return editorName;
     }
 
-    public void setEditorName(String editorName) {
-        editorName = editorName;
+    public void setEditorName(String editorName){
+        this.editorName = editorName;
     }
 
-    public String getEditorTelephone() {
+    public String getEditorTelephone(){
         return editorTelephone;
     }
 
-    public void setEditorTelephone(String editorTelephone) {
-        editorTelephone = editorTelephone;
+    public void setEditorTelephone(String editorTelephone){
+        this.editorTelephone = editorTelephone;
     }
 
-    public String getEditorEmail() {
+    public String getEditorEmail(){
         return editorEmail;
     }
 
-    public void setEditorEmail(String editorEmail) {
-        editorEmail = editorEmail;
+    public void setEditorEmail(String editorEmail){
+        this.editorEmail = editorEmail;
     }
 
 }

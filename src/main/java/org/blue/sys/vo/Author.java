@@ -9,7 +9,7 @@ import org.svip.db.enumeration.mysql.DbType;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-@Table(index = {@Index(name = "author_id_idx", column = "authorId")})
+@Table(index = {@Index(name = "author_id_idx", column = {"authorId"})})
 public class Author{
 
     @Column(type = DbType.INT,

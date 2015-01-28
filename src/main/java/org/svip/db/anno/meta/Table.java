@@ -16,5 +16,5 @@ public @interface Table{
 
     public String engine() default "InnoDB";
 
-    public String charset() default "utf8";
+    public String charset() default "UTF8";
 }

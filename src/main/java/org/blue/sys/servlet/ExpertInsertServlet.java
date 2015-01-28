@@ -15,6 +15,8 @@ import org.blue.util.ReturnError;
 import org.blue.util.VerifyInfo;
 
 public class ExpertInsertServlet extends HttpServlet {
+    
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Expert expert = new Expert();
@@ -29,7 +31,7 @@ public class ExpertInsertServlet extends HttpServlet {
         String remark = request.getParameter("remark");
 
         if(ReturnError.isLength(pname)){
-            expert.setExpert_pname(pname);
+            expert.setExpertPname(pname);
         }
         else{
             RequestDispatcher dp = request
@@ -39,7 +41,7 @@ public class ExpertInsertServlet extends HttpServlet {
         }
 
         if(ReturnError.isLength(pwd) && ReturnError.isEquals(pwd, rePwd)){
-            expert.setExpert_pwd(pwd);
+            expert.setExpertPwd(pwd);
         }
         else if(!ReturnError.isEquals(pwd, rePwd)){
             RequestDispatcher dp = request
@@ -54,23 +56,21 @@ public class ExpertInsertServlet extends HttpServlet {
             return;
         }
 
-        expert.setExpert_name(name);
-        expert.setExpert_email(email);
-        expert.setExpert_telephone(telephone);
-        expert.setExpert_remark(remark);
-        expert.setExpert_title(title);
+        expert.setExpertName(name);
+        expert.setExpertEmail(email);
+        expert.setExpertTelephone(telephone);
+        expert.setExpertRemark(remark);
+        expert.setExpertTitle(title);
 
         PryInsertDao pid = PryFactory.getPryInsertDao();
 
         try{
             if(!VerifyInfo.isRepeat(expert)){
                 if(pid.doExpert(expert)){
-                    RequestDispatcher dp = request
-                            .getRequestDispatcher("/host/admin/adminHost.jsp");
+                    RequestDispatcher dp = request.getRequestDispatcher("/host/admin/adminHost.jsp");
                     dp.forward(request, response);
                 }
-            }
-            else{
+            }else{
                 response.sendRedirect("/error/expertNameRepeat.jsp");
             }
         } catch(Exception e){
@@ -78,6 +78,7 @@ public class ExpertInsertServlet extends HttpServlet {
         }
     }
 
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         doGet(request, response);

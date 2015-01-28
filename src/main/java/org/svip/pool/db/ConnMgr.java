@@ -8,4 +8,8 @@ public class ConnMgr{
         return ConnPoolMgr.getInstance().getPool().getConnection();
     }
     
+    public static void close(Connection con) throws Exception{
+        ConnPoolMgr.getInstance().getPool().close(con);
+    }
+    
 }

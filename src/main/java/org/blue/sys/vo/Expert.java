@@ -3,83 +3,123 @@ package org.blue.sys.vo;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.svip.db.anno.meta.Column;
+import org.svip.db.anno.meta.Constraint;
+import org.svip.db.anno.meta.Index;
+import org.svip.db.anno.meta.Table;
+import org.svip.db.enumeration.mysql.DbType;
+
+@Table(index = {@Index(name = "expertIdIdx", column = {"expertId"})})
 public class Expert{
+    
+    @Column(type = DbType.INT,
+            length = 11,
+            constraint = @Constraint(primary = true, autoIncrement = true))
+    private int expertId;
+    
+    @Column(type = DbType.VARCHAR, length=20)
+    private String expertPwd;
+    
+    @Column(type = DbType.VARCHAR, length=30)
+    private String expertPname;
+    
+    @Column(type = DbType.VARCHAR, length=100)
+    private String expertName;
+    
+    @Column(type = DbType.VARCHAR, length=300)
+    private String expertTitle;
+    
+    @Column(type = DbType.TEXT)
+    private String expertRemark;
+    
+    @Column(type = DbType.VARCHAR, length=11)
+    private String expertTelephone;
+    
+    @Column(type = DbType.VARCHAR, length=100)
+    private String expertEmail;
+    
+    @Column(type = DbType.TEXT)
+    private String message;
+    
+    @Column(type = DbType.TEXT)
+    private String messagee;
+    
     public void setIdStatementValue(PreparedStatement pstm) throws SQLException {
-        pstm.setInt(1, expert_id);
+        pstm.setInt(1, expertId);
     }
 
     public void setStatementValue(PreparedStatement pstm) throws SQLException {
-        pstm.setString(1, expert_pname);
-        pstm.setString(2, expert_pwd);
-        pstm.setString(3, expert_name);
-        pstm.setString(4, expert_email);
-        pstm.setString(5, expert_telephone);
-        pstm.setString(6, expert_title);
-        pstm.setString(7, expert_remark);
+        pstm.setString(1, expertPname);
+        pstm.setString(2, expertPwd);
+        pstm.setString(3, expertName);
+        pstm.setString(4, expertEmail);
+        pstm.setString(5, expertTelephone);
+        pstm.setString(6, expertTitle);
+        pstm.setString(7, expertRemark);
     }
 
-    public int getExpert_id() {
-        return expert_id;
+    public int getExpertId() {
+        return expertId;
     }
 
-    public void setExpert_id(int expertId) {
-        expert_id = expertId;
+    public void setExpertId(int expertId) {
+        this.expertId = expertId;
     }
 
-    public String getExpert_pwd() {
-        return expert_pwd;
+    public String getExpertPwd() {
+        return expertPwd;
     }
 
-    public void setExpert_pwd(String expertPwd) {
-        expert_pwd = expertPwd;
+    public void setExpertPwd(String expertPwd) {
+        this.expertPwd = expertPwd;
     }
 
-    public String getExpert_pname() {
-        return expert_pname;
+    public String getExpertPname() {
+        return expertPname;
     }
 
-    public void setExpert_pname(String expertPname) {
-        expert_pname = expertPname;
+    public void setExpertPname(String expertPname) {
+        this.expertPname = expertPname;
     }
 
-    public String getExpert_name() {
-        return expert_name;
+    public String getExpertName() {
+        return expertName;
     }
 
-    public void setExpert_name(String expertName) {
-        expert_name = expertName;
+    public void setExpertName(String expertName) {
+        this.expertName = expertName;
     }
 
-    public String getExpert_title() {
-        return expert_title;
+    public String getExpertTitle() {
+        return expertTitle;
     }
 
-    public void setExpert_title(String expertTitle) {
-        expert_title = expertTitle;
+    public void setExpertTitle(String expertTitle) {
+        this.expertTitle = expertTitle;
     }
 
-    public String getExpert_remark() {
-        return expert_remark;
+    public String getExpertRemark() {
+        return expertRemark;
     }
 
-    public void setExpert_remark(String expertRemark) {
-        expert_remark = expertRemark;
+    public void setExpertRemark(String expertRemark) {
+        this.expertRemark = expertRemark;
     }
 
-    public String getExpert_telephone() {
-        return expert_telephone;
+    public String getExpertTelephone() {
+        return expertTelephone;
     }
 
-    public void setExpert_telephone(String expertTelephone) {
-        expert_telephone = expertTelephone;
+    public void setExpertTelephone(String expertTelephone) {
+        this.expertTelephone = expertTelephone;
     }
 
-    public String getExpert_email() {
-        return expert_email;
+    public String getExpertEmail() {
+        return expertEmail;
     }
 
-    public void setExpert_email(String expertEmail) {
-        expert_email = expertEmail;
+    public void setExpertEmail(String expertEmail) {
+        this.expertEmail = expertEmail;
     }
 
     public String getMessage() {
@@ -98,14 +138,4 @@ public class Expert{
         this.messagee = messagee;
     }
 
-    private int expert_id;
-    private String expert_pwd;
-    private String expert_pname;
-    private String expert_name;
-    private String expert_title;
-    private String expert_remark;
-    private String expert_telephone;
-    private String expert_email;
-    private String message;
-    private String messagee;
 }

@@ -9,7 +9,7 @@ import org.svip.db.anno.meta.Index;
 import org.svip.db.anno.meta.Table;
 import org.svip.db.enumeration.mysql.DbType;
 
-@Table(index = {@Index(name = "adminIdIdx", column = "adminId")})
+@Table(index = {@Index(name = "adminIdIdx", column = {"adminId"})})
 public class Admin {
 
     @Column(type = DbType.INT,
@@ -42,7 +42,7 @@ public class Admin {
     }
 
     public void setAdmin_id(int adminId) {
-        adminId = adminId;
+        this.adminId = adminId;
     }
 
     public String getadminPname() {
@@ -50,7 +50,7 @@ public class Admin {
     }
 
     public void setAdmin_login(String adminPname) {
-        adminPname = adminPname;
+        this.adminPname = adminPname;
     }
 
     public String getAdmin_name() {
@@ -58,7 +58,7 @@ public class Admin {
     }
 
     public void setAdmin_name(String adminName) {
-        adminName = adminName;
+        this.adminName = adminName;
     }
 
     public String getAdmin_pwd() {
@@ -66,7 +66,7 @@ public class Admin {
     }
 
     public void setAdmin_pwd(String adminPwd) {
-        adminPwd = adminPwd;
+        this.adminPwd = adminPwd;
     }
 
     public String getMessage() {

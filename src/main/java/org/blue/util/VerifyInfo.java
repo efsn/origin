@@ -54,7 +54,7 @@ public class VerifyInfo {
 
     public static boolean isRepeat(Expert expert) throws Exception {
         Map<String, String> map = PryFactory.getPryQueryDao().getExpert();
-        if(map.containsKey(expert.getExpert_pname())){
+        if(map.containsKey(expert.getExpertPname())){
             return true;
         }
         return false;

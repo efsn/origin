@@ -1,15 +1,16 @@
 package org.svip.db.definer.impl;
 
-import org.svip.db.anno.util.Parser;
-import org.svip.db.definer.DbDefiner;
-import org.svip.util.StrUtil;
-import template.DbMgr;
-import template.bean.User;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import org.svip.db.anno.util.Parser;
+import org.svip.db.definer.DbDefiner;
+import org.svip.pool.db.ConnMgr;
+import org.svip.util.StrUtil;
+
+import template.DbMgr;
+import template.bean.User;
 
 /**
  * @author Chan
@@ -18,9 +19,30 @@ import java.sql.SQLException;
  */
 public class MysqlDefiner implements DbDefiner{
     private static final int TIMEOUT = 0;
-
+    
+    private Connection con;
+    
+    private static MysqlDefiner definer;
+    
+    public MysqlDefiner(){
+        try {
+            this.con = ConnMgr.getConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static MysqlDefiner getDefiner(){
+        if(definer == null)
+            synchronized(MysqlDefiner.class){
+                if(definer == null)
+                    definer = new MysqlDefiner();
+            }
+        return definer;
+    }
+    
     @Override
-    public boolean isTableExsit(Connection con, Class<?> clazz) throws SQLException{
+    public boolean isTableExsit(Connection con, Class<?> clazz) throws Exception{
         String beanName = StrUtil.substring(clazz.getName(), ".", true);
         if(!StrUtil.isNull(beanName)){
             return isTableExsit(con, StrUtil.getDbName(beanName));
@@ -29,7 +51,7 @@ public class MysqlDefiner implements DbDefiner{
     }
 
     @Override
-    public boolean isTableExsit(Connection con, String tableName) throws SQLException{
+    public boolean isTableExsit(Connection con, String tableName) throws Exception{
         if(con.isValid(TIMEOUT)){
             DatabaseMetaData db = con.getMetaData();
             ResultSet rs = db.getTables(null, null, tableName, null);
@@ -41,11 +63,11 @@ public class MysqlDefiner implements DbDefiner{
     }
 
     @Override
-    public void createTable(Connection con, Class<?> clazz, boolean isTmp) throws SQLException{
+    public void createTable(Connection con, Class<?> clazz, boolean isTmp) throws Exception{
         if(con.isValid(TIMEOUT)){
             java.sql.Statement sm = con.createStatement();
             try{
-                String sql = Parser.getInstance().parseBean(User.class);
+                String sql = Parser.getInstance().parseBean(clazz);
                 if(!StrUtil.isNull(sql)){
                     System.out.println(sql);
                     sm.executeUpdate(sql);
@@ -58,13 +80,13 @@ public class MysqlDefiner implements DbDefiner{
                 put connection back to pool
                  */
                 if(con != null){
-                    con.close();
+                    this.close();
                 }
             }
         }
     }
 
-    public static void main(String[] args) throws SQLException{
+    public static void main(String[] args) throws Exception{
         MysqlDefiner definer = new MysqlDefiner();
         Connection con = DbMgr.getInstance().getConnection();
         try{
@@ -76,5 +98,24 @@ public class MysqlDefiner implements DbDefiner{
                 con.close();
             }
         }
+    }
+
+    @Override
+    public boolean isTableExsit(Class<?> clazz) throws Exception{
+        return this.isTableExsit(con, clazz);
+    }
+
+    @Override
+    public boolean isTableExsit(String tableName) throws Exception{
+        return this.isTableExsit(con, tableName);
+    }
+
+    @Override
+    public void createTable(Class<?> clazz, boolean isTmp) throws Exception{
+        this.createTable(con, clazz, isTmp);
+    }
+    
+    private void close() throws Exception{
+        ConnMgr.close(con);
     }
 }

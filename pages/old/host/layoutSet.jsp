@@ -1,11 +1,10 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ page contentType="text/html; charset=utf-8"%>
 
-<%@ page import="sys.dao.*" %>
-<%@ page import="sys.dao.impl.*" %>
-<%@ page import="sys.dao.proxy.*" %>
-<%@ page import="sys.factory.*" %>
-<%@ page import="sys.dbc.*" %>
+<%@ page import="org.blue.sys.dao.*" %>
+<%@ page import="org.blue.sys.dao.impl.*" %>
+<%@ page import="org.blue.sys.dao.proxy.*" %>
+<%@ page import="org.blue.sys.factory.*" %>
 
 
 
