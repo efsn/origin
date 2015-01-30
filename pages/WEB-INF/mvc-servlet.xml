@@ -38,9 +38,11 @@
     			<value>wizard/work</value>
     		</list>
     	</property>
-    	
     </bean>
     
+    <bean name="/p.do" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    	<property name="viewName" value="param"/>
+    </bean>
 
 	<bean name="/f.do" class="org.springframework.web.servlet.mvc.ServletForwardingController">
 		<property name="servletName" value="forwarding"/>

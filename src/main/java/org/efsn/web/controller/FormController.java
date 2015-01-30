@@ -29,7 +29,7 @@ public class FormController extends CancellableFormController{
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception{
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("address", Arrays.asList("New York, Hong Kong"));
+        map.put("address", Arrays.asList("New York", "Hong Kong"));
         return map;
     }
     
