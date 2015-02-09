@@ -1,4 +1,4 @@
-package org.codeyn.util.io;
+package org.codeyn.util.io.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.io.impl.BlobValueImpl;
+import org.codeyn.util.io.file.impl.BlobValueImpl;
 
 /**
  * 有些时候需要同事持有很多大数据量的对象，但往往对这些对象是进行只读的操作，如果我们将这些大对象读到内存中，那会占用很多内存

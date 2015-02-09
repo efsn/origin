@@ -1,10 +1,10 @@
-package org.codeyn.util.io.impl;
+package org.codeyn.util.io.file.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 
-import org.codeyn.util.io.BlobValue;
+import org.codeyn.util.io.file.BlobValue;
 import org.codeyn.util.yn.StmYn;
 
 /**

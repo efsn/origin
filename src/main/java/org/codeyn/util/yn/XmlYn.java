@@ -26,6 +26,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.codeyn.util.i18n.I18N;
+import org.codeyn.util.io.MyByteArrayOutputStream;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,8 +34,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import com.esen.io.MyByteArrayOutputStream;
 
 public class XmlYn {
   private XmlYn() {
@@ -94,7 +93,7 @@ public class XmlYn {
   /**
    * 从一个程序中定义的资源中构造一个dom对象
    */
-  public static final Document getDocumentFrom(String resourceName, Class cls) throws Exception{
+  public static final Document getDocumentFrom(String resourceName, Class<?> cls) throws Exception{
     InputStream in = cls.getResourceAsStream(resourceName);
     try {
       return getDocument(in);

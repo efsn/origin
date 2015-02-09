@@ -5,7 +5,7 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-package org.codeyn.util.io;
+package org.codeyn.util.io.file;
 
 import java.io.IOException;
 import java.io.Reader;

@@ -1,4 +1,4 @@
-package com.esen.io;
+package org.codeyn.util.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -7,11 +7,10 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
- * jdk已经有类似的类了ByteArrayOutputStream，此类和jdk提供的类功能大致相同，
- * 但她不是同步的，并且提供了getbuf,ensureCapacity和tryCopyFrom等方法
- * 这可以在某些情况下避免多次复制内存块，提高效率
+ * The same as ByteArrayOutputStream in jdk, the differenct is that provide methods
+ * {@link MyByteArrayOutputStream#getBuf}, {@link MyByteArrayOutputStream#ensureCapacity}, {@link MyByteArrayOutputStream#tryCopyFrom}
+ * <p>Be able to avid to multiple copy the piece of memery, upgrade performace, but not thread safe, 
  * 
- * @author yk
  */
 
 public final class MyByteArrayOutputStream extends OutputStream {

@@ -24,11 +24,11 @@ import java.util.zip.GZIPOutputStream;
 
 import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.io.MyByteArrayInputStream;
-import org.codeyn.util.io.UnicodeReader;
+import org.codeyn.util.io.MyByteArrayOutputStream;
+import org.codeyn.util.io.file.MyByteArrayInputStream;
+import org.codeyn.util.io.file.UnicodeReader;
 import org.codeyn.util.zip.gzip.GzipInStm;
 
-import com.esen.io.MyByteArrayOutputStream;
 
 
 public final class StmYn {
@@ -344,15 +344,6 @@ public final class StmYn {
     try{
         oo.writeObject(o);
     }catch(Exception e){
-        /**
-         * 20100903 又发现了非预期的异常：
-         *              java.lang.RuntimeException: com.esen.bi.dw.meta.impl.DWSubject_Alias_Temp
-                        Caused by: java.io.NotSerializableException: com.esen.bi.dw.meta.impl.DWSubject_Alias_Temp
-                    不晓得是哪个对象引用了com.esen.bi.dw.meta.impl.DWSubject_Alias_Temp。
-                    这里在打印出出异常的对象，方便查问题。
-         *          
-         */
-        //ExceptionHandler.rethrowRuntimeException(e, "在序列化对象【"+o.getClass()+"】时发生异常："+StrFunc.exceptionMsg2str(e));
         ExceptionHandler.rethrowRuntimeException(e, I18N.getString("com.esen.util.stmfunc.exp", "在序列化对象【{0}】时发生异常：{1}",new Object[]{o.getClass(),StrYn.exceptionMsg2str(e)}));
     }
     oo.close();
@@ -781,9 +772,6 @@ public final class StmYn {
     java.io.FileOutputStream fs = null;
     try {
       fs = new java.io.FileOutputStream("c:/1.txt");
-      byte[] aa = "abcdefg".getBytes();
-      //      bytesToHexString(fs,aa);
-      //      writeString(fs,"sdfasdfgsdfffffff你好fdhdfghhhhhhhhhhhhhhhhhhhhhdfghdf");
       fs.close();
     }
     catch (Exception e) {

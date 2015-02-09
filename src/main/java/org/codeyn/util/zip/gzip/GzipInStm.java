@@ -5,9 +5,8 @@ import java.io.InputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.codeyn.util.exception.ExceptionHandler;
+import org.codeyn.util.io.MyByteArrayOutputStream;
 import org.codeyn.util.yn.StmYn;
-
-import com.esen.io.MyByteArrayOutputStream;
 
 /**
  * 通过此类封装的流对象,读取的内容为Gzip压缩后内容

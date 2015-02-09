@@ -1,4 +1,4 @@
-package org.codeyn.util.io;
+package org.codeyn.util.io.file;
 
 /**
  * 微软在win2000后，对notepad存储的utf-8文档，会加上BOM(Byte Order Mark, U+FEFF)，主要因为utf-8和ascii是相容的；

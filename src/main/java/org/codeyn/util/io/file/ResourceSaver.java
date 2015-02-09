@@ -1,4 +1,4 @@
-package org.codeyn.util.io;
+package org.codeyn.util.io.file;
 
 public interface ResourceSaver{
     /**

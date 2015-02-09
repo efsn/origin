@@ -1,4 +1,4 @@
-package org.codeyn.util.io;
+package org.codeyn.util.io.file;
 
 import java.awt.Color;
 import java.io.BufferedWriter;

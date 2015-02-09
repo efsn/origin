@@ -1,4 +1,4 @@
-package org.codeyn.util.io;
+package org.codeyn.util.io.file;
 
 /**
  Copyright 2005 Bytecode Pty Ltd.
