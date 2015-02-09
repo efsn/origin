@@ -53,7 +53,64 @@
 		<property name="commandClass" value="template.bean.User"/>
 	</bean>
 
+	<!-- longest name priority 
+	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	<bean name="/*.jsp" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	<bean name="/jsp/*.jsp" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	
+	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="pre_"/>
+		<property name="suffix" value="_suf"/>
+	</bean>-->
+	
+	<bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+		<property name="mappings">
+			<props>
+				<prop key="/jsp/user/create.do">create</prop>
+				<prop key="/jsp/user/update.do">update</prop>
+				<prop key="/jsp/user/list.do">list</prop>
+				<prop key="/**">list</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="userService" class="org.demo.multi.controller.UserService"/>
+	<bean name="/jsp2/user/**" class="org.demo.multi.controller.UserController">
+		<property name="userService" ref="userService"/>
+		<property name="createView" value="user/create"/>
+		<property name="updateView" value="user/update"/>
+		<property name="listView" value="user/list"/>
+		<property name="redirectToListView" value="redirect:list.do"/>
+		<property name="methodNameResolver" ref="methodNameResolver"/>
+	</bean>
+
+	<bean id="userDelegate" class="org.demo.multi.controller.UserDelegate">
+		<property name="userService" ref="userService"/>
+		<property name="createView" value="user/create"/>
+		<property name="updateView" value="user/update"/>
+		<property name="listView" value="user/list"/>
+		<property name="redirectToListView" value="redirect:list.do"/>
+	</bean>
+	
+	<bean name="/jsp/user/**" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+		<property name="delegate" ref="userDelegate"/>
+		<property name="methodNameResolver" ref="parameterMethodNameResolver"/>
+	</bean>
+	
+	<bean id="parameterMethodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		<property name="methodParamNames" value="create,update,list"/>
+		<property name="paramName" value="action"/>
+		<property name="logicalMappings">
+			<props>
+				<prop key="doCreate">create</prop>
+				<prop key="doUpdate">update</prop>
+			</props>
+		</property>
+		<property name="defaultMethodName" value="list"/>
+	</bean>
 
 
 
-</beans>
+
+</beans> 
