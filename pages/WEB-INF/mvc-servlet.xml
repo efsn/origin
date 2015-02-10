@@ -110,7 +110,11 @@
 		<property name="defaultMethodName" value="list"/>
 	</bean>
 
-
+	<bean name="/data.do" class="org.demo.data.controller.DataBinderController">
+		<property name="webBindingInitializer" ref="webBindingInitializer"/>
+	</bean>
+	
+	<bean id="webBindingInitializer" class="org.demo.data.binder.BinderInit"/>
 
 
 </beans> 
