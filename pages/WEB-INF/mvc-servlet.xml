@@ -116,5 +116,21 @@
 	
 	<bean id="webBindingInitializer" class="org.demo.data.binder.BinderInit"/>
 
+	<bean name="/error.do" class="org.demo.data.controller.ErrorController">
+		<property name="commandClass" value="org.demo.data.binder.DataBinderModel"/>
+		<property name="errorView" value="error/error"/>
+	</bean>
+	
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath:message"/>
+		<property name="fileEncodings" value="uft-8"/>
+		<property name="cacheSeconds" value="120"/>
+	</bean>
+
+
+
+
+
+
 
 </beans> 
