@@ -10,7 +10,7 @@ import org.demo.data.UserState;
 
 public class DataBinderModel{
     private String username;
-    private boolean bl;
+    private boolean bool;
     private SchoolInfo sInfo;
     private List list;
     private Map map;
@@ -25,11 +25,11 @@ public class DataBinderModel{
     public void setUsername(String username){
         this.username = username;
     }
-    public boolean isBl(){
-        return bl;
+    public boolean isBool(){
+        return bool;
     }
-    public void setBl(boolean bl){
-        this.bl = bl;
+    public void setBool(boolean bool){
+        this.bool = bool;
     }
     public SchoolInfo getsInfo(){
         return sInfo;
@@ -67,9 +67,5 @@ public class DataBinderModel{
     public void setState(UserState state){
         this.state = state;
     }
-    
-    
-    
-    
     
 }

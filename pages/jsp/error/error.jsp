@@ -8,8 +8,13 @@
 		<title>Error</title>
 	</head>
 	<body>
-		<f:form commandName="command">
-			<f:errors path="*" cssClass="errorBox"/>
-		</f:form>
+<%-- 		<form action="/origin/ee.do"> --%>
+			<f:form commandName="command">
+				<f:errors path="*" cssStyle="color:red"/>
+			bool:<f:input path="bool"/><br/>
+			phoneNumber:<f:input path="phoneNumber"/><br/>
+			date:<f:input path="date"/><br/>
+			<input type="submit" value="Submit"/>
+			</f:form><br/>
 	</body>
 </html>

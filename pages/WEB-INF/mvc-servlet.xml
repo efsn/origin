@@ -127,7 +127,11 @@
 		<property name="cacheSeconds" value="120"/>
 	</bean>
 
-
+	<bean name="/ee.do" class="org.demo.multi.controller.DataBindErrorController">
+		<property name="commandClass" value="org.demo.data.binder.DataBinderModel"/>
+		<property name="formView" value="error/error"/>
+		<property name="successView" value="error/error"/>
+	</bean>
 
 
 

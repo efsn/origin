@@ -37,7 +37,7 @@ public class DataBinderController extends AbstractCommandController{
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception{
         super.initBinder(request, binder);
-//        DateFormat df = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss");
+//        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        binder.registerCustomEditor(Date.class, new CustomDateEditor(df, true));
 //        binder.registerCustomEditor(PhoneNumber.class, new PhoneNumberEditor());
 //        binder.registerCustomEditor(SchoolInfo.class, new SchoolInfoEditor());
