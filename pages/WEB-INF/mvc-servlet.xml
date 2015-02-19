@@ -122,15 +122,22 @@
 	</bean>
 	
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basename" value="classpath:message"/>
+		<property name="basename" value="classpath:messages"/>
 		<property name="fileEncodings" value="uft-8"/>
 		<property name="cacheSeconds" value="120"/>
 	</bean>
+	
+	<bean id="validator" class="org.demo.data.validator.DataBinderModelValidator"/>
 
 	<bean name="/ee.do" class="org.demo.multi.controller.DataBindErrorController">
+		<property name="validators">
+			<array>
+				<ref bean="validator"/>
+			</array>
+		</property>
 		<property name="commandClass" value="org.demo.data.binder.DataBinderModel"/>
-		<property name="formView" value="error/error"/>
-		<property name="successView" value="error/error"/>
+		<property name="formView" value="error/validator"/>
+		<property name="successView" value="error/validator"/>
 	</bean>
 
 

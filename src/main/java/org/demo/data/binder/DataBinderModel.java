@@ -10,6 +10,7 @@ import org.demo.data.UserState;
 
 public class DataBinderModel{
     private String username;
+    private String password;
     private boolean bool;
     private SchoolInfo sInfo;
     private List list;
@@ -66,6 +67,12 @@ public class DataBinderModel{
     }
     public void setState(UserState state){
         this.state = state;
+    }
+    public String getPassword(){
+        return password;
+    }
+    public void setPassword(String password){
+        this.password = password;
     }
     
 }

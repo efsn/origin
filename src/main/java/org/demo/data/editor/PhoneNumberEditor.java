@@ -9,7 +9,7 @@ import org.demo.data.PhoneNumber;
 
 public class PhoneNumberEditor extends PropertyEditorSupport{
     
-    private static final Pattern pattern = Pattern.compile("^(\\d{3,4})-(\\d{7,8})$");
+    private static final Pattern pattern = Pattern.compile("^(/d{3,4})-(/d{7,8})$");
     
     @Override
     public void setAsText(String text) throws IllegalArgumentException{
