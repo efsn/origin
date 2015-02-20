@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="f" %>
 
 <html>
 	<head>
@@ -10,13 +11,14 @@
 	</head>
 	<body>
 	<p>Create user</p>
-		<form action="create.do" method="POST">
+		<f:form commandName="command" action="create.do" method="POST">
 			<input type="hidden" name="action" value="doCreate"/>
-			Name:<input type="text" name="username" value="${command.username}"/>
-			Password:<input type="password" name="password" value="${command.password}"/>
-			Email:<input type="text" name="email" value="${command.email}"/>
+			Name:<f:input path="username"/>
+			<f:errors path="username" cssStyle="color:red"/><br/>
+			Password:<f:input path="password"/><br/>
+			Email:<f:input path="email"/>
 			<input type="submit" name="submit" value="Create"/>
-		</form>
+		</f:form>
 		<a href="${pageContext.request.contextPath}/jsp/user/list.do"/>List</a>
 	</body>
 </html>

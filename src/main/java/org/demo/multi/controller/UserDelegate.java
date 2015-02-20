@@ -3,6 +3,8 @@ package org.demo.multi.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import template.bean.User;
@@ -22,6 +24,15 @@ public class UserDelegate{
             //jump to create view
             ModelAndView mv = new ModelAndView(this.getCreateView());
             mv.addObject(this.getCommandName(user), user);
+            
+            BindException errors = new BindException(user, getCommandName(user));
+            if(!StringUtils.hasLength(user.getUsername())){
+                errors.rejectValue("username", "username.not.empty", "Please enter your usename");
+            }
+            if(errors.hasErrors()){
+                mv.addAllObjects(errors.getModel());
+            }
+            
             return mv;
         }
         userService.create(user);
