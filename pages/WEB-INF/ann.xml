@@ -15,7 +15,7 @@
 
 	<!-- Below is controller -->
 	
-	<bean class="org.demo.annotation.controller.UserController" />
-
+	<bean class="org.demo.annotation.controller.UserController"/>
+	<bean class="org.demo.annotation.controller.RestFulController"/>
 
 </beans> 
