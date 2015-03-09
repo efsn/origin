@@ -11,6 +11,31 @@ import java.util.regex.Pattern;
  */
 public enum RegExUtil{
     
+    /**
+     * Below is security XSS script attack
+     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     IP("((2[0-4]/d|25[0-5]|[01]?/d/d?)/.){3}(2[0-4]/d|25[0-5]|[01]?/d/d?)"),
     EMAIL(""),
     TAG_INNERHTML("(?<=<(/w+)>).*(?=<///1>)");

@@ -3,7 +3,18 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<property name="interceptors">
+    		<list>
+    			<ref bean="i1"/>
+    			<ref bean="i2"/>
+    		</list>
+    	</property>
+	</bean>
+	
+	 <bean id="i1" class="org.demo.interceptor.Interceptor1"/>
+    <bean id="i2" class="org.demo.interceptor.Interceptor2"/>
+	
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
@@ -17,5 +28,135 @@
 	
 	<bean class="org.demo.annotation.controller.UserController"/>
 	<bean class="org.demo.annotation.controller.RestFulController"/>
+    <bean class="org.efsn.web.controller.HwController">
+    	<property name="requireSession" value="false"/>
+    	<property name="cacheSeconds" value="5"/>
+    </bean>
+
+    <!-- 
+    
+    <bean name="/form.do" class="org.efsn.web.controller.FormController">
+    	<property name="formView" value="register"/>
+    	<property name="successView" value="redirect:/command.do"/>
+    	<property name="commandClass" value="template.bean.User"/>
+    	<property name="cancelView" value="redirect:/hello.do"/>
+    </bean>
+    
+    <bean name="/wizard.do" class="org.efsn.web.controller.WizardFormController">
+    	<property name="commandName" value="user"/>
+    	<property name="commandClass" value="template.bean.User"/>
+    	<property name="finishView" value="redirect:/command.do"/>
+    	<property name="cancelView" value="redirect:/hello.do"/>
+    	<property name="pages">
+    		<list>
+    			<value>wizard/base</value>
+    			<value>wizard/school</value>
+    			<value>wizard/work</value>
+    		</list>
+    	</property>
+    </bean>
+    
+    <bean name="/p.do" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    	<property name="viewName" value="param"/>
+    </bean>
+
+	<bean name="/f.do" class="org.springframework.web.servlet.mvc.ServletForwardingController">
+		<property name="servletName" value="forwarding"/>
+	</bean>
+
+
+	<bean name="/command.do" class="org.efsn.web.controller.CommandController">
+		<property name="commandClass" value="template.bean.User"/>
+	</bean>
+
+	 longest name priority 
+	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	<bean name="/*.jsp" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	<bean name="/jsp/*.jsp" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
+	
+	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="pre_"/>
+		<property name="suffix" value="_suf"/>
+	</bean>
+	
+	<bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+		<property name="mappings">
+			<props>
+				<prop key="/jsp/user/create.do">create</prop>
+				<prop key="/jsp/user/update.do">update</prop>
+				<prop key="/jsp/user/list.do">list</prop>
+				<prop key="/**">list</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="userService" class="org.demo.multi.controller.UserService"/>
+	<bean name="/jsp2/user/**" class="org.demo.multi.controller.UserController">
+		<property name="userService" ref="userService"/>
+		<property name="createView" value="user/create"/>
+		<property name="updateView" value="user/update"/>
+		<property name="listView" value="user/list"/>
+		<property name="redirectToListView" value="redirect:list.do"/>
+		<property name="methodNameResolver" ref="methodNameResolver"/>
+	</bean>
+
+	<bean id="userDelegate" class="org.demo.multi.controller.UserDelegate">
+		<property name="userService" ref="userService"/>
+		<property name="createView" value="user/create"/>
+		<property name="updateView" value="user/update"/>
+		<property name="listView" value="user/list"/>
+		<property name="redirectToListView" value="redirect:list.do"/>
+	</bean>
+	
+	<bean name="/jsp/user/**" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+		<property name="delegate" ref="userDelegate"/>
+		<property name="methodNameResolver" ref="parameterMethodNameResolver"/>
+	</bean>
+	
+	<bean id="parameterMethodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		<property name="methodParamNames" value="create,update,list"/>
+		<property name="paramName" value="action"/>
+		<property name="logicalMappings">
+			<props>
+				<prop key="doCreate">create</prop>
+				<prop key="doUpdate">update</prop>
+			</props>
+		</property>
+		<property name="defaultMethodName" value="list"/>
+	</bean>
+
+	<bean name="/data.do" class="org.demo.data.controller.DataBinderController">
+		<property name="webBindingInitializer" ref="webBindingInitializer"/>
+	</bean>
+	
+	<bean id="webBindingInitializer" class="org.demo.data.binder.BinderInit"/>
+
+	<bean name="/error.do" class="org.demo.data.controller.ErrorController">
+		<property name="commandClass" value="org.demo.data.binder.DataBinderModel"/>
+		<property name="errorView" value="error/error"/>
+	</bean>
+	
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath:messages"/>
+		<property name="fileEncodings" value="uft-8"/>
+		<property name="cacheSeconds" value="120"/>
+	</bean>
+	
+	<bean id="validator" class="org.demo.data.validator.DataBinderModelValidator"/>
+
+	<bean name="/ee.do" class="org.demo.multi.controller.DataBindErrorController">
+		<property name="validators">
+			<array>
+				<ref bean="validator"/>
+			</array>
+		</property>
+		<property name="commandClass" value="org.demo.data.binder.DataBinderModel"/>
+		<property name="formView" value="error/validator"/>
+		<property name="successView" value="error/validator"/>
+	</bean>
+ -->
+
+
 
 </beans> 
