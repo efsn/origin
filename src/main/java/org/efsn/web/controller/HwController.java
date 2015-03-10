@@ -16,12 +16,13 @@ import org.springframework.web.servlet.support.WebContentGenerator;
  */
 
 @Controller
-public class HwController extends WebContentGenerator implements LastModified{
+@RequestMapping("/hello.do")
+public class HwController extends WebContentGenerator implements LastModified, Response{
     
     private long lastModified;
 
-    @RequestMapping("/hello.do")
-    protected ModelAndView res(HttpServletRequest request, HttpServletResponse response) throws Exception{
+    @Override
+    public ModelAndView res(HttpServletRequest request, HttpServletResponse response) throws Exception{
         response.getWriter().write("<a href='http://www.baidu.com'>this</a>");
         return null;
     }

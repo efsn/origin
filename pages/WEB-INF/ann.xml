@@ -26,14 +26,14 @@
 
 	<!-- Below is controller -->
 	
-	<bean class="org.demo.annotation.controller.UserController"/>
-	<bean class="org.demo.annotation.controller.RestFulController"/>
     <bean class="org.efsn.web.controller.HwController">
     	<property name="requireSession" value="false"/>
     	<property name="cacheSeconds" value="5"/>
     </bean>
 
     <!-- 
+	<bean class="org.demo.annotation.controller.UserController"/>
+	<bean class="org.demo.annotation.controller.RestFulController"/>
     
     <bean name="/form.do" class="org.efsn.web.controller.FormController">
     	<property name="formView" value="register"/>
