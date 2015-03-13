@@ -38,10 +38,11 @@ import org.codeyn.util.i18n.HanziFormat;
 import org.codeyn.util.i18n.I18N;
 
 
-public final class StrYn{
+public final class StrUtil{
 
     public static final long G = 1024 * 1024 * 1024L;// GB 1073741824
     public static final long MB = 1024 * 1024L;// MB
+    
     public static final String UTF8 = "UTF-8";
     public static final String GB2312 = "GB2312";
     public static final String GBK = "GBK";
@@ -69,7 +70,7 @@ public final class StrYn{
     /**
      * 构造函数为私有表示此类不能被实例化
      */
-    private StrYn(){
+    private StrUtil(){
 
     }
 
@@ -194,9 +195,9 @@ public final class StrYn{
             if (plainpw == null) {
                 plainpw = "";
             }
-            byte[] b = plainpw.getBytes(StrYn.UTF8);
+            byte[] b = plainpw.getBytes(StrUtil.UTF8);
             b = encryptBytes(b, 123);
-            return ENCRYPT_PLAIN_PASSWORD_PREFIX + StrYn.bytesToHexString(b);
+            return ENCRYPT_PLAIN_PASSWORD_PREFIX + StrUtil.bytesToHexString(b);
         } catch (UnsupportedEncodingException ex) {
             return plainpw;
         }
@@ -227,7 +228,7 @@ public final class StrYn{
 
         try {
             if (!isEncryptedPlainPassword(encryptedpw)) return encryptedpw;
-            byte[] b = StrYn.hexStringToBytes(encryptedpw
+            byte[] b = StrUtil.hexStringToBytes(encryptedpw
                     .substring(ENCRYPT_PLAIN_PASSWORD_PREFIX.length()));
             if (b != null) {
                 b = decryptBytes(b, 123);
@@ -292,7 +293,7 @@ public final class StrYn{
                     / Math.log(10) + maxdeclen + 3));
         }
         char[] buf = new char[MAXLEN];
-        int len = StrYn.double2str(d, mindeclen, maxdeclen, groupnum, buf);
+        int len = StrUtil.double2str(d, mindeclen, maxdeclen, groupnum, buf);
         return new String(buf, 0, len);
     }
 
@@ -650,7 +651,7 @@ public final class StrYn{
         try {
             MessageDigest mdTemp = MessageDigest.getInstance(algorithm_md5);
             for (int i = 0; i < ss.length; i++) {
-                mdTemp.update((StrYn.null2blank(ss[i]) + "\t").getBytes());
+                mdTemp.update((StrUtil.null2blank(ss[i]) + "\t").getBytes());
             }
             return _md5str(mdTemp.digest());
         } catch (Exception e) {
@@ -2933,7 +2934,7 @@ public final class StrYn{
             }
         }
         if (formatJs) {
-            return StrYn.formatJsStr(result.toString());
+            return StrUtil.formatJsStr(result.toString());
         }
         return (result.toString());
     }
@@ -3888,7 +3889,7 @@ public final class StrYn{
         int i = 0;
         while (i < buf.length()) {
             char c = buf.charAt(i);
-            if (StrYn.isABC_xyz(c) || (StrYn.isDigit(c) && i > 0)
+            if (StrUtil.isABC_xyz(c) || (StrUtil.isDigit(c) && i > 0)
                     || (c == '_' && i > 0)) {
                 i++;
             } else {
@@ -4214,7 +4215,7 @@ public final class StrYn{
 
     static {
         try {
-            InputStream is = StrYn.class
+            InputStream is = StrUtil.class
                     .getResourceAsStream("contents.properties");
             try {
                 loadContents(is);
@@ -4235,7 +4236,7 @@ public final class StrYn{
      * @return 文件类型
      */
     public static final String getContentType(String ext){
-        if (!StrYn.isNull(ext)) {
+        if (!StrUtil.isNull(ext)) {
             int i = ext.lastIndexOf('.');
             if (i >= 0) {
                 ext = ext.substring(i + 1);
@@ -4266,7 +4267,7 @@ public final class StrYn{
     public static final String getContentType(final String ext,
             final String encoding){
         String ct = getContentType(ext);
-        if (StrYn.isNull(encoding)) return ct;
+        if (StrUtil.isNull(encoding)) return ct;
         return ct + "; charset=" + encoding;
     }
 
@@ -4902,7 +4903,7 @@ public final class StrYn{
         if (v == null) {
             return "null";
         } else if (v instanceof String) {
-            return StrYn.formatJsStr(v.toString(), true);
+            return StrUtil.formatJsStr(v.toString(), true);
         } else {// Number和Boolean都可以这样
             return v.toString();
         }
@@ -5426,8 +5427,8 @@ public final class StrYn{
                     parseDouble(o2, Double.NaN));
         }
 
-        String str1 = StrYn.object2str(o1);// object2str可能返回null
-        String str2 = StrYn.object2str(o2);
+        String str1 = StrUtil.object2str(o1);// object2str可能返回null
+        String str2 = StrUtil.object2str(o2);
         if (str1 == null) {
             return str2 == null ? 0 : -1;
         } else {
@@ -5437,8 +5438,8 @@ public final class StrYn{
 
     private static int compareDate(final Calendar o1, final Object o2){
         String datestr2 = o2.toString();
-        String style = StrYn.guessDateFormat(datestr2);
-        String datestr1 = StrYn.date2str(o1, style);
+        String style = StrUtil.guessDateFormat(datestr2);
+        String datestr1 = StrUtil.date2str(o1, style);
         return datestr1.compareTo(datestr2);
     }
 
@@ -5886,7 +5887,7 @@ public final class StrYn{
      */
     public static final char getIdCardCode(final String idcard)
             throws Exception{
-        if (StrYn.isNull(idcard) || idcard.length() != 17)
+        if (StrUtil.isNull(idcard) || idcard.length() != 17)
         // throw new Exception("不是合法的身份证号码,必须小于17位.");
             throw new Exception(I18N.getString("com.esen.util.StrFunc.7",
                     "不是合法的身份证号码,必须小于17位."));
@@ -5912,7 +5913,7 @@ public final class StrYn{
      * @return 是合法的id返回true，反之false
      */
     public static final boolean isIdCard(String idcard) throws Exception{
-        if (StrYn.isNull(idcard) || idcard.length() != PIDLEN) return false;
+        if (StrUtil.isNull(idcard) || idcard.length() != PIDLEN) return false;
         char c = getIdCardCode(idcard.substring(0, PIDLEN - 1));
         return idcard.charAt(PIDLEN - 1) == c;
     }
@@ -5933,7 +5934,7 @@ public final class StrYn{
      * @return 是合法电话号码返回true，反之false
      */
     public static final boolean isPhoneNumber(final String number){
-        if (StrYn.isNull(number)) return false;
+        if (StrUtil.isNull(number)) return false;
         return PATTERN_ALL_PHONE.matcher(number.trim()).find();
     }
 
@@ -6056,7 +6057,7 @@ public final class StrYn{
     public static Locale parseLocaleStr(String langStr, Locale defaultLocale){
 
         for (Locale locale : I18N.LOCALES) {
-            if (StrYn.compareStr(langStr, locale.toString())) {
+            if (StrUtil.compareStr(langStr, locale.toString())) {
                 return locale;
             }
         }

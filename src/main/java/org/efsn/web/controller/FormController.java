@@ -3,7 +3,7 @@ package org.efsn.web.controller;
 import java.util.Arrays;
 import java.util.List;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -32,7 +32,7 @@ public class FormController{
     @ModelAttribute("user")
     protected User getUser(@RequestParam(value="username", required=false) String username){
         User user = new User();
-        user.setUsername(StrYn.isNull(username) ? "Please enter your username" : username);
+        user.setUsername(StrUtil.isNull(username) ? "Please enter your username" : username);
         return user;
     }
     

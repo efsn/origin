@@ -3,7 +3,7 @@ package org.efsn.web.controller;
 import java.util.Arrays;
 import java.util.List;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -46,8 +46,8 @@ public class WizardFormController{
     public String getPages(@RequestParam(value="_target", required=false) String target,
                            @RequestParam(value="above", required=false) String above){
         List<String> strList = Arrays.asList("wizard/base", "wizard/school", "wizard/work");
-        int page = StrYn.isNull(above) ? StrYn.isNull(target) ? 0 : Integer.parseInt(target) 
-                                       : StrYn.isNull(target) ? 0 : Integer.parseInt(target) - 2;
+        int page = StrUtil.isNull(above) ? StrUtil.isNull(target) ? 0 : Integer.parseInt(target) 
+                                       : StrUtil.isNull(target) ? 0 : Integer.parseInt(target) - 2;
         return strList.get(page < strList.size() ? page : strList.size() - 1);
     }
     

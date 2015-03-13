@@ -1,14 +1,5 @@
 package org.codeyn.util.file;
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2005</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -25,7 +16,7 @@ public class FileVersion{
     private static int nameEntryCount, numEntryCount; // 资源的入口数,在其中寻找 0X10
                                                       // //版本资源
     private static RandomAccessFile stm;
-    private static long _fpos = 0;
+    private static long fpos = 0;
     private static boolean hasVer;
 
     public FileVersion(){
@@ -35,13 +26,12 @@ public class FileVersion{
         stm.seek(curpos);
     }
 
-    private static int btoi(byte b){
+    private static int byteToInt(byte b){
         return ((b & 0x80) << 1) + b;
     }
 
     private static int bytesToInt(byte[] b, int offset, int len){
-        int i;
-        int temp, result = 0;
+        int i, temp, result = 0;
         for (i = 0; i < len; i++) {
             temp = ((b[i + offset] & 0x80) << 1) + b[i + offset];
             result += temp << ((len - i - 1) * 8);
@@ -60,19 +50,17 @@ public class FileVersion{
     }
 
     /**
-     * 获得一个字
+     * Obtain a word(double byte)
      * 
      * @throws IOException
-     * @return int
      */
-    private static int getaWord() throws IOException{
-        byte aByte;
-        byte[] aWord = new byte[2];
-        aByte = stm.readByte();
-        aWord[1] = aByte;
-        aByte = stm.readByte();
-        aWord[0] = aByte;
-        return bytesToInt(aWord, 0, 2);
+    private static int getWord() throws IOException{
+        byte[] word = new byte[2];
+        byte bt = stm.readByte();
+        word[1] = bt;
+        bt = stm.readByte();
+        word[0] = bt;
+        return bytesToInt(word, 0, 2);
     }
 
     /**
@@ -82,12 +70,12 @@ public class FileVersion{
      *            int
      * @throws IOException
      */
-    private static void setaWord(int value) throws IOException{
-        byte[] aWord = new byte[2];
+    private static void setWord(int value) throws IOException{
+        byte[] word = new byte[2];
         short b = (short) (value % 0x10000);
-        aWord[0] = (byte) (b % 0x100); // ;抵位
-        aWord[1] = (byte) (b / 0x100);
-        stm.write(aWord);
+        word[0] = (byte) (b % 0x100);
+        word[1] = (byte) (b / 0x100);
+        stm.write(word);
     }
 
     private static long getalWord() throws IOException{
@@ -199,9 +187,9 @@ public class FileVersion{
         stm.seek(pePos); // PE Header
         getCur();
         step(4 + 2);
-        numSection = getaWord();
+        numSection = getWord();
         step(4 * 3);
-        aWord = getaWord(); // option的长度
+        aWord = getWord(); // option的长度
         setCur();
         secPos = pePos + aWord + 4 + 20; // peHead的长度
         stm.seek(secPos); // 到节表所在的位置
@@ -248,7 +236,7 @@ public class FileVersion{
                 adWord = getFverPos();
                 gotoPos(adWord);
                 for (int i = 0; i < 4; i++) {
-                    sver[i] = String.valueOf(getaWord());
+                    sver[i] = String.valueOf(getWord());
                 }
                 result = sver[1] + "." + sver[0] + "." + sver[3] + "."
                         + sver[2];
@@ -272,8 +260,8 @@ public class FileVersion{
         goBoundary(); // a
         // VS_FIXEDFILEINFO
         step(4 * 2);
-        _fpos = getPos();
-        return _fpos;
+        fpos = getPos();
+        return fpos;
     }
 
     private static void gotoPos(long adWord) throws IOException{
@@ -303,8 +291,8 @@ public class FileVersion{
             getCur();
             dsize = getaiWord();
             hSize = getaiWord();
-            if (getaWord() == 0XFFFF) {
-                if (getaWord() == 0X0010) {
+            if (getWord() == 0XFFFF) {
+                if (getWord() == 0X0010) {
                     hasVer = true;
                     break;
                 } else {
@@ -337,7 +325,7 @@ public class FileVersion{
     private static int getaByte() throws IOException{
         byte aByte;
         aByte = stm.readByte();
-        return btoi(aByte);
+        return byteToInt(aByte);
     }
 
     // ////////////////////////////////
@@ -353,8 +341,8 @@ public class FileVersion{
             aDword = aDword + resPos;
             gotoPos(aDword);
             step(4 * 3);
-            nameEntryCount = getaWord();
-            numEntryCount = getaWord();
+            nameEntryCount = getWord();
+            numEntryCount = getWord();
             /*
              * System.out.print(nameEntryCount); System.out.print("-");
              * System.out.print(numEntryCount); System.out.print("-");
@@ -387,8 +375,8 @@ public class FileVersion{
         hasVer = false;
         getCur(); // 到达RESOURCE_DIRECTORY所在的位置
         step(4 * 3);
-        nameEntryCount = getaWord();
-        nameEntryCount = (getaWord() + nameEntryCount);
+        nameEntryCount = getWord();
+        nameEntryCount = (getWord() + nameEntryCount);
         // System.out.println(nameEntryCount);
         // 下面的几个资源分类列表
         // directory_entry结构,8字节长
@@ -451,10 +439,10 @@ public class FileVersion{
             if (adWord != 0) { // 存在版本
                 adWord = getFverPos();
                 gotoPos(adWord);
-                setaWord(Integer.parseInt(sver[1]));
-                setaWord(Integer.parseInt(sver[0]));
-                setaWord(Integer.parseInt(sver[3]));
-                setaWord(Integer.parseInt(sver[2]));
+                setWord(Integer.parseInt(sver[1]));
+                setWord(Integer.parseInt(sver[0]));
+                setWord(Integer.parseInt(sver[3]));
+                setWord(Integer.parseInt(sver[2]));
             }
         } finally {
             close();
@@ -504,12 +492,12 @@ public class FileVersion{
                 adWord = getFverPos();
                 gotoPos(adWord);
                 step((part - 1) * 2);// 到达指定版本
-                verSour = getaWord();
+                verSour = getWord();
                 step(-2);// 回到当前指针
-                setaWord(verSour + value);
+                setWord(verSour + value);
                 step(part * (-2));// 回到版本开始的地方
                 for (int i = 0; i < 4; i++) {
-                    sver[i] = String.valueOf(getaWord());
+                    sver[i] = String.valueOf(getWord());
                 }
                 result = sver[1] + "." + sver[0] + "." + sver[3] + "."
                         + sver[2];

@@ -1,5 +1,3 @@
-//Source file: D:\\i-report-server\\src\\com\\sanlink\\util\\FileZip.java
-
 package org.codeyn.util.file;
 
 import java.io.BufferedInputStream;
@@ -11,40 +9,39 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.codeyn.util.Maps;
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StmYn;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
+import org.codeyn.util.yn.StrmUtil;
 
 /**
  * 文件压缩类，所生成的文件能被FileUnZip解压缩，也可以被delphi类解压缩 压缩文件的结构:固定长度的uncompressed zipid +
  * 所有文件的压缩流
  */
 public class FileZip{
-    final static String ZIPID = "{EB71174D-FD89-468E-B932-42A8286CC745}";// 压缩文件头标识
-    final static String GZIPID = "{E1A571E4-DDB4-4DE2-82A1-F1263B15B7E6}";// 压缩文件头标识
-    final static String ID = "{DF3D6B55-6BC0-4E7C-A307-23503B12767F}";// 压缩文件头标识
-    // final static String ERR_INVALIDFILE = "无效的文件或目录";
-    // final static String ERR_INVALIDDESTFILE = "无效的目标文件或目录";
-    // final static String ERR_NOFILE = "没有要压缩的文件或目录";
+    
+    final static String ZIPID = "{EB71174D-FD89-468E-B932-42A8286CC745}";
+    final static String GZIPID = "{E1A571E4-DDB4-4DE2-82A1-F1263B15B7E6}";
+    final static String ID = "{DF3D6B55-6BC0-4E7C-A307-23503B12767F}";
 
     public static final int ZIP_DONT = 1;
     public static final int ZIP_ZIP = 2;
     public static final int ZIP_GZIP = 3;
-    public static final int ZIP_UNKNOWN = 100;// 未知压缩格式
+    public static final int ZIP_UNKNOWN = 100;
 
-    private ArrayList _files = new ArrayList();// 所有需要压缩的文件列表；
-    private ArrayList _destNames = new ArrayList();// 所有压缩文件对应的解压文件名；
-    protected OutputStream _out; // 压缩目的文件流
-    private int _totalSize;
-    private String _fn;// zip file name
-    private String _header = "";// 压缩包标识
-    private String _option;// 压缩文件大小和个数
-    private int _count; // 个数
+    private List<File> files = new ArrayList<File>();
+    private List<String> destNames = new ArrayList<String>();
+    protected OutputStream out;
+    private int totalSize;
+    private String zipFileName;
+    private String header = "";
+    private String option;
+    private int count;
     private int zip;
 
     protected static String getERR_INVALIDFILE(){
@@ -54,23 +51,18 @@ public class FileZip{
     }
 
     protected static String getERR_INVALIDDESTFILE(){
-
         return I18N.getString("com.esen.util.FileZip.2", "无效的目标文件或目录");
-
     }
 
     protected static String getERR_NOFILE(){
-
         return I18N.getString("com.esen.util.FileZip.3", "没有要压缩的文件或目录");
-
     }
 
     /**
-     * @param fn
-     *            压缩包文件名，绝对路径
+     * @param fn 压缩包文件名，绝对路径
      */
     public FileZip(String fn) throws Exception{
-        _fn = fn;
+        zipFileName = fn;
         this.zip = ZIP_ZIP;
     }
 
@@ -81,12 +73,12 @@ public class FileZip{
      * @throws java.lang.Exception
      */
     public FileZip(OutputStream o, int zip) throws Exception{
-        _out = o;
+        out = o;
         this.zip = zip;
     }
 
     public FileZip(String fn, int zip) throws Exception{
-        _fn = fn;
+        zipFileName = fn;
         this.zip = zip;
     }
 
@@ -96,31 +88,30 @@ public class FileZip{
      * @param s
      */
     public void addHeader(String s){
-        _header = s;
+        header = s;
     }
 
     /**
      * @param fn
-     * @param destfn
-     *            ,相对路径
+     * @param destfn, 相对路径
      */
     public void addFile(String fn, String destfn) throws Exception{
         File f = new File(fn);
-        if (_files.contains(f)) return;// 如果一个文件压缩两次
+        if (files.contains(f)) return;// 如果一个文件压缩两次
         if (destfn.length() == 0)
             destfn = fn;
         else {
-            destfn = FileYn.delDriver(destfn);
+            destfn = FileUtil.delDriver(destfn);
             if (destfn == null) destfn = fn; // 如果目的文件名空，目的文件名就是原文件名
         }
         setZipFile(f, destfn);
     }
 
     void setZipFile(File f, String destfn){
-        _totalSize += f.length();
-        _count++;
-        _files.add(f);
-        _destNames.add(destfn);
+        totalSize += f.length();
+        count++;
+        files.add(f);
+        destNames.add(destfn);
     }
 
     /**
@@ -137,7 +128,7 @@ public class FileZip{
             throws Exception{
         if (destdir == null) destdir = "";
         if (destdir.length() != 0) {
-            destdir = FileYn.delDriver(destdir);
+            destdir = FileUtil.delDriver(destdir);
         }
         File path = new File(dir);
         if (path.getParent() == null) return;// dir not exists
@@ -183,8 +174,8 @@ public class FileZip{
     }
 
     protected void writeZipId(OutputStream out, String zipId) throws Exception{
-        if (!StrYn.isNull(zipId)) {
-            StmYn.writeFix(out, zipId, zipId.length());
+        if (!StrUtil.isNull(zipId)) {
+            StrmUtil.writeFix(out, zipId, zipId.length());
         }
     }
 
@@ -195,27 +186,27 @@ public class FileZip{
      */
     public void startZip() throws Exception{
         boolean closestm = false;
-        if (_out == null) {
-            File f = new File(_fn);
+        if (out == null) {
+            File f = new File(zipFileName);
             f = f.getParentFile();
             f.mkdirs();
-            _out = new FileOutputStream(_fn);
+            out = new FileOutputStream(zipFileName);
             closestm = true;
         }
         try {
             // zip 不是一定跟zipid一一对应的,所以方法供子类继承
             String zipId = getZipId(zip);
-            writeZipId(_out, zipId);
+            writeZipId(out, zipId);
 
             switch (zip) {
                 case ZIP_DONT:
-                    _out = new BufferedOutputStream(_out);
+                    out = new BufferedOutputStream(out);
                     break;
                 case ZIP_ZIP:
-                    _out = new DeflaterOutputStream(_out);
+                    out = new DeflaterOutputStream(out);
                     break;
                 case ZIP_GZIP:
-                    _out = new GZIPOutputStream(_out);
+                    out = new GZIPOutputStream(out);
                     break;
             }
             BufferedInputStream in = null;
@@ -223,9 +214,9 @@ public class FileZip{
             // write zippkg header: zipId + "#0"+header+"#0"+
             genZipHead();
             // zip each file
-            for (int i = 0; i < _count; i++) {
-                File f = (File) _files.get(i);
-                String fn = (String) _destNames.get(i);
+            for (int i = 0; i < count; i++) {
+                File f = (File) files.get(i);
+                String fn = (String) destNames.get(i);
                 // 对于file 是文件目录的 在解压时直接过滤掉了 这里为不影响现有的逻辑 加一个过滤函数给子类继承
                 if (!ZipFileFilter(fn, f)) continue;
                 // 获得需要压缩文件的一些属性
@@ -233,7 +224,7 @@ public class FileZip{
                 if (!f.isDirectory()) {
                     in = new BufferedInputStream(new FileInputStream(f));
                     try {
-                        StmYn.stmCopyFrom(in, _out, in.available());
+                        StrmUtil.stmCopyFrom(in, out, in.available());
                         Thread.yield();
                     } finally {
                         in.close();
@@ -241,16 +232,16 @@ public class FileZip{
                 }
             }
         } finally {
-            _out.flush();
+            out.flush();
             if (closestm) {
-                _out.close();
+                out.close();
             } else {
                 /**
                  * 如果是压缩流，必须调用finish来往流里面写入数据，flush的方式不起作用，故使用 FileZip(out, xx)
                  * 创建的zip对象时，就会导致压缩流没有完全写入文件
                  */
                 if (zip == ZIP_ZIP || zip == ZIP_GZIP) {
-                    DeflaterOutputStream deflaterOut = ((DeflaterOutputStream) _out);
+                    DeflaterOutputStream deflaterOut = ((DeflaterOutputStream) out);
                     deflaterOut.finish();
                 }
             }
@@ -259,11 +250,11 @@ public class FileZip{
 
     void genZipHead() throws IOException{
         Map<String, String> m = new HashMap<String, String>();
-        m.put("size", new Integer(_totalSize).toString());
-        m.put("count", new Integer(_count).toString());
-        _option = Maps.toString(m, "=", ";");
-        StmYn.writeString(_out, _header);
-        StmYn.writeString(_out, _option);
+        m.put("size", new Integer(totalSize).toString());
+        m.put("count", new Integer(count).toString());
+        option = Maps.toString(m, "=", ";");
+        StrmUtil.writeString(out, header);
+        StrmUtil.writeString(out, option);
     }
 
     /*
@@ -282,7 +273,7 @@ public class FileZip{
         m.put("ab", ab);
         m.put("sz", new Long(file.length()).toString());
         m.put("dir", dir);
-        StmYn.writeString(_out, Maps.toString(m, "=", ";"));
+        StrmUtil.writeString(out, Maps.toString(m, "=", ";"));
     }
 
 }

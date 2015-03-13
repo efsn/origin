@@ -19,8 +19,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.codeyn.util.yn.StmYn;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrmUtil;
+import org.codeyn.util.yn.StrUtil;
 
 /**
  * 此类和Properties不同的地方是，提供一些更易用的get方法和set方法 存储的格式不编码unicode的，存储时带有编码信息
@@ -68,7 +68,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的long类型
      */
     public long getLong(String key){
-        return StrYn.str2long(getProperty(key), 0);
+        return StrUtil.str2long(getProperty(key), 0);
     }
 
     /**
@@ -81,7 +81,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的long类型或缺省值
      */
     public long getLong(String key, long defaultValue){
-        return StrYn.str2long(getProperty(key), defaultValue);
+        return StrUtil.str2long(getProperty(key), defaultValue);
     }
 
     /**
@@ -92,7 +92,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的int类型或0
      */
     public int getInt(String key){
-        return StrYn.str2int(getProperty(key), 0);
+        return StrUtil.str2int(getProperty(key), 0);
     }
 
     /**
@@ -105,7 +105,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的int类型或defaultValue
      */
     public int getInt(String key, int defaultValue){
-        return StrYn.str2int(getProperty(key), defaultValue);
+        return StrUtil.str2int(getProperty(key), defaultValue);
     }
 
     /**
@@ -116,7 +116,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的float类型或0
      */
     public float getFloat(String key){
-        return StrYn.str2float(getProperty(key), 0);
+        return StrUtil.str2float(getProperty(key), 0);
     }
 
     /**
@@ -128,7 +128,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的float类型或defaultValue
      */
     public float getFloat(String key, float defaultValue){
-        return StrYn.str2float(getProperty(key), defaultValue);
+        return StrUtil.str2float(getProperty(key), defaultValue);
     }
 
     /**
@@ -139,7 +139,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的double类型或0
      */
     public double getDouble(String key){
-        return StrYn.str2double(getProperty(key), 0);
+        return StrUtil.str2double(getProperty(key), 0);
     }
 
     /**
@@ -152,7 +152,7 @@ public class MiniProperties extends Properties{
      * @return
      */
     public double getDouble(String key, double defaultValue){
-        return StrYn.str2double(getProperty(key), defaultValue);
+        return StrUtil.str2double(getProperty(key), defaultValue);
     }
 
     /**
@@ -163,7 +163,7 @@ public class MiniProperties extends Properties{
      * @return 返回value的boolean类型
      */
     public boolean getBoolean(String key){
-        return StrYn.str2boolean(getProperty(key));
+        return StrUtil.str2boolean(getProperty(key));
     }
 
     /**
@@ -176,7 +176,7 @@ public class MiniProperties extends Properties{
      * @return
      */
     public boolean getBoolean(String key, boolean defaultValue){
-        return StrYn
+        return StrUtil
                 .str2boolean(getProperty(key, String.valueOf(defaultValue)));
     }
 
@@ -378,7 +378,7 @@ public class MiniProperties extends Properties{
     public synchronized void store(OutputStream out, String header,
             String encoding) throws IOException{
         BufferedWriter awriter;
-        if (StrYn.isNull(encoding)) {
+        if (StrUtil.isNull(encoding)) {
             awriter = new BufferedWriter(new OutputStreamWriter(out));
         } else {
             awriter = new BufferedWriter(new OutputStreamWriter(out, encoding));
@@ -542,7 +542,7 @@ public class MiniProperties extends Properties{
      */
     public String getProperty(String key, String defaultValue){
         String val = getProperty(key);
-        return (StrYn.isNull(val)) ? defaultValue : val;
+        return (StrUtil.isNull(val)) ? defaultValue : val;
     }
 
     /**
@@ -563,15 +563,15 @@ public class MiniProperties extends Properties{
         if (in == null) return;
         if (!in.markSupported()) in = new BufferedInputStream(in);
         in.mark(50);
-        String ss = StmYn.readFix(in, HEADER_CHARSET.length());
+        String ss = StrmUtil.readFix(in, HEADER_CHARSET.length());
         if (HEADER_CHARSET.equalsIgnoreCase(ss)) {
-            charset = StmYn.readLine(in);
+            charset = StrmUtil.readLine(in);
             if (charset != null) charset = charset.trim();
         }
         in.reset();
 
         Reader rd;
-        if (StrYn.isNull(charset)) {
+        if (StrUtil.isNull(charset)) {
             rd = new InputStreamReader(in);
         } else {
             rd = new InputStreamReader(in, charset);
@@ -609,7 +609,7 @@ public class MiniProperties extends Properties{
                 : new BufferedReader(in);
         try {
             while ((s = reader.readLine()) != null) {
-                if (StrYn.isNull(s)) {
+                if (StrUtil.isNull(s)) {
                     continue;
                 }
                 if (commentChars.indexOf(s.charAt(0)) != -1) {
@@ -621,7 +621,7 @@ public class MiniProperties extends Properties{
                 }
                 key = loadConvert(s.substring(0, p));
                 value = loadConvert(s.substring(p + 1, s.length()));
-                if (!StrYn.isNull(key) && !StrYn.isNull(value)) {
+                if (!StrUtil.isNull(key) && !StrUtil.isNull(value)) {
                     put(key, value);
                 }
             }

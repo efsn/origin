@@ -19,7 +19,7 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 public final class DateParser {
   
@@ -31,7 +31,7 @@ public final class DateParser {
   }
   
   private void parseDate(String date) {
-    if(date == null || StrYn.isNull(date)) {
+    if(date == null || StrUtil.isNull(date)) {
       //throw new IllegalArgumentException("date为NULL, 或者空字符串."); //by xh
     	//throw new IllegalArgumentException(I18N.getString("com.esen.util.DateParser.1", "date为NULL, 或者空字符串."));
      

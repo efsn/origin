@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 import org.codeyn.util.io.file.BlobValue;
-import org.codeyn.util.yn.StmYn;
+import org.codeyn.util.yn.StrmUtil;
 
 /**
  * 通过临时文件存储字节流的实现；
@@ -29,7 +29,7 @@ public final class BlobValueImpl implements BlobValue {
   private void write(InputStream data) {
     try {
       startPoint = rf.getFilePointer();
-      len = StmYn.stmTryCopyFrom(data, rf);
+      len = StrmUtil.stmTryCopyFrom(data, rf);
     }
     catch (IOException e) {
       throw new RuntimeException(e);

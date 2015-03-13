@@ -14,7 +14,7 @@ import java.util.Set;
 import org.codeyn.util.ClassPathSearcher;
 import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.yn.ArrYn;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * 
  *
  */
-public class I18N{
+public final class I18N{
 
     private static final Logger logger = LoggerFactory.getLogger(I18N.class);
 
@@ -40,8 +40,7 @@ public class I18N{
 
     public final static String[] LANGUAGE_CODES = {"zh_CN", "zh_TW", "en"};
 
-    public final static String[] LANGUAGE_NAMES = new String[] {"简体中文", "繁體中文",
-            "English"};
+    public final static String[] LANGUAGE_NAMES = new String[] {"简体中文", "繁體中文", "English"};
 
     /**
      * 支持的Locale
@@ -79,21 +78,6 @@ public class I18N{
      */
     public static String getString(String key){
         return getString(key, (String) null);
-    }
-
-    /**
-     * @deprecated 不再使用
-     */
-    public static String getString(String key, Class defFactoryClass){
-        return getString(key, (String) null, new Object[0]);
-    }
-
-    /**
-     * @deprecated 不再使用
-     */
-    public static String getString(String key, Class defFactoryClass,
-            Object[] params){
-        return getString(key, null, null, params);
     }
 
     public static String getString(String key, String defValue){
@@ -149,7 +133,7 @@ public class I18N{
         }
         if (unfindedkey) {
             logger.debug("the key {} is undefined", key);
-            value = StrYn.null2blank(defaultValue);
+            value = StrUtil.null2blank(defaultValue);
         }
         if (params == null || params.length == 0) {
             return value;

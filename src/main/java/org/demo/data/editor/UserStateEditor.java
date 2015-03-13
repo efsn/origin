@@ -3,7 +3,7 @@ package org.demo.data.editor;
 import java.beans.PropertyEditorSupport;
 
 import org.codeyn.util.yn.ArrYn;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 import org.demo.data.UserState;
 
 public class UserStateEditor extends PropertyEditorSupport{
@@ -12,7 +12,7 @@ public class UserStateEditor extends PropertyEditorSupport{
     
     @Override
     public void setAsText(String text) throws IllegalArgumentException{
-        if(StrYn.isNull(text)){
+        if(StrUtil.isNull(text)){
             setValue(null);
         }else{
             int idx = 0;

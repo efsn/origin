@@ -21,37 +21,31 @@ import org.codeyn.util.GUID;
 import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.exception.IllegalParameterException;
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StmYn;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrmUtil;
+import org.codeyn.util.yn.StrUtil;
 
 /**
- * <p>
- * Description:文件或目录处理的函数
- * </p>
+ * <p>File tool</p>
  */
-public final class FileYn{
-    // 定义文件分隔符常量
-    public static final char separatorChar = '/';
-
-    public static final String separator = "" + separatorChar;
-
+public final class FileUtil{
+    
+    public static final int LISTFILE_OPTION_RECUR = 0x1;// 是否递归遍历子目录
+    public static final int LISTFILE_OPTION_INCLUDEDIR = 0x2;// 是否遍历目录名
+    public static final int LISTFILE_OPTION_EXCLUDEFILE = 0x4;// 是否不遍历文件
+    
+    public static final String separator = "/";
+    public static final char separatorChar = separator.charAt(0);
     public static final String DEFAULT_PATH = System.getProperty("java.io.tmpdir");
+    
     public static final int SORT_SIZE = 0;
     public static final int SORT_TIME = 1;
     public static final int SIZE = SORT_SIZE;
     public static final int TIME = SORT_TIME;
 
-    private FileYn(){
-    }
+    private FileUtil(){}
 
-    /**
-     * 列出一个目录下所有的子目录
-     * 
-     * @param dir
-     * @return
-     */
     public static String[] listSubDir(String dir){
-        ArrayList subdirs = new ArrayList();
+        List<String> subDirs = new ArrayList<String>();
         File dirF = new File(dir);
         File[] files = dirF.listFiles();
         if (files == null) {
@@ -59,33 +53,24 @@ public final class FileYn{
         }
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory()) {
-                subdirs.add(files[i].getName());
+                subDirs.add(files[i].getName());
             }
         }
-        String[] result = new String[subdirs.size()];
-        subdirs.toArray(result);
-        return result;
+        return subDirs.toArray(new String[0]);
     }
 
     /**
-     * 改变文件名路径中的分隔符
-     * 
-     * @param fn
-     * @return
+     * Change separator in file path
      */
-    public static String changeSeparator(String fn){
-        if (fn == null) {
+    public static String changeSeparator(String path){
+        if (path == null) {
             return null;
         }
         if (File.separatorChar != '\\') {
-            fn = fn.replace('\\', File.separatorChar);
+            path = path.replace('\\', File.separatorChar);
         }
-        return fn;
+        return path;
     }
-
-    public static final int LISTFILE_OPTION_RECUR = 0X1;// 是否递归遍历子目录
-    public static final int LISTFILE_OPTION_INCLUDEDIR = 0X2;// 是否遍历目录名
-    public static final int LISTFILE_OPTION_EXCLUDEFILE = 0X4;// 是否不遍历文件
 
     /**
      * path是一个绝对路径，可以不以\(unix上是/)结尾，
@@ -101,7 +86,7 @@ public final class FileYn{
      * @return
      */
     public static File[] listFiles(String path, String filter, int option){
-        if (path == null || path.length() == 0) return null;
+        if (StrUtil.isNull(path)) return null;
         boolean rec = LISTFILE_OPTION_RECUR == (option & LISTFILE_OPTION_RECUR);
         boolean includeDir = LISTFILE_OPTION_INCLUDEDIR == (option & LISTFILE_OPTION_INCLUDEDIR);
         boolean excludeFile = LISTFILE_OPTION_EXCLUDEFILE == (option & LISTFILE_OPTION_EXCLUDEFILE);
@@ -110,7 +95,7 @@ public final class FileYn{
         if (filter != null) {
             p = Pattern.compile(filter);
         }
-        List l = new ArrayList();
+        List<File> l = new ArrayList<File>();
         listFilesRec(l, dir, p, rec, includeDir, excludeFile);
         File[] result = new File[l.size()];
         l.toArray(result);
@@ -256,7 +241,7 @@ public final class FileYn{
      * 删除文件,可以是文件也可以是目录
      */
     public static boolean remove(String file){
-        if (StrYn.isNull(file)) return true;
+        if (StrUtil.isNull(file)) return true;
         return remove(new File(file));
     }
 
@@ -471,11 +456,11 @@ public final class FileYn{
          * 因为检查目录存在是非常耗时的操作,所以如果有经常在同一目录下创建临时文件,则最好在使用前就创建好,不要每次都检查父目录是否存在
          */
         if (checkPathExist) {
-            FileYn.ensureExists(dir, true, true);
+            FileUtil.ensureExists(dir, true, true);
         }
         String tempfile = createTempFile(dir.getAbsolutePath(), name, isdir,
                 createit);
-        if (StrYn.isNull(tempfile) && throwExceptionIfFail) {
+        if (StrUtil.isNull(tempfile) && throwExceptionIfFail) {
             // throw new Exception("在目录:" + dir.getAbsolutePath() +
             // " 下创建临时文件失败");
             throw new Exception(I18N.getString("com.esen.util.FileFunc.3",
@@ -651,7 +636,7 @@ public final class FileYn{
             BufferedOutputStream out = new BufferedOutputStream(
                     new FileOutputStream(f2));
             try {
-                StmYn.stmTryCopyFrom(in, out);
+                StrmUtil.stmTryCopyFrom(in, out);
                 return true;
             } finally {
                 out.close();
@@ -829,7 +814,7 @@ public final class FileYn{
 
     public static void main(String[] args){
         try {
-            System.out.println(FileYn.formatUnixDir("/\\xxx"));
+            System.out.println(FileUtil.formatUnixDir("/\\xxx"));
             System.out.println(formatPath("/abc\\aaa/abc.aaa"));
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -954,7 +939,7 @@ public final class FileYn{
     public static void stm2file(InputStream in, String fn) throws IOException{
         FileOutputStream out = new FileOutputStream(fn);
         try {
-            StmYn.stmTryCopyFrom(in, out);
+            StrmUtil.stmTryCopyFrom(in, out);
             out.flush();
         } finally {
             out.close();
@@ -980,10 +965,10 @@ public final class FileYn{
          * 下次导入时因为存在同名的文件,所以在名称后面+1,自动命名获得的就是这个名称,所以每次名称都会+1
          * 解决:将临时文件写入到指定的目录中就可以了
          */
-        String fn = FileYn.createTempFile(dir, filename, false, true, true);
+        String fn = FileUtil.createTempFile(dir, filename, false, true, true);
         FileOutputStream out = new FileOutputStream(fn);
         try {
-            StmYn.stmTryCopyFrom(in, out);
+            StrmUtil.stmTryCopyFrom(in, out);
             out.flush();
         } finally {
             out.close();
@@ -1003,7 +988,7 @@ public final class FileYn{
             throws Exception{
         FileOutputStream out = new FileOutputStream(fn);
         try {
-            StmYn.stmCopyFrom(in, out, length);
+            StrmUtil.stmCopyFrom(in, out, length);
             out.flush();
             // out.write(buf);
         } finally {
@@ -1072,7 +1057,7 @@ public final class FileYn{
         try {
             FileInputStream fin = new FileInputStream(file);
             try {
-                return StmYn.gzipStm(fin);
+                return StrmUtil.gzipStm(fin);
             } finally {
                 fin.close();
             }
@@ -1103,10 +1088,10 @@ public final class FileYn{
         if (file == null || !file.isFile()) return;
         FileInputStream fin = new FileInputStream(file);
         try {
-            InputStream in = zip ? StmYn.getGZIPStm(fin) : StmYn
+            InputStream in = zip ? StrmUtil.getGZIPStm(fin) : StrmUtil
                     .getUnGZIPStm(fin);
             try {
-                StmYn.stmTryCopyFrom(in, out);
+                StrmUtil.stmTryCopyFrom(in, out);
             } finally {
                 in.close();
             }
@@ -1150,7 +1135,7 @@ public final class FileYn{
         }
 
         if (sb.length() > 150) {// 放宽文件名长度限制
-            String ext = FileYn.extractFileExt(sb.toString());
+            String ext = FileUtil.extractFileExt(sb.toString());
             return sb.substring(0, 145) + (ext == null ? "" : ext);
         }
         return (sb.length() > 0) ? sb.toString() : "unknwon";
@@ -1296,7 +1281,7 @@ public final class FileYn{
 
         if (File.separator.equals("\\")) { // 表示是windows系统
             // 第一个字母必须是A..z,第二个必须是:
-            if (fn.trim().length() > 1 && StrYn.isABC_xyz(fn.trim().charAt(0))
+            if (fn.trim().length() > 1 && StrUtil.isABC_xyz(fn.trim().charAt(0))
                     && fn.trim().charAt(1) == ':') {
                 return true;
             } else {
@@ -1313,7 +1298,7 @@ public final class FileYn{
         if (in == null) {
             throw new Exception("in==null");
         }
-        destdir = FileYn.includePathSeparator(destdir);
+        destdir = FileUtil.includePathSeparator(destdir);
         File destdirf = new File(destdir);
         if (!destdirf.exists() || !destdirf.isDirectory()) {
             if (!destdirf.mkdirs()) {
@@ -1345,7 +1330,7 @@ public final class FileYn{
                 OutputStream o = new BufferedOutputStream(new FileOutputStream(
                         f));
                 try {
-                    StmYn.stmTryCopyFrom(zip, o);
+                    StrmUtil.stmTryCopyFrom(zip, o);
                 } finally {
                     o.close();
                 }
@@ -1382,8 +1367,8 @@ public final class FileYn{
      */
     private static String formatZipName(String path){
         path = includeSeparatorHeadExcludeTrail(path);
-        String parentdir = FileYn.extractFileDir(path);
-        String filename = FileYn.extractFileName(path);
+        String parentdir = FileUtil.extractFileDir(path);
+        String filename = FileUtil.extractFileName(path);
         if (filename.length() != 0) {
             filename = formatFileName(filename);
         }
@@ -1471,7 +1456,7 @@ public final class FileYn{
      *            相对路径中只支持存在一个./,../支持存在无限多个
      */
     public static String cd_unixlike(String pwd, String cd){
-        if (StrYn.isNull(cd)) {
+        if (StrUtil.isNull(cd)) {
             return pwd;
         }
         if (cd.charAt(0) == '/') {
@@ -1867,12 +1852,12 @@ public final class FileYn{
             throw new RuntimeException(I18N.getString(
                     "com.esen.util.FileFunc.19", "源文件和目的文件相同"));
         }
-        FileYn.ensureExists(dest, false, true);
+        FileUtil.ensureExists(dest, false, true);
         InputStream in = new FileInputStream(src);
         try {
             OutputStream out = new GZIPOutputStream(new FileOutputStream(dest));
             try {
-                StmYn.stmTryCopyFrom(in, out);
+                StrmUtil.stmTryCopyFrom(in, out);
             } finally {
                 out.close();
             }

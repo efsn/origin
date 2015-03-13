@@ -4,7 +4,7 @@ import java.beans.PropertyEditorSupport;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 import org.demo.data.PhoneNumber;
 
 public class PhoneNumberEditor extends PropertyEditorSupport{
@@ -13,7 +13,7 @@ public class PhoneNumberEditor extends PropertyEditorSupport{
     
     @Override
     public void setAsText(String text) throws IllegalArgumentException{
-        if(StrYn.isNull(text)) setValue(null);
+        if(StrUtil.isNull(text)) setValue(null);
         Matcher matcher = pattern.matcher(text);
         if(matcher.matches()){
             PhoneNumber pn = new PhoneNumber();

@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 /**
  * 根据Comparator排序的List对象
@@ -32,7 +32,7 @@ public class OrderedList extends ArrayList implements Cloneable {
    */
   private static final Comparator DEFAULT = new Comparator() {
     public int compare(Object o1, Object o2) {
-      return StrYn.compareObject(o1, o2);
+      return StrUtil.compareObject(o1, o2);
     }
   };
 

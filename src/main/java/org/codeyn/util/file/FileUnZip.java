@@ -1,5 +1,3 @@
-//Source file: D:\\i-report-server\\src\\com\\sanlink\\util\\FileUnZip.java
-
 package org.codeyn.util.file;
 
 import java.io.BufferedInputStream;
@@ -15,34 +13,40 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
 import org.codeyn.util.Maps;
-import org.codeyn.util.yn.StmYn;
+import org.codeyn.util.yn.StrmUtil;
 
 /**
- * 压缩包解压缩类，能解压缩delphi类压缩的文件包
+ * Uncompress class which can uncompress the file delphi compressed
+ * 
+ * @author Codeyn
+ * @version 1.0
+ * 
  */
 public class FileUnZip{
-    protected String _dest;
-    private String _head;
-    private int _count;
-    private FileInputStream fs;
-    protected InputStream _in;
+
     final static String ERRZIPFILE = "Invalid zip file!";
+
+    private String dest;
+    private InputStream in;
+    private FileInputStream fi;
+    private String head;
+    private int count;
 
     protected long curSize;
 
     /**
      * @param fn
      *            file to unzip
-     * @throws java.io.FileNotFoundException
+     * 
      * @throws FileNotFoundException
      */
-    public FileUnZip(String fn) throws FileNotFoundException, Exception{
-        fs = new FileInputStream(fn);
+    public FileUnZip(String fn) throws Exception{
+        fi = new FileInputStream(fn);
         try {
-            init(fs);
+            init(fi);
         } catch (Exception ex) {
-            fs.close();
-            fs = null;
+            fi.close();
+            fi = null;
             throw ex;
         }
     }
@@ -58,7 +62,7 @@ public class FileUnZip{
      * @return
      */
     protected String readZipId(InputStream in) throws Exception{
-        return StmYn.readFix(in, FileZip.ZIPID.length());
+        return StrmUtil.readFix(in, FileZip.ZIPID.length());
     }
 
     /**
@@ -89,34 +93,34 @@ public class FileUnZip{
         int zipType = getZipType(id);
         switch (zipType) {
             case FileZip.ZIP_DONT:
-                _in = new BufferedInputStream(in);
+                this.in = new BufferedInputStream(in);
                 break;
             case FileZip.ZIP_ZIP:
-                _in = new InflaterInputStream(in);
+                this.in = new InflaterInputStream(in);
                 break;
             case FileZip.ZIP_GZIP:
-                _in = new GZIPInputStream(in);
+                this.in = new GZIPInputStream(in);
                 break;
             default:
                 throw new Exception(ERRZIPFILE);
         }
-        checkHeader(_in);
+        checkHeader(this.in);
     }
 
     void checkHeader(InputStream in) throws Exception{
-        _head = StmYn.readString(in);
+        head = StrmUtil.readString(in);
         String s = getOptions(in); // option
         Map<String, String> m = Maps.toMap(s, "=", ";");
         String cstr = m.get("count");
-        _count = Integer.parseInt(cstr == null ? "0" : cstr);
+        count = Integer.parseInt(cstr == null ? "0" : cstr);
     }
 
     protected String getOptions(InputStream in) throws Exception{
-        return StmYn.readString(in);
+        return StrmUtil.readString(in);
     }
 
     public int getCount(){
-        return _count;
+        return count;
     }
 
     /**
@@ -132,15 +136,15 @@ public class FileUnZip{
 
         BufferedOutputStream out = null;
         try {
-            _dest = destdir;
+            dest = destdir;
             // unzip a file
-            for (int i = 0; i < _count; i++) {
-                File f = getFileInfo(_in);
+            for (int i = 0; i < count; i++) {
+                File f = getFileInfo(this.in);
                 if (f == null) break;
                 if (!f.isDirectory()) {
                     out = new BufferedOutputStream(new FileOutputStream(f));
                     try {
-                        StmYn.stmCopyFrom(_in, out, curSize);
+                        StrmUtil.stmCopyFrom(this.in, out, curSize);
                         Thread.yield();
                     } finally {
                         out.close();
@@ -155,8 +159,8 @@ public class FileUnZip{
     }
 
     public void close() throws Exception{
-        if (fs != null) {
-            fs.close();
+        if (fi != null) {
+            fi.close();
         }
     }
 
@@ -167,7 +171,7 @@ public class FileUnZip{
          * BI-5464 etl导入主题集后，维表是乱码 原因：i压缩时是使用的GBK编码，BI解压时使用的是UTF-8,所以出现了乱码问题。
          * 这里指定采用GBK解码即可
          */
-        String s = StmYn.readString(in, "GBK");
+        String s = StrmUtil.readString(in, "GBK");
         if (s == null) return null;
         Map<String, String> m = Maps.toMap(s, "=", ";");
         String fn = m.get("fn");
@@ -175,7 +179,7 @@ public class FileUnZip{
             fn = fn.replace('\\', File.separatorChar);
             // unix separator & fixed char in script\
         }
-        fn = _dest + File.separator + fn;
+        fn = dest + File.separator + fn;
         String dir = m.get("dir");
         String ab = m.get("ab");
         curSize = Long.parseLong(m.get("sz"));
@@ -192,7 +196,7 @@ public class FileUnZip{
             if (f.exists()) {
                 f.delete(); // 如果已经存在，先删除！
             }
-            FileYn.createDirsOfFile(f);
+            FileUtil.createDirsOfFile(f);
         }
         return f;
     }
@@ -201,7 +205,7 @@ public class FileUnZip{
      * @return String
      */
     public String getHeader(){
-        return _head;
+        return head;
     }
 
     public static void main(String[] args){

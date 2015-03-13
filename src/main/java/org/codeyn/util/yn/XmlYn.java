@@ -70,8 +70,8 @@ public class XmlYn {
    */
   private static final Document getDocumentFromInputStreamWeblogic(InputStream is) throws Exception {
     BufferedInputStream bi = new BufferedInputStream(is);
-    String charset = StrYn.UTF8;//Chardet.extractCharset(bi);
-    if (!StrYn.isNull(charset) && "GBK".equalsIgnoreCase(charset)) {//encoding是GBK时，对流进行正确的编码
+    String charset = StrUtil.UTF8;//Chardet.extractCharset(bi);
+    if (!StrUtil.isNull(charset) && "GBK".equalsIgnoreCase(charset)) {//encoding是GBK时，对流进行正确的编码
       //用缓冲输入流，直接使用输入流时会报:org.xml.sax.SAXParseException: Premature end of file.异常
       return getDocument(new InputStreamReader(bi, charset));
     }
@@ -164,7 +164,7 @@ public class XmlYn {
     os.write(0xEF);
     os.write(0xBB);
     os.write(0xBF);
-    saveDocument(doc, os, StrYn.UTF8);
+    saveDocument(doc, os, StrUtil.UTF8);
   }
   
   /**
@@ -280,7 +280,7 @@ public class XmlYn {
     Transformer tf = TransformerFactory.newInstance().newTransformer();
     Properties properties = tf.getOutputProperties();
 
-    if(StrYn.isNull(encoding)) encoding = StrYn.GB2312;
+    if(StrUtil.isNull(encoding)) encoding = StrUtil.GB2312;
     properties.setProperty(OutputKeys.ENCODING, encoding);
     properties.setProperty(OutputKeys.INDENT, indent?"yes":"no");
 
@@ -318,7 +318,7 @@ public class XmlYn {
     finally {
       result.close();
     }
-    String enc = StrYn.isNull(encoding)?StrYn.GB2312:encoding;
+    String enc = StrUtil.isNull(encoding)?StrUtil.GB2312:encoding;
     return result.toString(enc);
   }
   
@@ -661,7 +661,7 @@ public class XmlYn {
      * @return 查找到的第一个元素，查找不到时，返回null。
      */
     public static Element getElementByAttributeInDepth(Document doc, String attName, String attValue) {
-        if (StrYn.isNull(attName) || StrYn.isNull(attValue)) {
+        if (StrUtil.isNull(attName) || StrUtil.isNull(attValue)) {
             //throw new RuntimeException("参数不得为空");
             throw new RuntimeException(I18N.getString("com.esen.util.XmlFunc.3", "参数不得为空"));
         }
@@ -670,7 +670,7 @@ public class XmlYn {
             return null;
         }
         String value = elem.getAttribute(attName);
-        if (!StrYn.isNull(value) && value.equals(attValue)) {
+        if (!StrUtil.isNull(value) && value.equals(attValue)) {
             return elem;
         }
         else {
@@ -685,7 +685,7 @@ public class XmlYn {
      * @return 查找到的第一个元素，查找不到时，返回null。
      */
     public static Element getChildNodeByAttributeInDepth(Element parent, String attName, String attValue) {
-        if (StrYn.isNull(attName) || StrYn.isNull(attValue)) {
+        if (StrUtil.isNull(attName) || StrUtil.isNull(attValue)) {
             //throw new RuntimeException("参数不得为空");
             throw new RuntimeException(I18N.getString("com.esen.util.XmlFunc.4", "参数不得为空 "));
         }
@@ -697,7 +697,7 @@ public class XmlYn {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 if (node.hasAttributes()) {
                     String value = ((Element) node).getAttribute(attName);
-                    if (!StrYn.isNull(value) && value.equals(attValue)) {
+                    if (!StrUtil.isNull(value) && value.equals(attValue)) {
                         return (Element) node;
                     }
                 }

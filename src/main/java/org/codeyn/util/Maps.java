@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 public final class Maps{
 
@@ -41,7 +41,7 @@ public final class Maps{
                 sb.append("&");
             }
             sb.append(entry.getKey()).append("=");
-            sb.append(StrYn.encodeURIComponent(StrYn.isNull((String)entry.getValue()) ? "" : (String)entry.getValue()));
+            sb.append(StrUtil.encodeURIComponent(StrUtil.isNull((String)entry.getValue()) ? "" : (String)entry.getValue()));
         }
         return sb.toString();
     }

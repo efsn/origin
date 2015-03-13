@@ -1,6 +1,6 @@
 package org.codeyn.util.exception;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 import org.codeyn.util.i18n.I18N;
 
 /**
@@ -43,7 +43,7 @@ public class Exception4I18N extends Exception{
 
 	@Override
 	public String getLocalizedMessage() {
-		if(StrYn.isNull(messageKey)){
+		if(StrUtil.isNull(messageKey)){
 			return super.getLocalizedMessage();
 		}
 		return I18N.getString(messageKey, defaultValue, params);
@@ -51,7 +51,7 @@ public class Exception4I18N extends Exception{
 
 	@Override
 	public String getMessage() {
-		if(StrYn.isNull(messageKey)){
+		if(StrUtil.isNull(messageKey)){
 			return super.getMessage();
 		}
 		return I18N.getString(messageKey, defaultValue, I18N.getDefaultLocale(), params);

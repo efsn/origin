@@ -6,7 +6,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.io.MyByteArrayOutputStream;
-import org.codeyn.util.yn.StmYn;
+import org.codeyn.util.yn.StrmUtil;
 
 /**
  * 通过此类封装的流对象,读取的内容为Gzip压缩后内容
@@ -71,7 +71,7 @@ public class GzipInStm extends InputStream {
     initStm();
     int rlen = 0;
     while (true) {//循环读取内容
-      rlen += StmYn.stmTryRead(this.rin, b, off + rlen, len - rlen);
+      rlen += StrmUtil.stmTryRead(this.rin, b, off + rlen, len - rlen);
       if (rlen == len || this.isend)
         break;
       readNextData();
@@ -95,7 +95,7 @@ public class GzipInStm extends InputStream {
     bout = new MyByteArrayOutputStream(BUF_SIZE);
     gout = new GZIPOutputStream(bout);
     //此处不能调用readNextData,因为readNextData中会重置bout
-    StmYn.stmCopyFrom(this.oriin, gout, BUF_SIZE);
+    StrmUtil.stmCopyFrom(this.oriin, gout, BUF_SIZE);
     this.rin = bout.asInputStream();
     init = true;
   }
@@ -107,7 +107,7 @@ public class GzipInStm extends InputStream {
     bout.reset();
     long r = 0;
     while (bout.size() == 0) {
-      r = StmYn.stmCopyFrom(this.oriin, gout, BUF_SIZE);
+      r = StrmUtil.stmCopyFrom(this.oriin, gout, BUF_SIZE);
       if (r == 0) {
         gout.finish();
         gout.close();

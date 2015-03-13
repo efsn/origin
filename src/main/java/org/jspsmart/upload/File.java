@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 public class File{
     
@@ -54,7 +54,7 @@ public class File{
         int k = startData;
         if (rs == null)
             throw new IllegalArgumentException("The resultSet cannot be null");
-        if (StrYn.isNull(paramString))
+        if (StrUtil.isNull(paramString))
             throw new IllegalArgumentException("The columnName cannot be null or empty");
         long l = BigInteger.valueOf(size).divide(BigInteger.valueOf(i)).longValue();
         int j = BigInteger.valueOf(size).mod(BigInteger.valueOf(i)).intValue();

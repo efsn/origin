@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 /**
  * 此类负责快速的读取文本信息，支持读取npf格式文件的一些比较高效的函数
@@ -722,7 +722,7 @@ public class BufferedReader2 extends Reader {
    */
   private boolean parse_content_equals(final String s) {
     if (parse_start_index==-1){
-      return StrYn.strCompare(s, readlsb);
+      return StrUtil.strCompare(s, readlsb);
     }
     
     return strCompare(s, 0, cb, parse_start_index, s.length());
@@ -734,7 +734,7 @@ public class BufferedReader2 extends Reader {
       if (len==1){
         char c = cb[parse_start_index];
         if (c<127) 
-          return StrYn.strofascii(c);
+          return StrUtil.strofascii(c);
       }
       return new String(cb, parse_start_index, len);
     }
@@ -760,7 +760,7 @@ public class BufferedReader2 extends Reader {
       if (len==1){
         char c = cb[parse_start_index];
         if (c<127) 
-          return StrYn.strofascii(c);
+          return StrUtil.strofascii(c);
       }
       return new String(cb, parse_start_index, len);
     }

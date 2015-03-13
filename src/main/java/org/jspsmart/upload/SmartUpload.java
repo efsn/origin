@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.PageContext;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 public class SmartUpload{
     
@@ -202,7 +202,7 @@ public class SmartUpload{
                              String type,
                              String disposition, 
                              int offset) throws Exception{
-        if (StrYn.isNull(path))
+        if (StrUtil.isNull(path))
             throw new IllegalArgumentException("File '" + path + "' not found");
         if ((!isVirtual(path)) && (denyPhysicalPath)) {
             throw new SecurityException("Physical path is denied");
@@ -212,7 +212,7 @@ public class SmartUpload{
         FileInputStream in = new FileInputStream(file);
         long len = file.length();
         byte[] arrayOfByte = new byte[offset];
-        if (StrYn.isNull(type))
+        if (StrUtil.isNull(type))
             response.setContentType("application/x-msdownload");
         else {
             response.setContentType(type);
@@ -240,16 +240,16 @@ public class SmartUpload{
                               String disposition) throws Exception{
         if (resultSet == null)
             throw new IllegalArgumentException("The resultSet cannot be null");
-        if (StrYn.isNull(path))
+        if (StrUtil.isNull(path))
             throw new IllegalArgumentException("The columnName cannot be null or empty");
         byte[] arrayOfByte = resultSet.getBytes(path);
-        if (StrYn.isNull(type))
+        if (StrUtil.isNull(type))
             response.setContentType("application/x-msdownload");
         else {
             response.setContentType(type);
         }
         response.setContentLength(arrayOfByte.length);
-        if (StrYn.isNull(disposition))
+        if (StrUtil.isNull(disposition))
             response.setHeader("Content-Disposition", "attachment;");
         else {
             response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(disposition, "UTF-8"));
@@ -289,14 +289,14 @@ public class SmartUpload{
     }
 
     private String getFileExt(String fileName){
-        if (StrYn.isNull(fileName)) {
+        if (StrUtil.isNull(fileName)) {
             return fileName;
         }
         return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
     }
 
     private String getContentType(String type){
-        if(StrYn.isNull(type)){
+        if(StrUtil.isNull(type)){
             return type;
         }
         String ct = "Content-Type:";
@@ -308,7 +308,7 @@ public class SmartUpload{
     }
 
     private String getTypeMIME(String mime){
-        if(StrYn.isNull(mime)){
+        if(StrUtil.isNull(mime)){
             return mime;
         }
         int i = mime.indexOf("/");
@@ -319,7 +319,7 @@ public class SmartUpload{
     }
 
     private String getSubTypeMIME(String mime){
-        if(StrYn.isNull(mime)){
+        if(StrUtil.isNull(mime)){
             return mime;
         }
         int i = mime.indexOf("/") + 1;
@@ -398,7 +398,7 @@ public class SmartUpload{
         String name = null;
         String separator = System.getProperty("file.separator");
         int i = 0;
-        if (StrYn.isNull(path))
+        if (StrUtil.isNull(path))
             throw new IllegalArgumentException("There is no specified destination file");
         if (path.lastIndexOf("\\") >= 0) {
             parent = path.substring(0, path.lastIndexOf("\\"));
@@ -462,7 +462,7 @@ public class SmartUpload{
     }
 
     public void uploadInFile(String path) throws Exception{
-        if (StrYn.isNull(path))
+        if (StrUtil.isNull(path))
             throw new IllegalArgumentException("There is no specified destination file");
         if ((!isVirtual(path)) && (denyPhysicalPath)) {
             throw new SecurityException("Physical path is denied");
@@ -491,7 +491,7 @@ public class SmartUpload{
     }
     
     private void setFilesList(String path, Vector<String> list){
-        if(StrYn.isNull(path)){
+        if(StrUtil.isNull(path)){
             list = null;
         }else{
             StringBuffer sb = new StringBuffer();
@@ -517,7 +517,7 @@ public class SmartUpload{
     }
     
     private String getFileName(String name){
-        if(StrYn.isNull(name))
+        if(StrUtil.isNull(name))
             return null;
         int i = name.lastIndexOf('/');
         if (i != -1) return name.substring(i + 1, name.length());

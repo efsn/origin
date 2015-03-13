@@ -228,11 +228,11 @@ public class SecurityUtil {
     String value = request != null ? request.getParameter(param) : param;  
     value = filter(value);
     //判断空必须放在转换后
-    if(StrYn.isNull(value)) {
+    if(StrUtil.isNull(value)) {
         return value;
     }
     else {
-        String errmsg = StrYn.format2HtmlStr("'" + value + "'值不合法。");
+        String errmsg = StrUtil.format2HtmlStr("'" + value + "'值不合法。");
           if (!"true".equalsIgnoreCase(value) && !"false".equalsIgnoreCase(value)) {
               throw new IllegalArgumentException(errmsg);
           }
@@ -254,7 +254,7 @@ public class SecurityUtil {
 
   public static String checkUrlValue(HttpServletRequest request, String value)  throws IllegalArgumentException {
     value = filter(value);
-    if( StrYn.isNull(value) ) return value;
+    if( StrUtil.isNull(value) ) return value;
     int p = value.indexOf("?");
     if( p!=-1 ){//对于有参数的url，要拆开，把参数部分进行url编码，再检查是否合法。
         String urlPath = value.substring(0,p);
@@ -274,7 +274,7 @@ public class SecurityUtil {
     curPath = curPath.replaceAll("/+", "/");//将重复的斜线转成１个．
     String ctxPath = request.getContextPath();//contextpath是以/开始的地址。如果contextpath是根，则返回""空串。
     if( ctxPath!=null ){
-            int c = StrYn.charCount(curPath,'/');
+            int c = StrUtil.charCount(curPath,'/');
         if( "".equals(ctxPath) ){//如果是根开始的ctxPath，则url中"../"出现的次数不能达到"/"线出现的次数．
             limitSubStrCount(value, "../", c);
         }else if( ctxPath.startsWith("/") ){//如果ctxPath不是根开始，则url中"../"出现的次数不能超过"/"线出现的次数
@@ -296,7 +296,7 @@ public class SecurityUtil {
                 break;
         }
         if( n>=c )
-            throw new IllegalArgumentException(StrYn.format2HtmlStr("URL值'"+param+"'不合法。"));
+            throw new IllegalArgumentException(StrUtil.format2HtmlStr("URL值'"+param+"'不合法。"));
     }
   
   /**
@@ -505,12 +505,12 @@ public class SecurityUtil {
     String value = request != null ? request.getParameter(param) : param;  
     value = filter(value);
     //判断空必须放在转换后
-    if(StrYn.isNull(value))
+    if(StrUtil.isNull(value))
         return value;
     // 这里把参数名称传给异常,错误页面用该参数名称从request对象中去取值来组织与显示异常
-    String errmsg = StrYn.format2HtmlStr("'" + param + "'值不合法。");
+    String errmsg = StrUtil.format2HtmlStr("'" + param + "'值不合法。");
    
-    if (!StrYn.isNull(value) && !(negate ^ pattern.matcher(value).matches())) {
+    if (!StrUtil.isNull(value) && !(negate ^ pattern.matcher(value).matches())) {
       // 这里把参数名称传给异常,错误页面用该参数名称从request对象中去取值来组织与显示异常
       throw new IllegalArgumentException(errmsg);
     }
@@ -546,14 +546,14 @@ public class SecurityUtil {
     String value = request != null ? request.getParameter(param) : param;  
     value = filter(value);
     //判断空必须放在转换后
-    if(StrYn.isNull(value))
+    if(StrUtil.isNull(value))
         return value;
     // 这里把参数名称传给异常,错误页面用该参数名称从request对象中去取值来组织与显示异常
-    String errmsg = StrYn.format2HtmlStr("'" + param + "'值不合法。");
+    String errmsg = StrUtil.format2HtmlStr("'" + param + "'值不合法。");
    
-    if (!StrYn.isNull(value) && !(negate ^ pattern.matcher(value).matches())) {
+    if (!StrUtil.isNull(value) && !(negate ^ pattern.matcher(value).matches())) {
       // 这里把参数名称传给异常,错误页面用该参数名称从request对象中去取值来组织与显示异常
-      if(StrYn.isNull(errorMsg)){
+      if(StrUtil.isNull(errorMsg)){
         throw new IllegalArgumentException(errmsg);
       }else{
         throw new IllegalArgumentException(errorMsg);
@@ -567,7 +567,7 @@ public class SecurityUtil {
             for (int i = 0; i < _patlist.length; i++) {
                 if (_patlist[i].matcher(value).matches()) {
               // 这里把参数名称传给异常,错误页面用该参数名称从request对象中去取值来组织与显示异常
-              if(StrYn.isNull(errorMsg)){
+              if(StrUtil.isNull(errorMsg)){
                 throw new IllegalArgumentException(errmsg);
               }else{
                 throw new IllegalArgumentException(errorMsg);
@@ -584,11 +584,11 @@ public class SecurityUtil {
    * */
   public static String checkSemicolon(HttpServletRequest request, String param){
     String value = request != null ? request.getParameter(param) : param;
-      if (StrYn.isNull(value)) {
+      if (StrUtil.isNull(value)) {
           return value;
       }
       if(InJS.matcher(value).matches()){
-        throw new IllegalArgumentException(StrYn.format2HtmlStr("'" + param + "'值不合法。"));
+        throw new IllegalArgumentException(StrUtil.format2HtmlStr("'" + param + "'值不合法。"));
           //throw new IllegalArgumentException(I18N.getString("com.esen.util.security.SecurityFunc.java.1", UtilResourceBundleFactory.class, new Object[]{param}));
         }
       return value;
@@ -599,12 +599,12 @@ public class SecurityUtil {
    * */
   public static String checkSemicolon(HttpServletRequest request, String param,String errorMsg) throws IllegalArgumentException{
     String value = request != null ? request.getParameter(param) : param;
-      if (StrYn.isNull(value)) {
+      if (StrUtil.isNull(value)) {
           return value;
       }
       if(InJS.matcher(value).matches()){
-        if(StrYn.isNull(errorMsg)){
-            throw new IllegalArgumentException(StrYn.format2HtmlStr("'" + param + "'值不合法。"));
+        if(StrUtil.isNull(errorMsg)){
+            throw new IllegalArgumentException(StrUtil.format2HtmlStr("'" + param + "'值不合法。"));
         }else{
             throw new IllegalArgumentException(errorMsg);
         }
@@ -623,19 +623,19 @@ public class SecurityUtil {
    * @throws IllegalAccessException
    */
   public static File checkFile(String filepath, String dir, String suffix) throws IllegalAccessException {
-    String errmsg = StrYn.format2HtmlStr("路径值'"+filepath+"'不合法。");
+    String errmsg = StrUtil.format2HtmlStr("路径值'"+filepath+"'不合法。");
     filepath = filter(filepath);
     dir = filter(dir);
     File file = new File(filepath);
     if (file != null && file.exists()) {
       // 校验路径范围
-      if (!StrYn.isNull(dir)){
+      if (!StrUtil.isNull(dir)){
         File dirFile = new File(dir);
         if(!file.getAbsolutePath().startsWith(dirFile.getAbsolutePath())) {
             throw new IllegalAccessException(errmsg);
           }
       }
-      if (!StrYn.isNull(suffix)) {
+      if (!StrUtil.isNull(suffix)) {
         // 校验后缀名合法性
         int index = file.getName().lastIndexOf(".");
         if (index > -1) {
@@ -660,7 +660,7 @@ public class SecurityUtil {
  * @throws IllegalArgumentException
  */
   public static String[] checkParamValues(HttpServletRequest request, String param,Pattern pattern, boolean negate) throws IllegalArgumentException {   
-    if(request == null || StrYn.isNull(param)){
+    if(request == null || StrUtil.isNull(param)){
         return null;
     }
     String[] values = request.getParameterValues(param);
@@ -775,7 +775,7 @@ public class SecurityUtil {
         checkParam(e.getMessage(),null);
         return e;
     }catch(IllegalArgumentException ex){
-        Exception newe = new Exception(StrYn.format2HtmlStr(e.getMessage()));
+        Exception newe = new Exception(StrUtil.format2HtmlStr(e.getMessage()));
         newe.setStackTrace(e.getStackTrace());
         return newe;
     }       

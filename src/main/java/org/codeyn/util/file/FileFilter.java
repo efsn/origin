@@ -3,31 +3,37 @@ package org.codeyn.util.file;
 import java.io.File;
 import java.io.FilenameFilter;
 
-//文件过滤类，子目录不受后缀过滤
-public class FileFilter implements FilenameFilter{
-    private String _ext;
+import org.codeyn.util.yn.StrUtil;
 
-    // ext:.bmp|.bin|.exe...
+/**
+ * Filter Files except Directory which via suffix
+ * <p>ext:.bmp|.bin|.exe...etc
+ * 
+ * @author Codeyn
+ * @version 1.0
+ */
+public class FileFilter implements FilenameFilter{
+
+    private String ext;
+
     public FileFilter(String ext){
-        _ext = ext;
+        this.ext = ext;
     }
 
+    /**
+     * if none filter all
+     */
     public boolean accept(File dir, String fn){
-        if (_ext == null || _ext.length() == 0) return true;// no filter, all
-                                                            // accept
-        String ext = FileYn.extractFileExt(fn);
+        if (StrUtil.isNull(this.ext)) return true;
+        String ext = FileUtil.extractFileExt(fn);
         if (ext == null) {
-            // judge fn is a dir or file
             File[] f = dir.listFiles();
             for (int i = 0; i < f.length; i++) {
                 if ((f[i].isDirectory()) && (f[i].getName().equals(fn)))
-                    return true;// accept dir
+                    return true;
             }
             return false;
         }
-        if ((ext == null) || (_ext.indexOf(ext) == -1))
-            return false;
-        else
-            return true;
+        return this.ext.indexOf(ext) > -1;
     }
 }

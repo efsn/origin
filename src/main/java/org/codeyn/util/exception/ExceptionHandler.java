@@ -3,7 +3,7 @@ package org.codeyn.util.exception;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +30,8 @@ public final class ExceptionHandler {
     try{
       throw new RuntimeException(msg);
     }catch(Exception ex){
-      String s = StrYn.exception2str(ex);
-      s = StrYn.ensureNotStartWith(s,"java.lang.RuntimeException:").trim();
+      String s = StrUtil.exception2str(ex);
+      s = StrUtil.ensureNotStartWith(s,"java.lang.RuntimeException:").trim();
       System.out.println(s);
     }
   }
@@ -161,7 +161,7 @@ public final class ExceptionHandler {
 		if (ex == null) {
 			throwRuntimeException(key, defaultValue, params);
 		}
-		if (StrYn.isNull(key)) {
+		if (StrUtil.isNull(key)) {
 			/**
 			 * 20080928 msg为空时：以前的做法是msg为空时取ex.getMessage。当ex是RuntimeException时，这样处理会导致重复包装RuntimeException。
 			 *                    现在直接就调用rethrowRuntimeException(Throwable ex)处理。

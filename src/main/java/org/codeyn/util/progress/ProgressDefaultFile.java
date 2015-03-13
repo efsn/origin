@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import org.codeyn.util.GUID;
 import org.codeyn.util.UnionInputStream;
 import org.codeyn.util.exception.ExceptionHandler;
-import org.codeyn.util.file.FileYn;
+import org.codeyn.util.file.FileUtil;
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 public class ProgressDefaultFile extends ProgressDefault {
   private File dir;
@@ -34,8 +34,8 @@ public class ProgressDefaultFile extends ProgressDefault {
     super(nm);
     this.dir = dir;
     try {
-      FileYn.ensureExists(dir, true, true);
-      String filepath = FileYn.createTempFile(dir.getAbsolutePath(),
+      FileUtil.ensureExists(dir, true, true);
+      String filepath = FileUtil.createTempFile(dir.getAbsolutePath(),
           "progress_" + (new GUID().toString())+".txt", false, true);
       if (filepath == null)
         //throw new RuntimeException("创建日志文件没有成功!");
@@ -129,11 +129,11 @@ public class ProgressDefaultFile extends ProgressDefault {
 
   private InputStream getCacheLogStm() {
     String logs = this.getLogs();
-    if (StrYn.isNull(logs))
+    if (StrUtil.isNull(logs))
       return null;
     try {
     //TODO 2.1修改为Reader和Writer
-      return new ByteArrayInputStream(logs.getBytes(StrYn.UTF8));
+      return new ByteArrayInputStream(logs.getBytes(StrUtil.UTF8));
     }
     catch (UnsupportedEncodingException e) {
       ExceptionHandler.rethrowRuntimeException(e);
@@ -162,7 +162,7 @@ public class ProgressDefaultFile extends ProgressDefault {
 
   private void write(String log, boolean newline) {
     try {
-      if (!StrYn.isNull(log)) {
+      if (!StrUtil.isNull(log)) {
         raf.write(log.getBytes());
       }
       if (newline) {

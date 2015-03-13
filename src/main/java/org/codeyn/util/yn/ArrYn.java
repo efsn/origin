@@ -140,7 +140,7 @@ public final class ArrYn {
       return false;
     }
     for (int i = 0, len = ar1.length; i < len; i++) {
-      if (!StrYn.compareStr(ar1[i], ar2[i]))
+      if (!StrUtil.compareStr(ar1[i], ar2[i]))
         return false;
     }
     return true;
@@ -164,7 +164,7 @@ public final class ArrYn {
     int len = ss.length;
     int[] ii = new int[len];
     for (int i = 0; i < len; i++) {
-      ii[i] = StrYn.str2int(ss[i], def);
+      ii[i] = StrUtil.str2int(ss[i], def);
     }
     return ii;
   }
@@ -494,7 +494,7 @@ public final class ArrYn {
     int j = 0;
     for (int i = 0; i < len; i++) {
       String str = strs[i];
-      boolean isnull = excludeEmpty ? StrYn.isNull(str) : str == null;
+      boolean isnull = excludeEmpty ? StrUtil.isNull(str) : str == null;
       if (!isnull) {
         if (i != j) {
           strs[j] = strs[i];
@@ -514,7 +514,7 @@ public final class ArrYn {
   }
 
     public static String array2Str(Object[] list, char sept) {
-        return array2Str(list, StrYn.strofascii(sept));
+        return array2Str(list, StrUtil.strofascii(sept));
     }
 
     /**
@@ -555,7 +555,7 @@ public final class ArrYn {
     }
     StringBuffer sb = new StringBuffer(list.length * (1 + 10));
     for (int i = 0; i < list.length; i++) {
-      sb.append(StrYn.double2str(list[i],0,3,false));
+      sb.append(StrUtil.double2str(list[i],0,3,false));
       if (i < list.length - 1)
         sb.append(sept);
     }
@@ -611,7 +611,7 @@ public final class ArrYn {
         Object v = Array.get(items,i);
         
         if(v!=null){
-          sb.append(StrYn.object2str(v));
+          sb.append(StrUtil.object2str(v));
         }else{
             sb.append(Double.NaN);
         }
@@ -624,7 +624,7 @@ public final class ArrYn {
         
         if(v!=null){
             sb.append("\"");
-          sb.append(StrYn.object2str(v));
+          sb.append(StrUtil.object2str(v));
           sb.append("\"");
         }else{
             sb.append("null");
@@ -879,7 +879,7 @@ public final class ArrYn {
 
     public static int indexOf(double[] a, double i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
-            if (StrYn.compareDouble(a[j], i) == 0)
+            if (StrUtil.compareDouble(a[j], i) == 0)
                 return j;
         }
         return -1;
@@ -904,7 +904,7 @@ public final class ArrYn {
 
     public static int indexOf(Object[] a, Object i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
-            if (StrYn.compareObject(a[j], i) == 0)
+            if (StrUtil.compareObject(a[j], i) == 0)
                 return j;
         }
         return -1;
@@ -929,7 +929,7 @@ public final class ArrYn {
 
     public static int indexOf(List a, Object i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
-            if (StrYn.compareObject(a.get(j), i) == 0)
+            if (StrUtil.compareObject(a.get(j), i) == 0)
                 return j;
         }
         return -1;
@@ -982,7 +982,7 @@ public final class ArrYn {
 
     private static int indexOf(Object a, Object o, int fromi, int toi) {
         for (int j = fromi; j < toi; j++) {
-            if (StrYn.compareObject(Array.get(a, j), o) == 0)
+            if (StrUtil.compareObject(Array.get(a, j), o) == 0)
                 return j;
         }
         return -1;
@@ -1129,7 +1129,7 @@ public final class ArrYn {
     Object r = Array.get(ar,0);
     for (int i = 1; i < len; i++) {
       Object v = Array.get(ar,i);
-      if (StrYn.compareObject(r,v)<0) {
+      if (StrUtil.compareObject(r,v)<0) {
         r = v;
       }
     }
@@ -1152,7 +1152,7 @@ public final class ArrYn {
     Object r = Array.get(ar,0);
     for (int i = 1; i < len; i++) {
       Object v = Array.get(ar,i);
-      if (StrYn.compareObject(r,v)>0) {
+      if (StrUtil.compareObject(r,v)>0) {
         r = v;
       }
     }
@@ -1246,7 +1246,7 @@ public static void fillNull(List lst, int size){
   public static Integer [] int2Objs(int [] ii){
     Integer [] objs = new Integer[ii.length];
     for (int i = 0; i < objs.length; i++) {
-      objs[i] = StrYn.intobj(ii[i]);  
+      objs[i] = StrUtil.intobj(ii[i]);  
     }
     return objs;
   }

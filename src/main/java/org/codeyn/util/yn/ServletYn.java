@@ -27,7 +27,7 @@ import javax.servlet.jsp.JspWriter;
 
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.codeyn.util.exception.ExceptionHandler;
-import org.codeyn.util.file.FileYn;
+import org.codeyn.util.file.FileUtil;
 
 /**
  * 此类提供一些服务器端Web相关的Servlet和Jsp开发过程中常用的通用函数，但不包括Struts相关的
@@ -55,7 +55,7 @@ public abstract class ServletYn {
      * @return
      */
     public static final String getUserAgent(HttpServletRequest req) {
-        return "(" + StrYn.null2default(req.getHeader("UA-CPU"), "Other") + ") " + SecurityYn.checkXSSParam(req.getHeader("User-Agent"));
+        return "(" + StrUtil.null2default(req.getHeader("UA-CPU"), "Other") + ") " + SecurityYn.checkXSSParam(req.getHeader("User-Agent"));
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class ServletYn {
             return null;
         String rs = null;
         try {
-            rs = StmYn.stm2Str(in, "UTF-8");
+            rs = StrmUtil.stm2Str(in, "UTF-8");
         }
         finally {
             in.close();
@@ -143,7 +143,7 @@ public abstract class ServletYn {
         out.print("<html><head>");
         out.print("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
         out.print("<link href=\"xui/xui.css\" rel=\"stylesheet\" type=\"text/css\"/>");
-        out.print("</head><body>" + StrYn.null2blank(html) + "</body>");
+        out.print("</head><body>" + StrUtil.null2blank(html) + "</body>");
         /*通过参数defjsheader来控制是否缺省将公共的脚本引入，因为有时候只是非常简单的页面输出，不必引入脚本，引用后反而是增加了浏览器的负担*/
         if (defjsheader) {
             out.println("<script src=\"xui/sys.js\"></script>");
@@ -173,7 +173,7 @@ public abstract class ServletYn {
 
     //输出指定的Javascript脚本
     public static void outJavascript(PrintWriter out, String js) throws Exception {
-        if (StrYn.isNull(js))
+        if (StrUtil.isNull(js))
             return;
         out.println("<script>");
         out.println(js);
@@ -187,7 +187,7 @@ public abstract class ServletYn {
 
     public static String getCloseWindowScript(HttpServletRequest req) {
         String script = (String) req.getAttribute("closeWindowScript");
-        return (StrYn.isNull(script) ? "" : script);
+        return (StrUtil.isNull(script) ? "" : script);
     }
 
     public static void reloadTopWindowScript(HttpServletRequest req) {
@@ -206,8 +206,8 @@ public abstract class ServletYn {
     public static void reloadScript(HttpServletRequest req, String object) {
         StringBuffer js = new StringBuffer("<script>\n");
         //object如果没有指定，则表示为当前window对象
-        js.append("var _java_isWindow_ = ").append(StrYn.isNull(object)).append(";\n");
-        js.append("var _java_wnd_ = ").append(StrYn.null2default(object, "window")).append(";\n");
+        js.append("var _java_isWindow_ = ").append(StrUtil.isNull(object)).append(";\n");
+        js.append("var _java_wnd_ = ").append(StrUtil.null2default(object, "window")).append(";\n");
         js.append("if (_java_isWindow_ || _java_wnd_ != window) {\n");
         js.append("_java_wnd_.location.reload();}\n");
         js.append("</script>\n");
@@ -216,7 +216,7 @@ public abstract class ServletYn {
 
     public static String getReloadScript(HttpServletRequest req) {
         String script = (String) req.getAttribute("reloadWindowScript");
-        return (StrYn.isNull(script) ? "" : script);
+        return (StrUtil.isNull(script) ? "" : script);
     }
 
     //重新载入页面,istop表示是否重新载入顶部页面
@@ -226,7 +226,7 @@ public abstract class ServletYn {
 
     public static String getRefreshLeftTreeScript(HttpServletRequest req) {
         String script = (String) req.getAttribute("refreshLeftTreeScript");
-        return (StrYn.isNull(script) ? "" : script);
+        return (StrUtil.isNull(script) ? "" : script);
     }
 
     public static final String GLOBAL_EXCEPTION = "ESENSOFT.Global_Exception";
@@ -261,12 +261,12 @@ public abstract class ServletYn {
          * [安全改造]系统信息泄露，add by shenzhy 2013.5.7
          */
         String msg = SecurityYn.filter(ex.getMessage());
-        return StrYn.isNull(msg) ? "" : msg.replaceAll("\r\n", "<br>");
+        return StrUtil.isNull(msg) ? "" : msg.replaceAll("\r\n", "<br>");
     }
 
     public static final String exception2str(HttpServletRequest request) {
         Exception ex = getException(request);
-        return ex == null ? "" : StrYn.null2blank(StrYn.exception2str(ex));
+        return ex == null ? "" : StrUtil.null2blank(StrUtil.exception2str(ex));
     }
 
     public static final boolean hasException(HttpServletRequest request) {
@@ -281,7 +281,7 @@ public abstract class ServletYn {
      * @throws Exception
      */
     public static final void showError(HttpServletRequest req, HttpServletResponse res, Throwable e) throws Exception {
-        getHtmlOutputStream(req, res, "<script>alert(\"" + StrYn.exceptionMsg2str(e) + "\");</script>", false);
+        getHtmlOutputStream(req, res, "<script>alert(\"" + StrUtil.exceptionMsg2str(e) + "\");</script>", false);
         res.flushBuffer();
     }
 
@@ -305,13 +305,13 @@ public abstract class ServletYn {
         //    connection = Keep-Alive
 
         String ip = req.getHeader("x-forwarded-for");
-        if (StrYn.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = req.getHeader("Proxy-Client-IP");
         }
-        if (StrYn.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = req.getHeader("WL-Proxy-Client-IP");
         }
-        if (StrYn.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = req.getRemoteAddr();
             /*
              * 2011-03-28 by hejzh：将"127.0.0.1".equalsIgnoreCase(ip)改为"127.0.0.1".equals(ip)，实际上字符串
@@ -341,8 +341,8 @@ public abstract class ServletYn {
     public static final String getParameter(HttpServletRequest req, String nm) {
         //edit by zqj  2013.5.6 安全改造：Log Forging
         String rs = SecurityYn.checkLogDesc(req,nm);
-        if (!StrYn.isNull(rs) && StrYn.parseBoolean(req.getParameter("escape"), false)) {
-            rs = StrYn.unescape(rs);
+        if (!StrUtil.isNull(rs) && StrUtil.parseBoolean(req.getParameter("escape"), false)) {
+            rs = StrUtil.unescape(rs);
         }
         return rs;
     }
@@ -355,9 +355,9 @@ public abstract class ServletYn {
         if(rs == null){
             return null;
         }
-        if (rs != null && rs.length > 0 && StrYn.parseBoolean(req.getParameter("escape"), false)) {
+        if (rs != null && rs.length > 0 && StrUtil.parseBoolean(req.getParameter("escape"), false)) {
             for (int i = 0; i < rs.length; i++) {
-                rs[i] = StrYn.unescape(rs[i]);
+                rs[i] = StrUtil.unescape(rs[i]);
             }
         }
         return rs;
@@ -425,7 +425,7 @@ public abstract class ServletYn {
      * 判断方法:如果上传文件的后缀是以".zip"结尾,则是zip文件
      */
     public static boolean isZipFile(FileItem item) {
-        return ".zip".equalsIgnoreCase(FileYn.extractFileExt(item.getName()));
+        return ".zip".equalsIgnoreCase(FileUtil.extractFileExt(item.getName()));
     }
 
     /**
@@ -443,19 +443,19 @@ public abstract class ServletYn {
          */
         ServletYn.resetResponse(res);
 
-        if (StrYn.isNull(contentType))
+        if (StrUtil.isNull(contentType))
             contentType = "application/x-download";
-        if (StrYn.isNull(contentDisposition)) {
-            if (StrYn.isNull(filename))
+        if (StrUtil.isNull(contentDisposition)) {
+            if (StrUtil.isNull(filename))
                 filename = "download";
 
             /**
              * 20090711 浏览器对下载的文件名有很多限制，光进行ISO8859-1编码不行，还要处理特殊字符。
              *          之前用encodeISO8859_1，改为用formatDownloadFileName。
              */
-            contentDisposition = "attachment; filename=" + StrYn.formatDownloadFileName(filename);
+            contentDisposition = "attachment; filename=" + StrUtil.formatDownloadFileName(filename);
         }
-        if (!StrYn.isNull(charset)) {
+        if (!StrUtil.isNull(charset)) {
             contentType += "; charset=" + charset;
         }
 
@@ -713,7 +713,7 @@ public abstract class ServletYn {
      */
     public static boolean isMobileDevice(HttpServletRequest req) {
         String userAgent = req.getHeader("user-agent");
-        if (!StrYn.isNull(userAgent)) {
+        if (!StrUtil.isNull(userAgent)) {
             userAgent = userAgent.toLowerCase();
             for (int i = 0; i < mobileUserAgents.length; i++) {
                 if (userAgent.contains(mobileUserAgents[i])) {
@@ -752,7 +752,7 @@ public abstract class ServletYn {
      */
     public static Locale getPureposeLocale(HttpServletRequest req) {
         String langStr = req.getParameter("lang");
-        if (StrYn.isNull(langStr)) {
+        if (StrUtil.isNull(langStr)) {
             Cookie[] cookies = req.getCookies();
             if (cookies != null) {
                 for (int i = 0; i < cookies.length; i++) {
@@ -762,10 +762,10 @@ public abstract class ServletYn {
                     }
                 }
             }
-            if (StrYn.isNull(langStr))
+            if (StrUtil.isNull(langStr))
                 langStr = req.getLocale().toString();
         }
-        return StrYn.parseLocaleStr(langStr, Locale.SIMPLIFIED_CHINESE);
+        return StrUtil.parseLocaleStr(langStr, Locale.SIMPLIFIED_CHINESE);
     }
 }
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.codeyn.util.yn.ArrYn;
-import org.codeyn.util.yn.StmYn;
+import org.codeyn.util.yn.StrmUtil;
 
 /**
  * 将多个InputStream流看作一个InputStream
@@ -190,6 +190,6 @@ public class UnionInputStream extends InputStream {
    */
   private int stmTryRead(InputStream in, byte[] b, int off, int len)
       throws IOException {
-    return StmYn.stmTryRead(in, b, off, len);
+    return StrmUtil.stmTryRead(in, b, off, len);
   }
 }

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.codeyn.util.file.FileYn;
+import org.codeyn.util.file.FileUtil;
 import org.codeyn.util.yn.ArrYn;
-import org.codeyn.util.yn.StmYn;
+import org.codeyn.util.yn.StrmUtil;
 
 /**
  * 获取本机网卡物理地址
@@ -104,7 +104,7 @@ LinkAgg4 0x000000000000 904 DOWN  lan904 snap904 19  ETHER     Yes     119
         return r;
       }
       try{
-        String s = StmYn.stm2Str(i);
+        String s = StrmUtil.stm2Str(i);
         collectMacAddressFromString(r, s);
       }finally{
         i.close();
@@ -123,13 +123,13 @@ LinkAgg4 0x000000000000 904 DOWN  lan904 snap904 19  ETHER     Yes     119
       boolean linux = File.separatorChar=='/';
       if (!linux)
         return r;
-      java.io.File[] cfgfns = FileYn.listFiles("/etc/sysconfig/network-scripts/", "ifcfg-*", 0);
+      java.io.File[] cfgfns = FileUtil.listFiles("/etc/sysconfig/network-scripts/", "ifcfg-*", 0);
       if (cfgfns==null || cfgfns.length==0){
         return r;
       }
       for (int i = 0; i < cfgfns.length; i++) {
         try {
-          String s = FileYn.file2str(cfgfns[i].getAbsolutePath());
+          String s = FileUtil.file2str(cfgfns[i].getAbsolutePath());
           collectMacAddressFromString(r, s);
         }
         catch (Exception ex) {

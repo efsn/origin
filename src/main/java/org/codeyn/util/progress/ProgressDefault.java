@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import org.codeyn.util.exception.CancelException;
 import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 public class ProgressDefault implements IProgress{
     private static final long serialVersionUID = -105778650059739864L;
@@ -93,7 +93,7 @@ public class ProgressDefault implements IProgress{
      * 设置最后一条添加的日志的时间
      */
     public void setLastLogWithTime(String log){
-        this.setLastLog(StrYn.formatNowDateTime() + " " + log);
+        this.setLastLog(StrUtil.formatNowDateTime() + " " + log);
     }
 
     /**
@@ -257,7 +257,7 @@ public class ProgressDefault implements IProgress{
      * 添加日志信息的时间
      */
     public void addLogWithTime(String log){
-        this.addLog(StrYn.formatNowDateTime() + " " + log);
+        this.addLog(StrUtil.formatNowDateTime() + " " + log);
     }
 
     /**

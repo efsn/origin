@@ -11,14 +11,14 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codeyn.util.yn.StrYn;
+import org.codeyn.util.yn.StrUtil;
 
 public class Ini{
 
     private Map<String, Map<String, String>> sections = new HashMap<String, Map<String, String>>();
 
     private Map<String, String> esureSectionExist(final String key){
-        if(StrYn.isNull(key)){
+        if(StrUtil.isNull(key)){
             return null;
         }
         Map<String, String> section = this.getSection(key);

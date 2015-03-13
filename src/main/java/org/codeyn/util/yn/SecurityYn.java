@@ -202,7 +202,7 @@ public class SecurityYn {
   }
 
   public static String checkUrlValue(HttpServletRequest request, String value)  throws IllegalArgumentException {
-    if( StrYn.isNull(value) ) return value;
+    if( StrUtil.isNull(value) ) return value;
     int p = value.indexOf("?");
     if( p!=-1 ){//对于有参数的url，要拆开，把参数部分进行url编码，再检查是否合法。
         String urlPath = value.substring(0,p);
@@ -216,7 +216,7 @@ public class SecurityYn {
     curPath = curPath.replaceAll("/+", "/");//将重复的斜线转成１个．
     String ctxPath = request.getContextPath();//contextpath是以/开始的地址。如果contextpath是根，则返回""空串。
     if( ctxPath!=null ){
-            int c = StrYn.charCount(curPath,'/');
+            int c = StrUtil.charCount(curPath,'/');
         if( "".equals(ctxPath) ){//如果是根开始的ctxPath，则url中"../"出现的次数不能达到"/"线出现的次数．
             limitSubStrCount(value, "../", c);
         }else if( ctxPath.startsWith("/") ){//如果ctxPath不是根开始，则url中"../"出现的次数不能超过"/"线出现的次数
@@ -328,14 +328,14 @@ public class SecurityYn {
   public static String checkParam(HttpServletRequest request, String param, Pattern pattern, boolean negate)
         throws IllegalArgumentException {
     String value = request != null ? request.getParameter(param) : param;
-    if(StrYn.isNull(value)){
+    if(StrUtil.isNull(value)){
         return value;
     }
-    String checkparam =StrYn.format2HtmlStr(value);
+    String checkparam =StrUtil.format2HtmlStr(value);
     if (!(negate ^ pattern.matcher(value).matches())) {
         throw new IllegalArgumentException(I18N.getString("com.esen.util.security.SecurityFunc.java.1", "参数“{0}”含有非法字符", new Object[]{checkparam}));
     }
-    if (!StrYn.isNull(checkparam) && !(negate ^ pattern.matcher(checkparam).matches())) {
+    if (!StrUtil.isNull(checkparam) && !(negate ^ pattern.matcher(checkparam).matches())) {
         // 这里把参数名称传给异常,错误页面用该参数名称从request对象中去取值来组织与显示异常
         throw new IllegalArgumentException(I18N.getString("com.esen.util.security.SecurityFunc.java.1", "参数“{0}”含有非法字符", new Object[]{checkparam}));
     }
@@ -350,12 +350,12 @@ public class SecurityYn {
   }
   
   public static String checkXForwarded(String param){
-      if (StrYn.isNull(param)) {
+      if (StrUtil.isNull(param)) {
           return param;
       }
       if(!XForwardedFor.matcher(param).matches()){
           
-          throw new IllegalArgumentException(I18N.getString("com.esen.util.security.SecurityFunc.java.1", "参数“{0}”含有非法字符", new Object[]{StrYn.format2HtmlStr(param)}));
+          throw new IllegalArgumentException(I18N.getString("com.esen.util.security.SecurityFunc.java.1", "参数“{0}”含有非法字符", new Object[]{StrUtil.format2HtmlStr(param)}));
       }
       return param;
   }
@@ -364,7 +364,7 @@ public class SecurityYn {
    * 2013.1.15 by wandj  增加参数分号验证.js中出现的参数不能有"或者'和;或者+组合出现,否则可以直接跟js语句执行
    * */
   public static String checkSemicolon(String param){
-      if (StrYn.isNull(param)) {
+      if (StrUtil.isNull(param)) {
           return param;
       }
       if(InJS.matcher(param).matches()){
@@ -399,7 +399,7 @@ public class SecurityYn {
    * 2012.12.26 增加对boolean的验证
    * */
   public static String checkBoolean(String param)throws IllegalArgumentException {
-      if(!StrYn.isNull(param)){
+      if(!StrUtil.isNull(param)){
           if(!"true".equals(param)&&!"false".equals(param)){
               throw new IllegalArgumentException(I18N.getString("com.esen.util.security.SecurityFunc.java.1", "参数“{0}”含有非法字符", new Object[]{param}));
           }
@@ -485,16 +485,16 @@ public class SecurityYn {
    * @throws IllegalAccessException
    */
   public static File checkFile(String filepath, String dir, String suffix) throws IllegalAccessException {
-    String errmsg = StrYn.format2HtmlStr("路径值'"+filepath+"'不合法。");
+    String errmsg = StrUtil.format2HtmlStr("路径值'"+filepath+"'不合法。");
     filepath = filter(filepath);
     dir = filter(dir);
     File file = new File(filepath);
     if (file != null && file.exists()) {
       // 校验路径范围
-      if (!StrYn.isNull(dir) && !file.getAbsolutePath().startsWith(dir)) {
+      if (!StrUtil.isNull(dir) && !file.getAbsolutePath().startsWith(dir)) {
         throw new IllegalAccessException(errmsg);
       }
-      if (!StrYn.isNull(suffix)) {
+      if (!StrUtil.isNull(suffix)) {
         // 校验后缀名合法性
         int index = file.getName().lastIndexOf(".");
         if (index > -1) {
@@ -514,7 +514,7 @@ public class SecurityYn {
    * @return 检验后的值
    */
   public static String checkLength(String param){
-      if (StrYn.isNull(param)) {
+      if (StrUtil.isNull(param)) {
           return param;
       }
       if(param.length()>=200){

@@ -11,7 +11,7 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipException;
 
-import org.codeyn.util.file.FileYn;
+import org.codeyn.util.file.FileUtil;
 
 public
     class ZipOutputStream
@@ -546,7 +546,7 @@ public
 	      }
 	  }else{
 		  putNextEntry(new  ZipEntry(name));
-		  FileYn.file2OutStm(srcFile, this, false);
+		  FileUtil.file2OutStm(srcFile, this, false);
 	  }
   }
 }
