@@ -3,8 +3,9 @@
 <html>
 	<body>
 		<form action="wizard.do" method="POST">
-			School:<input type="text" name="email" value="${email}"/>
-			<input type="submit" name="_target1" value="Above"/>
+			Work:<input type="text" name="email" value="${email}"/>
+			<input type="hidden" name="_target" value="3"/>
+			<input type="submit" name="above" value="Above"/>
 			<input type="submit" name="_finish" value="Finish"/>
 			<input type="submit" name="_cancel" value="Cancel"/>
 		</form>

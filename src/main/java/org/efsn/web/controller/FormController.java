@@ -1,42 +1,49 @@
 package org.efsn.web.controller;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
+import org.codeyn.util.yn.StrYn;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.CancellableFormController;
 
 import template.bean.User;
 
-public class FormController extends CancellableFormController{
-    @Override
-    protected void doSubmitAction(Object command) throws Exception{
-        User user = (User)command;
+@Controller
+@RequestMapping("/form.do")
+public class FormController{
+    
+    @RequestMapping(method = RequestMethod.POST)
+    public String submit(@ModelAttribute("user") User user){
         System.out.println(user.getUsername() + ":" + user.getPassword());
+        return "redirect:/command.do";
     }
     
-    @Override
-    protected Object formBackingObject(HttpServletRequest request)
-            throws Exception{
+    @RequestMapping(method = RequestMethod.GET)
+    public ModelAndView show(@ModelAttribute("user") User user, Model model){
+        return new ModelAndView("register").addObject(user);
+    }
+    
+    @ModelAttribute("user")
+    protected User getUser(@RequestParam(value="username", required=false) String username){
         User user = new User();
-        user.setUsername("Please enter your username");
+        user.setUsername(StrYn.isNull(username) ? "Please enter your username" : username);
         return user;
     }
     
-    @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception{
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("address", Arrays.asList("New York", "Hong Kong"));
-        return map;
+    @ModelAttribute("address")
+    protected List<String> referenceData(){
+        return Arrays.asList("NewYork", "HongKong");
     }
     
-//    @Override
-//    protected ModelAndView onCancel(Object command) throws Exception{
-//        this.doSubmitAction(command);
-//        return null;
-//    }
+    public ModelAndView onCancel(User user) throws Exception{
+        submit(user);
+        return null;
+    }
     
 }

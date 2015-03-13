@@ -18,43 +18,21 @@
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-		<property name="prefix" value="/jsp/ann/"/>
+		<property name="prefix" value="/jsp/"/>
 		<property name="suffix" value=".jsp"/>
 	</bean>
 
-
-
 	<!-- Below is controller -->
+	<bean class="org.demo.annotation.controller.UserController"/>
+	<bean class="org.demo.annotation.controller.RestFulController"/>
 	
     <bean class="org.efsn.web.controller.HwController">
     	<property name="requireSession" value="false"/>
     	<property name="cacheSeconds" value="5"/>
     </bean>
 
-    <!-- 
-	<bean class="org.demo.annotation.controller.UserController"/>
-	<bean class="org.demo.annotation.controller.RestFulController"/>
-    
-    <bean name="/form.do" class="org.efsn.web.controller.FormController">
-    	<property name="formView" value="register"/>
-    	<property name="successView" value="redirect:/command.do"/>
-    	<property name="commandClass" value="template.bean.User"/>
-    	<property name="cancelView" value="redirect:/hello.do"/>
-    </bean>
-    
-    <bean name="/wizard.do" class="org.efsn.web.controller.WizardFormController">
-    	<property name="commandName" value="user"/>
-    	<property name="commandClass" value="template.bean.User"/>
-    	<property name="finishView" value="redirect:/command.do"/>
-    	<property name="cancelView" value="redirect:/hello.do"/>
-    	<property name="pages">
-    		<list>
-    			<value>wizard/base</value>
-    			<value>wizard/school</value>
-    			<value>wizard/work</value>
-    		</list>
-    	</property>
-    </bean>
+    <bean class="org.efsn.web.controller.FormController"/>
+    <bean class="org.efsn.web.controller.WizardFormController"/>
     
     <bean name="/p.do" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     	<property name="viewName" value="param"/>
@@ -64,11 +42,9 @@
 		<property name="servletName" value="forwarding"/>
 	</bean>
 
-
-	<bean name="/command.do" class="org.efsn.web.controller.CommandController">
-		<property name="commandClass" value="template.bean.User"/>
-	</bean>
-
+	<bean class="org.efsn.web.controller.CommandController"/>
+	
+    <!-- 
 	 longest name priority 
 	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
 	<bean name="/*.jsp" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>

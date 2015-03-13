@@ -6,8 +6,8 @@
 <html>
 <body>
 	<form action="form.do" method="POST">
-		Username:<input type="text" name="username" value="${command.username}"/>
-		Password:<input type="password" name="password"/></br>
+		Username:<input type="text" name="username" value="${user.username}"/>
+		Password:<input type="password" name="password"/><br/>
 		Address:<select name="address">
 					<c:forEach items="${address}" var="item">
 						<option value="${item}">${item}</option>

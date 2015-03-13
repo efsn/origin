@@ -1,82 +1,75 @@
 package org.efsn.web.controller;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
+import org.codeyn.util.yn.StrYn;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractWizardFormController;
 
 import template.bean.User;
 
-public class WizardFormController extends AbstractWizardFormController{
+
+@Controller
+@RequestMapping("/wizard.do")
+public class WizardFormController{
     
-    private String cancelView;
-    private String finishView;
+    private String cancelView = "redirect:/hello.do";
+    private String finishView = "redirect:/form.do";
     
     public String getCancelView(){
         return cancelView;
-    }
-
-    public void setCancelView(String cancelView){
-        this.cancelView = cancelView;
     }
 
     public String getFinishView(){
         return finishView;
     }
 
-    public void setFinishView(String finishView){
-        this.finishView = finishView;
-    }
-
-    @Override
-    protected Object formBackingObject(HttpServletRequest request)
-            throws Exception{
-        User user =  (User) createCommand();
+    @ModelAttribute
+    public User getUser(){
+        User user = new User();
         user.setUsername("Please enter your name");
         user.setPassword("Please enter your password");
         return user;
     }
     
-    @Override
-    protected Map referenceData(HttpServletRequest request, int page)
-            throws Exception{
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("address", Arrays.asList("New York, Hong Kong"));
-        return map;
+    @ModelAttribute("address")
+    public List<String> getAddress(){
+        return Arrays.asList("NewYork", "HongKong");
     }
     
-
-    @Override
-    protected ModelAndView processFinish(HttpServletRequest request,
-                                         HttpServletResponse response,
-                                         Object command,
-                                         BindException errors)throws Exception{
-        return new ModelAndView(getFinishView());
+    @ModelAttribute("page")
+    public String getPages(@RequestParam(value="_target", required=false) String target,
+                           @RequestParam(value="above", required=false) String above){
+        List<String> strList = Arrays.asList("wizard/base", "wizard/school", "wizard/work");
+        int page = StrYn.isNull(above) ? StrYn.isNull(target) ? 0 : Integer.parseInt(target) 
+                                       : StrYn.isNull(target) ? 0 : Integer.parseInt(target) - 2;
+        return strList.get(page < strList.size() ? page : strList.size() - 1);
     }
-
-    @Override
-    protected ModelAndView processCancel(HttpServletRequest request,
-                                         HttpServletResponse response,
-                                         Object command, 
-                                         BindException errors)throws Exception{
+    
+    @RequestMapping()
+    public ModelAndView wizard(@ModelAttribute User user, Model model)throws Exception{
+        return new ModelAndView((String)model.asMap().get("page")).addObject(user);
+    }
+    
+    @RequestMapping(params="_cancel")
+    public ModelAndView cancel()throws Exception{
         return new ModelAndView(getCancelView());
     }
     
-    @Override
-    protected void validatePage(Object command, Errors errors, int page){
+    @RequestMapping(params="_finish")
+    public ModelAndView finish()throws Exception{
+        return new ModelAndView(getFinishView());
     }
     
-    @Override
-    protected void postProcessPage(HttpServletRequest request, Object command,
-            Errors errors, int page) throws Exception{
+    public void validatePage(){
+    }
+    
+    public void postProcessPage() throws Exception{
     }
     
     

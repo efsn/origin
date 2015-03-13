@@ -4,8 +4,9 @@
 	<body>
 		<form action="wizard.do" method="POST">
 			School:<input type="text" name="mobilePhone" value="${mobilePhone}"/>
-			<input type="submit" name="_target0" value="Above"/>
-			<input type="submit" name="_target2" value="Next"/>
+			<input type="hidden" name="_target" value="2"/>
+			<input type="submit" name="above" value="Above"/>
+			<input type="submit" name="next" value="Next"/>
 		</form>
 	</body>
 </html>
