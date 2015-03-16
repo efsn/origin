@@ -7,15 +7,24 @@
 		<property name="interceptors">
     		<list>
     			<ref bean="i1"/>
+<!--     			<ref bean="conversion"/> -->
     			<ref bean="i2"/>
     		</list>
     	</property>
 	</bean>
 	
-	 <bean id="i1" class="org.demo.interceptor.Interceptor1"/>
+	<bean id="i1" class="org.demo.interceptor.Interceptor1"/>
     <bean id="i2" class="org.demo.interceptor.Interceptor2"/>
+    <bean id="conversion" class="org.springframework.web.servlet.handler.ConversionServiceExposingInterceptor">
+    	<constructor-arg name="conversionService">
+			<bean class="org.springframework.core.convert.support.DefaultConversionService"/>
+    	</constructor-arg>
+    </bean>
 	
-	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
+	
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+<!-- 		<property name="webBindingInitializer" ref="webBindingInitializer"/> -->
+	</bean>
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
 		<property name="prefix" value="/jsp/"/>
@@ -55,6 +64,8 @@
 		<property name="prefix" value="pre_"/>
 		<property name="suffix" value="_suf"/>
 	</bean>
+	
+	
 	
 	<bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 		<property name="mappings">
@@ -102,6 +113,8 @@
 		<property name="defaultMethodName" value="list"/>
 	</bean>
 
+	-->
+
 	<bean name="/data.do" class="org.demo.data.controller.DataBinderController">
 		<property name="webBindingInitializer" ref="webBindingInitializer"/>
 	</bean>
@@ -131,8 +144,7 @@
 		<property name="formView" value="error/validator"/>
 		<property name="successView" value="error/validator"/>
 	</bean>
- -->
-
-
+	
+	<bean class="org.demo.data.BinderAndValidatorController"/>
 
 </beans> 
