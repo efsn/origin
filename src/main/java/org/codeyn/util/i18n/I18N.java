@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.codeyn.util.ClassPathSearcher;
 import org.codeyn.util.exception.ExceptionHandler;
-import org.codeyn.util.yn.ArrYn;
+import org.codeyn.util.yn.ArrayUtil;
 import org.codeyn.util.yn.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public final class I18N{
     }
 
     public static String getLanguageName(String langCode){
-        return LANGUAGE_NAMES[ArrYn.find(LANGUAGE_CODES, langCode)];
+        return LANGUAGE_NAMES[ArrayUtil.find(LANGUAGE_CODES, langCode)];
     }
 
     /**
@@ -163,7 +163,7 @@ public final class I18N{
             if ("all".equals(lang)) {
                 return;
             }
-            supports = new Locale[] {LOCALES[ArrYn.find(LANGUAGE_CODES, lang)]};
+            supports = new Locale[] {LOCALES[ArrayUtil.find(LANGUAGE_CODES, lang)]};
         } catch (IOException e) {
             ExceptionHandler.handleException(e);
         } finally {

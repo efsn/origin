@@ -137,7 +137,7 @@ public class FileZip{
                 .listFiles(new org.codeyn.util.file.FileFilter(exts));
         for (int i = 0; (files != null) && (i < files.length); i++) {// if a
                                                                      // subdir????
-            desf = destdir + path.separator + files[i].getName();
+            desf = destdir + File.separator + files[i].getName();
             if (files[i].isDirectory()) {
                 // first add the dir file into _files
                 setZipFile(files[i], desf);

@@ -2,7 +2,7 @@ package org.demo.data.editor;
 
 import java.beans.PropertyEditorSupport;
 
-import org.codeyn.util.yn.ArrYn;
+import org.codeyn.util.yn.ArrayUtil;
 import org.codeyn.util.yn.StrUtil;
 import org.demo.data.UserState;
 
@@ -16,7 +16,7 @@ public class UserStateEditor extends PropertyEditorSupport{
             setValue(null);
         }else{
             int idx = 0;
-            if((idx = ArrYn.find(STATES, text)) != -1){
+            if((idx = ArrayUtil.find(STATES, text)) != -1){
                 UserState us = new UserState();
                 us.setState(STATES[idx].toUpperCase());
                 setValue(us);

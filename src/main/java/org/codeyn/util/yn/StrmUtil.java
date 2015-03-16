@@ -365,7 +365,7 @@ public final class StrmUtil{
      * @return
      * @throws IOException
      */
-    static public final String readFix(InputStream in, int fix)
+    public static final String readFix(InputStream in, int fix)
             throws IOException{
         if (fix <= 0) return null;
         byte[] bb = new byte[fix];
@@ -381,7 +381,7 @@ public final class StrmUtil{
      * @return
      * @throws IOException
      */
-    static public final String readFix(InputStream in, int fix, String charset)
+    public static final String readFix(InputStream in, int fix, String charset)
             throws IOException{
         if (fix <= 0) return null;
         byte[] bb = new byte[fix];
@@ -397,7 +397,7 @@ public final class StrmUtil{
      * @return
      * @throws IOException
      */
-    static public final String readLine(InputStream in) throws IOException{
+    public static final String readLine(InputStream in) throws IOException{
         return readLine(in, null);
     }
 
@@ -410,7 +410,7 @@ public final class StrmUtil{
      * @return
      * @throws IOException
      */
-    static public final String readLine(InputStream in, String charset)
+    public static final String readLine(InputStream in, String charset)
             throws IOException{
         int rd = in.read();
         if (rd == -1) return null;
@@ -444,7 +444,7 @@ public final class StrmUtil{
      * @param s
      * @throws IOException
      */
-    static public final void writeLine(OutputStream out, String s)
+    public static final void writeLine(OutputStream out, String s)
             throws IOException{
         writeFix(out, s);
         out.write('\r');
@@ -457,14 +457,14 @@ public final class StrmUtil{
      * @param s
      * @throws IOException
      */
-    static public final void writeFix(OutputStream out, String s)
+    public static final void writeFix(OutputStream out, String s)
             throws IOException{
         if (s == null || s.length() == 0) return;
         byte[] b = s.getBytes();
         out.write(b);
     }
 
-    static public final void writeLine(OutputStream out, String s,
+    public static final void writeLine(OutputStream out, String s,
             String charsetName) throws IOException{
         writeFix(out, s, charsetName);
         out.write('\r');
@@ -474,7 +474,7 @@ public final class StrmUtil{
     /**
      * 按指定编码写字符串的内容,如果编码为null这使用系统缺省编码
      */
-    static public final void writeFix(OutputStream out, String s,
+    public static final void writeFix(OutputStream out, String s,
             String charsetName) throws IOException{
         if (s == null || s.length() == 0) return;
         byte[] b = charsetName != null ? s.getBytes(charsetName) : s.getBytes();
@@ -482,7 +482,7 @@ public final class StrmUtil{
     }
 
     // write fix length string to outputstream
-    static public final void writeFix(OutputStream out, String s, int fix)
+    public static final void writeFix(OutputStream out, String s, int fix)
             throws IOException{
         if (fix <= 0) return;
         byte[] b = s.getBytes();
@@ -499,7 +499,7 @@ public final class StrmUtil{
      * @return
      * @throws Exception
      */
-    static public final String readLinesUntil(InputStream br, String ln)
+    public static final String readLinesUntil(InputStream br, String ln)
             throws Exception{
         return readLinesUntil(br, ln, null);
     }
@@ -513,7 +513,7 @@ public final class StrmUtil{
      * @return
      * @throws Exception
      */
-    static public final String readLinesUntil(InputStream br, String ln,
+    public static final String readLinesUntil(InputStream br, String ln,
             String charset) throws Exception{
         StringBuffer result = new StringBuffer();
         String s = readLine(br, charset);
@@ -531,7 +531,7 @@ public final class StrmUtil{
      * @param ln
      * @throws Exception
      */
-    static public final void skipLinesUntil(InputStream br, String ln)
+    public static final void skipLinesUntil(InputStream br, String ln)
             throws Exception{
         String s = readLine(br);
         while ((s != null) && !s.equals(ln)) {
@@ -539,7 +539,7 @@ public final class StrmUtil{
         }
     }
 
-    static public final int readInt(InputStream i) throws IOException,
+    public static final int readInt(InputStream i) throws IOException,
             EOFException{
         InputStream in = i;
         int ch1 = in.read();
@@ -550,24 +550,24 @@ public final class StrmUtil{
         return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     }
 
-    static public final long readLong(InputStream i) throws IOException{
+    public static final long readLong(InputStream i) throws IOException{
         return ((long) (readInt(i)) << 32) + (readInt(i) & 0xFFFFFFFFL);
     }
 
-    static public final double readDouble(InputStream i) throws IOException{
+    public static final double readDouble(InputStream i) throws IOException{
         return Double.longBitsToDouble(readLong(i));
     }
 
-    static public final float readFloat(InputStream i) throws IOException{
+    public static final float readFloat(InputStream i) throws IOException{
         return Float.intBitsToFloat(readInt(i));
     }
 
-    static public final void writeDouble(OutputStream o, double v)
+    public static final void writeDouble(OutputStream o, double v)
             throws IOException{
         writeLong(o, Double.doubleToLongBits(v));
     }
 
-    static public final void writeInt(OutputStream o, int v) throws IOException{
+    public static final void writeInt(OutputStream o, int v) throws IOException{
         OutputStream out = o;
         out.write((v >>> 24) & 0xFF);
         out.write((v >>> 16) & 0xFF);
@@ -575,12 +575,12 @@ public final class StrmUtil{
         out.write((v >>> 0) & 0xFF);
     }
 
-    static public final void writeFloat(OutputStream o, float v)
+    public static final void writeFloat(OutputStream o, float v)
             throws IOException{
         writeInt(o, Float.floatToIntBits(v));
     }
 
-    static public final void writeLong(OutputStream o, long v)
+    public static final void writeLong(OutputStream o, long v)
             throws IOException{
         OutputStream out = o;
         out.write((int) (v >>> 56) & 0xFF);
@@ -593,7 +593,7 @@ public final class StrmUtil{
         out.write((int) (v >>> 0) & 0xFF);
     }
 
-    static public final int stmCopyFrom(String fn, OutputStream out)
+    public static final int stmCopyFrom(String fn, OutputStream out)
             throws IOException{
         InputStream in = new FileInputStream(fn);
         try {
@@ -606,9 +606,9 @@ public final class StrmUtil{
     /**
      * 从一个流中复制指定的长度的类容到另一个流中,如果从源流中不能再读入数据则返回复制了的数据的字节数
      */
-    static private final int BUF_SIZE = 1024 * 8;
+    private static final int BUF_SIZE = 1024 * 8;
 
-    static public final long stmCopyFrom(InputStream in, OutputStream out,
+    public static final long stmCopyFrom(InputStream in, OutputStream out,
             long sz) throws IOException{
         byte[] buf = new byte[BUF_SIZE];
         long rst = 0;
@@ -627,7 +627,7 @@ public final class StrmUtil{
     /**
      * 将流中的所有信息读出并以byte数组的形式返回
      */
-    static public final byte[] stm2bytes(InputStream in) throws IOException{
+    public static final byte[] stm2bytes(InputStream in) throws IOException{
         if (in instanceof MyByteArrayInputStream) {
             MyByteArrayInputStream min = (MyByteArrayInputStream) in;
             byte[] r = new byte[min.available()];

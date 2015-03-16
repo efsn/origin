@@ -133,7 +133,9 @@ public class FileVersion{
     private static boolean isResFile(String fn) throws Exception{
         int pos = fn.lastIndexOf(".");
         if (pos == -1) {
-            throw new Exception(fn + I18N.getString("com.esen.util.FileVersion.1", "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
+            throw new Exception(fn
+                    + I18N.getString("com.esen.util.FileVersion.1",
+                            "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
         }
         String fix = fn.substring(pos + 1, fn.length());
         boolean checkFix = false;
@@ -144,7 +146,9 @@ public class FileVersion{
             }
         }
         if (!checkFix) {
-            throw new Exception(fn + I18N.getString("com.esen.util.FileVersion.2", "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
+            throw new Exception(fn
+                    + I18N.getString("com.esen.util.FileVersion.2",
+                            "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
         }
         return fix.compareToIgnoreCase("res") == 0;
     }
@@ -250,6 +254,7 @@ public class FileVersion{
 
     /**
      * 到达资源部分开始位置
+     * 
      * @return long 返回文件版本所在位置
      */
     private static long getFverPos() throws IOException{

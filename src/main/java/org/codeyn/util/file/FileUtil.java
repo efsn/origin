@@ -25,24 +25,28 @@ import org.codeyn.util.yn.StrmUtil;
 import org.codeyn.util.yn.StrUtil;
 
 /**
- * <p>File tool</p>
+ * <p>
+ * File tool
+ * </p>
  */
 public final class FileUtil{
-    
+
     public static final int LISTFILE_OPTION_RECUR = 0x1;// 是否递归遍历子目录
     public static final int LISTFILE_OPTION_INCLUDEDIR = 0x2;// 是否遍历目录名
     public static final int LISTFILE_OPTION_EXCLUDEFILE = 0x4;// 是否不遍历文件
-    
+
     public static final String separator = "/";
     public static final char separatorChar = separator.charAt(0);
-    public static final String DEFAULT_PATH = System.getProperty("java.io.tmpdir");
-    
+    public static final String DEFAULT_PATH = System
+            .getProperty("java.io.tmpdir");
+
     public static final int SORT_SIZE = 0;
     public static final int SORT_TIME = 1;
     public static final int SIZE = SORT_SIZE;
     public static final int TIME = SORT_TIME;
 
-    private FileUtil(){}
+    private FileUtil(){
+    }
 
     public static String[] listSubDir(String dir){
         List<String> subDirs = new ArrayList<String>();
@@ -1281,7 +1285,8 @@ public final class FileUtil{
 
         if (File.separator.equals("\\")) { // 表示是windows系统
             // 第一个字母必须是A..z,第二个必须是:
-            if (fn.trim().length() > 1 && StrUtil.isABC_xyz(fn.trim().charAt(0))
+            if (fn.trim().length() > 1
+                    && StrUtil.isABC_xyz(fn.trim().charAt(0))
                     && fn.trim().charAt(1) == ':') {
                 return true;
             } else {

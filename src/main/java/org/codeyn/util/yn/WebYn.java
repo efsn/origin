@@ -22,8 +22,11 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspWriter;
 
 import org.codeyn.util.exception.ExceptionHandler;
-import org.codeyn.util.file.FileYn;
-import org.springframework.scheduling.config.Task;
+import org.codeyn.util.file.FileUtil;
+import org.codeyn.util.yn.SecurityUtil;
+import org.codeyn.util.yn.SecurityYn;
+import org.codeyn.util.yn.StrUtil;
+import org.codeyn.util.yn.StrmUtil;
 
 public class WebYn{
 
@@ -131,7 +134,7 @@ public class WebYn{
             return p;
         }
         try {
-            byte[] b = StrYn.hexStringToBytes(p);
+            byte[] b = StrUtil.hexStringToBytes(p);
             return new String(b);
         } catch (Exception ex) {
             return p;
@@ -143,7 +146,7 @@ public class WebYn{
             return p;
         }
         byte[] b = p.getBytes();
-        return StrYn.bytesToHexString(b);
+        return StrUtil.bytesToHexString(b);
     }
 
     public static String encodeURL(String p){
@@ -274,61 +277,61 @@ public class WebYn{
     }
 
     public static String getFileICON(String fileExt, String path){
-        if (StrYn.isNull(fileExt)) {
-            return StrYn.isNull(path) ? "images/none.gif" : path
+        if (StrUtil.isNull(fileExt)) {
+            return StrUtil.isNull(path) ? "images/none.gif" : path
                     + "images/none.gif";
         }
         if (fileExt.equalsIgnoreCase(".gif")) {
-            return StrYn.isNull(path) ? "images/gif.gif" : path
+            return StrUtil.isNull(path) ? "images/gif.gif" : path
                     + "images/gif.gif";
         }
         if (fileExt.equalsIgnoreCase(".bmp")) {
-            return StrYn.isNull(path) ? "images/bmp.gif" : path
+            return StrUtil.isNull(path) ? "images/bmp.gif" : path
                     + "images/bmp.gif";
         }
         if (fileExt.equalsIgnoreCase(".htm")
                 || fileExt.equalsIgnoreCase(".html")) {
-            return StrYn.isNull(path) ? "images/htm.gif" : path
+            return StrUtil.isNull(path) ? "images/htm.gif" : path
                     + "images/htm.gif";
         }
         if (fileExt.equalsIgnoreCase(".jpg")
                 || fileExt.equalsIgnoreCase(".jpeg")) {
-            return StrYn.isNull(path) ? "images/jpg.gif" : path
+            return StrUtil.isNull(path) ? "images/jpg.gif" : path
                     + "images/jpg.gif";
         }
         if (fileExt.equalsIgnoreCase(".png")) {
-            return StrYn.isNull(path) ? "images/png.gif" : path
+            return StrUtil.isNull(path) ? "images/png.gif" : path
                     + "images/png.gif";
         }
         if (fileExt.equalsIgnoreCase(".doc")) {
-            return StrYn.isNull(path) ? "images/word.gif" : path
+            return StrUtil.isNull(path) ? "images/word.gif" : path
                     + "images/word.gif";
         }
         if (fileExt.equalsIgnoreCase(".xls")) {
-            return StrYn.isNull(path) ? "images/xls.gif" : path
+            return StrUtil.isNull(path) ? "images/xls.gif" : path
                     + "images/xls.gif";
         }
         if (fileExt.equalsIgnoreCase(".txt")) {
-            return StrYn.isNull(path) ? "images/txt.gif" : path
+            return StrUtil.isNull(path) ? "images/txt.gif" : path
                     + "images/txt.gif";
         }
         if (fileExt.equalsIgnoreCase(".dll")
                 || fileExt.equalsIgnoreCase(".ocx")) {
-            return StrYn.isNull(path) ? "images/dll.gif" : path
+            return StrUtil.isNull(path) ? "images/dll.gif" : path
                     + "images/dll.gif";
         }
         if (fileExt.equalsIgnoreCase(".bat")
                 || fileExt.equalsIgnoreCase(".cmd")) {
-            return StrYn.isNull(path) ? "images/bat.gif" : path
+            return StrUtil.isNull(path) ? "images/bat.gif" : path
                     + "images/bat.gif";
         }
         if (fileExt.equalsIgnoreCase(".exe")
                 || fileExt.equalsIgnoreCase(".com")) {
-            return StrYn.isNull(path) ? "images/exe.gif" : path
+            return StrUtil.isNull(path) ? "images/exe.gif" : path
                     + "images/exe.gif";
         }
         if (fileExt.equalsIgnoreCase(".pdf")) {
-            return StrYn.isNull(path) ? "images/pdf.gif" : path
+            return StrUtil.isNull(path) ? "images/pdf.gif" : path
                     + "images/pdf.gif";
         }
         if (fileExt.equalsIgnoreCase(".rar")
@@ -339,17 +342,17 @@ public class WebYn{
                 || fileExt.equalsIgnoreCase(".lzh")
                 || fileExt.equalsIgnoreCase(".ace")
                 || fileExt.equalsIgnoreCase(".gzip")) {
-            return StrYn.isNull(path) ? "images/rar.gif" : path
+            return StrUtil.isNull(path) ? "images/rar.gif" : path
                     + "images/rar.gif";
         }
-        return StrYn.isNull(path) ? "images/none.gif" : path
+        return StrUtil.isNull(path) ? "images/none.gif" : path
                 + "images/none.gif";
     }
 
     public static String getFileType(File file){
         if (file.isDirectory()) return "文件夹";
-        String fileExt = FileYn.extractFileExt(file.getAbsolutePath());
-        if (StrYn.isNull(fileExt)) {
+        String fileExt = FileUtil.extractFileExt(file.getAbsolutePath());
+        if (StrUtil.isNull(fileExt)) {
             return "未知文件";
         }
         if (fileExt.equalsIgnoreCase(".gif")) {
@@ -604,7 +607,7 @@ public class WebYn{
                 sname = sCookie.getName();
                 if (sname.equals(name)) {
                     String result = sCookie.getValue();
-                    return StrYn.isNull(result) ? "" : result;
+                    return StrUtil.isNull(result) ? "" : result;
                 }
             }
         }
@@ -644,9 +647,9 @@ public class WebYn{
             String valName, String propertyName, String defaultVal)
             throws Exception{
         String _type = req.getParameter(valName);
-        if (StrYn.isNull(_type)) {
+        if (StrUtil.isNull(_type)) {
             _type = (String) login.getProperty(propertyName);
-            _type = StrYn.isNull(_type) ? defaultVal : _type;
+            _type = StrUtil.isNull(_type) ? defaultVal : _type;
         }
         login.setProperty(propertyName, _type);
     }
@@ -654,7 +657,7 @@ public class WebYn{
     public static String getProperty(Login login, String propertyName,
             String defaultVal) throws Exception{
         String result = (String) login.getProperty(propertyName);
-        return StrYn.isNull(result) ? defaultVal : result;
+        return StrUtil.isNull(result) ? defaultVal : result;
     }
 
     /**
@@ -666,7 +669,7 @@ public class WebYn{
      * @return String
      */
     public static final String conversion2br(String str) throws Exception{
-        if (StrYn.isNull(str)) return "";
+        if (StrUtil.isNull(str)) return "";
         String swap = str.replaceAll("\r\n", "<br>");
         return swap.replaceAll("\r", "<br>").replaceAll("\n", "<br>")
                 .replaceAll("\t\n", "<br>");
@@ -688,7 +691,7 @@ public class WebYn{
 
     public static final void getFile4Database(HttpServletResponse response,
             JspWriter out, String name, byte[] bytes) throws Exception{
-        if (StrYn.isNull(name)) {
+        if (StrUtil.isNull(name)) {
             throw new Exception("未指定文件名.");
         }
         out.clearBuffer();
@@ -705,7 +708,7 @@ public class WebYn{
 
     public static final void getFile(HttpServletResponse response,
             JspWriter out, String fn) throws Exception{
-        if (StrYn.isNull(fn)) {
+        if (StrUtil.isNull(fn)) {
             throw new Exception("未指定文件.");
         }
         out.clearBuffer();
@@ -715,7 +718,7 @@ public class WebYn{
         try {
             int _fiSize = fi.available();
 
-            response.setContentType(WebYn.getContentType(FileYn
+            response.setContentType(WebYn.getContentType(FileUtil
                     .extractFileExt(fn)));
             response.setContentLength(_fiSize);
             String path = "filename=\""
@@ -723,7 +726,7 @@ public class WebYn{
             path = SecurityYn.checkHttpHeader(null, path);
             response.setHeader("Content-Disposition", path);
             OutputStream ostr = response.getOutputStream();
-            StmYn.stmCopyFrom(fi, ostr, _fiSize);
+            StrmUtil.stmCopyFrom(fi, ostr, _fiSize);
             ostr.flush();
         } finally {
             fi.close();
@@ -789,13 +792,13 @@ public class WebYn{
         // connection = Keep-Alive
 
         String ip = req.getHeader("x-forwarded-for");
-        if (StrYn.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = req.getHeader("Proxy-Client-IP");
         }
-        if (StrYn.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = req.getHeader("WL-Proxy-Client-IP");
         }
-        if (StrYn.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isNull(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = req.getRemoteAddr();
             if ("127.0.0.1".equalsIgnoreCase(ip)
                     || "localhost".equalsIgnoreCase(ip)
@@ -812,7 +815,7 @@ public class WebYn{
         }
         // 如果是多级代理的话，可能X-Forwarded-For：192.168.1.110， 192.168.1.120，
         // 192.168.1.130， 192.168.1.100，要取其中第１个
-        if (!StrYn.isNull(ip)) {
+        if (!StrUtil.isNull(ip)) {
             String[] ips = ip.split(",");
             if (ips.length > 1) ip = ips[0].trim();
         }
@@ -823,7 +826,7 @@ public class WebYn{
     // 获取contextPath
     public static String getContextPath(HttpServletRequest request){
         String contextPath = request.getContextPath();
-        contextPath = StrYn.isNull(contextPath) ? "" : (contextPath
+        contextPath = StrUtil.isNull(contextPath) ? "" : (contextPath
                 .charAt(contextPath.length() - 1) == '/' ? contextPath
                 : contextPath + "/");
         return contextPath;
@@ -831,7 +834,7 @@ public class WebYn{
 
     public static String getRealPath(HttpServletRequest request){
         String iRealPath = getContextPath(request) + "i/";
-        iRealPath = StrYn.isNull(iRealPath) ? "/" : iRealPath;
+        iRealPath = StrUtil.isNull(iRealPath) ? "/" : iRealPath;
         if (iRealPath != null && !iRealPath.startsWith("/")) {
             iRealPath = "/" + iRealPath;
         }
@@ -840,7 +843,7 @@ public class WebYn{
 
     public static final String getServerUrlPath(String serverpath,
             String urlpath, String defpath){
-        if (StrYn.isNull(urlpath)) {
+        if (StrUtil.isNull(urlpath)) {
             return getUrlPath(serverpath, defpath);
         }
         return getUrlPath(serverpath, urlpath);
@@ -903,7 +906,7 @@ public class WebYn{
         }
         sw.write("    </td>\r\n");
         sw.write("  </tr>\r\n");
-        if (!StrYn.isNull(exDetail)) {
+        if (!StrUtil.isNull(exDetail)) {
             sw.write("<tr height=1%>"
                     + "<td colspan=2>"
                     + "<div style=\"cursor:pointer\" onclick=\"if(errDiv.style.display=='none'){errDiv.style.display='block';arrowImg.src='"
@@ -942,7 +945,7 @@ public class WebYn{
             msg = SecurityUtil.checkParam(msg, "返回信息不合法");
         } catch (IllegalArgumentException ex) {
             // 如果存在XSS攻击的，转成HTML
-            msg = StrYn.format2HtmlStr(msg);
+            msg = StrUtil.format2HtmlStr(msg);
         }
         return msg;
     }
@@ -972,8 +975,8 @@ public class WebYn{
      */
     public static final String genUpIdFields(String id, String btype,
             String bbhlistname, Login login, Connection conn) throws Exception{
-        if (StrYn.isNull(id) || StrYn.isNull(bbhlistname)
-                || StrYn.isNull(btype)) return null;
+        if (StrUtil.isNull(id) || StrUtil.isNull(bbhlistname)
+                || StrUtil.isNull(btype)) return null;
 
         BbhList bbhlist = BbhList.getBbhList(bbhlistname);
 
@@ -1009,19 +1012,13 @@ public class WebYn{
         return level < fileds.length && level > -1 ? fileds[level] : null;
     }
 
-    public static void main(String[] args){
-        System.out.println(formatFileName("c:\\ww \\ww \\ww"));
-        System.out.println(formatFileName("c:" + File.separator + " r"
-                + File.separator));
-    }
-
     /**
      * @param path
      * @return 格式话文件路径,将 C:\Documents and Settings\Administrator\rootdir\ 转化为
      *         C:\\Documents and Settings\\Administrator\\rootdir\\ 不处理空格.
      */
     public static String formatFileName(String path){
-        if (StrYn.isNull(path)) return path;
+        if (StrUtil.isNull(path)) return path;
         char sr = (File.separatorChar == '\\') ? '/' : '\\';
         path = path.replace(sr, File.separatorChar);
         char[] cs = path.toCharArray();
@@ -1083,7 +1080,7 @@ public class WebYn{
         }
         try {
             for (int i = 0; i < selectBbhs.length; i++) {
-                if (StrYn.isNull(selectBbhs[i])) continue;
+                if (StrUtil.isNull(selectBbhs[i])) continue;
                 String idtype[] = selectBbhs[i].split(",");
                 String userid = idtype[0];
                 String btype = idtype.length == 2 ? idtype[1]
@@ -1148,7 +1145,7 @@ public class WebYn{
         out.println("<table border=\"0\" style=\"position:absolute;width:100%;height:100%;\">");
         out.println("<tr><td align=\"center\" vAlign=\"middle\"><table border=\"0\"><tr><td><span>页面加载中...</span></td></tr>");
         out.println("<tr><td align=\"center\" vAlign=\"middle\"><img src=\""
-                + (StrYn.isNull(serverPath) ? "" : serverPath)
+                + (StrUtil.isNull(serverPath) ? "" : serverPath)
                 + "images/loading.gif\"></td></tr>");
         out.println("</table></td></tr></table>");
         out.println("</div>");
@@ -1172,8 +1169,8 @@ public class WebYn{
     public static void includeOemJs(JspWriter out, String relPath, String jsFile)
             throws IOException{
         String oemJsPath = ReportProperties.getProperty("oemJsPath", "");
-        relPath = StrYn.ensureEndWith(relPath, "/");
-        oemJsPath = StrYn.ensureEndWith(oemJsPath, "/");
+        relPath = StrUtil.ensureEndWith(relPath, "/");
+        oemJsPath = StrUtil.ensureEndWith(oemJsPath, "/");
         String oemJsFile = relPath + oemJsPath + "js/" + jsFile;
         // if( new File(oemJsFile).exists() ){//无法检测是否存在，因为不是绝对路径。
         out.println("<!-- BEGIN: 页面定制js函数，扩展页面功能-->");

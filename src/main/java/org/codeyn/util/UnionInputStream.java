@@ -3,7 +3,7 @@ package org.codeyn.util;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.codeyn.util.yn.ArrYn;
+import org.codeyn.util.yn.ArrayUtil;
 import org.codeyn.util.yn.StrmUtil;
 
 /**
@@ -20,7 +20,7 @@ public class UnionInputStream extends InputStream {
   private InputStream[] ins = null;
 
   public UnionInputStream(InputStream[] in) throws IOException {
-    ins = (InputStream[]) ArrYn.excludeNull(in);
+    ins = (InputStream[]) ArrayUtil.excludeNull(in);
   }
 
   /**
