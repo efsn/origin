@@ -12,6 +12,17 @@
     </servlet-->
     
     <filter>
+    	<filter-name>frontEndCache</filter-name>
+    	<filter-class>net.sf.ehcache.constructs.web.filter.SimplePageCachingFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+    	<filter-name>frontEndCache</filter-name>
+<!--  HOST page		<url-pattern>*.host</url-pattern> -->
+		<url-pattern>*/tmp.jsp</url-pattern>
+    </filter-mapping>
+    
+    <filter>
     	<filter-name>etag</filter-name>
     	<filter-class>org.springframework.web.filter.ShallowEtagHeaderFilter</filter-class>
     </filter>

@@ -5,18 +5,17 @@ import java.util.Random;
 
 /**
  * <p>
- * 产生一个GUID对象
+ * Generate a guid object, almost none of duplicate, length is always 32
  * </p>
- * <p>
- * guid重复的概率几乎为0，我们可以认为每次创建的一个新的GUID对象都是唯一的，长度总是32
- * </p>
+ * 
+ * @author Codeyn
+ * @version 1.0
  */
 
 public final class GUID implements Serializable{
 
     private static final long serialVersionUID = 3826200632731090939L;
     
-    private static int[] localAddr;
     private final static byte[] RANDOMCHARS = {'Y', 'A', 'U', '8', 'K', 'V',
             'C', 'U', '6', 'D', 'N', 'E', 'I', 'F', 'L', 'J', 'U', 'K', 'M',
             'W', 'L', 'T', '4', 'I', 'N', '2', 'O', 'P', 'X', 'S', 'T', '7',
@@ -25,9 +24,13 @@ public final class GUID implements Serializable{
     private final static int[] INDEXS = {9, 17, 0, 18, 27, 3, 8, 25, 13, 11, 6,
             14, 19, 28, 30, 31, 21, 26, 15, 1, 2, 29, 16, 12, 22, 10, 7, 23,
             20, 24, 4, 5};
-
+    
+    private String guid;
+    private static long counter = 1;
+    private static int[] localAddr;
+    
     private static String getLocalMachineCode(){
-        String r = "";
+        String r = null;
         try {
             r = MacAddress.getMacAddress();
             if (r != null)
@@ -65,8 +68,6 @@ public final class GUID implements Serializable{
         counter = value;
     }
 
-    private static long counter = 1;
-
     public GUID(){
         this.guid = makeGuid(null);
     }
@@ -75,14 +76,11 @@ public final class GUID implements Serializable{
         this.guid = makeGuid(id);
     }
 
-    private String guid;
-
     public static final String makeGuid(){
         return makeGuid(null);
     }
 
     public static final String makeGuid(String id){
-        // 571C144A EE0A 4C27 BE80 834002D40D66
         byte[] buf = new byte[32];
         long ns = getNextSerial();
         long l = System.currentTimeMillis();
@@ -90,14 +88,14 @@ public final class GUID implements Serializable{
         Random rd = new Random(l + ns + ((id != null) ? id.hashCode() : 3423));
         int st = getRandomAbsInt(rd);
         int idx = getRandomAbsInt(rd);
-        // 本机特征
+        // Local machine code
         for (int i = 0; i < 12; i++) {
             int b = (int) (localAddr[i] + i);
             idx = (int) ((b + idx) % rcl);
             buf[INDEXS[i]] = RANDOMCHARS[idx];
         }
 
-        // 系统时间
+        // System time
         idx = getRandomAbsInt(rd);
         for (int i = 0; i < 8; i++) {
             long b = ((l >> (i * 8)) & 0xFF);
@@ -105,7 +103,7 @@ public final class GUID implements Serializable{
             buf[INDEXS[i + 12]] = RANDOMCHARS[idx];
         }
 
-        // 序号
+        // Serial number
         idx = (int) ns;
         for (int i = 0; i < 8; i++) {
             int b = (int) (((ns) >> (i * 8)) & 0xFF);
@@ -114,7 +112,7 @@ public final class GUID implements Serializable{
             buf[INDEXS[i + 20]] = RANDOMCHARS[idx];
         }
 
-        // 用户标示
+        // user tags
         for (int i = 0; i < 4; i++) {
             int b;
             if (id == null || id.length() == 0) {
