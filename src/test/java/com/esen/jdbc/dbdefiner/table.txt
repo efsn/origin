@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tablemeta tablename="test_1" primarykey="userid_,bbq_,btype_" > 
+<fields>   
+<field fieldname="userid_" fielddesc="单位代码"  sqltype="C" nullable="0" len="30"/>
+<field fieldname="bbq_" fielddesc="数据期" sqltype="C" len="10" nullable="0"/>
+<field fieldname="btype_"  sqltype="C" len="1" nullable="0"/>
+<field fieldname="zb1" sqltype="N" len="20" scale="2"   defaultvalue="10"  />
+<field fieldname="date_"  sqltype="D" unique="1" />
+<field fieldname="time_" sqltype="T"  />
+<field fieldname="timestamp_"  sqltype="P"  />
+<field fieldname="int_"  sqltype="I"  />
+<field fieldname="clob_"  sqltype="M"  />
+<field fieldname="blob_"  sqltype="X"  />
+</fields>
+<indexes>
+  <index indexname="index_name" unique="1" fields="userid_,bbq_"/>
+</indexes>
+</tablemeta>

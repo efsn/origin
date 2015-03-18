@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tablemeta tablename="t_test_1" primarykey="parentdir,filename" > 
+<fields>   
+<field fieldname="parentdir"   sqltype="C" nullable="0" len="3000"/>
+<field fieldname="filename" sqltype="C" nullable="0" len="3000" />
+<field fieldname="zb1" sqltype="N" len="20" scale="2"   />
+<field fieldname="date_"  sqltype="D" />
+<field fieldname="time_" sqltype="T"  />
+<field fieldname="timestamp_"  sqltype="P"  />
+<field fieldname="int_"  sqltype="I"  />
+<field fieldname="clob_"  sqltype="M"  />
+<field fieldname="blob_"  sqltype="X"  />
+</fields>
+<indexes>
+  <index fields="parentdir,filename" unique="0"/>
+</indexes>
+</tablemeta>

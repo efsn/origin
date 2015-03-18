@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+
+	<entity name="orm.City" table="ES_CITY" bean="com.esen.jdbc.orm.City">
+		<properties>
+			<property name="cityId" field="CITYID_"  nullable="false" unique="true" length="20" pk="true" />
+			<property name="name" field="NAME_"  nullable="false" length="100" />
+			
+			<property name="btype" field="BTYPE_"  nullable="true" unique="false" length="1" type="C" />
+			<property name="parent" field="PARENT_"  nullable="true" unique="false" length="20" type="C" />
+			<property name="upid0" field="UPID0_"  nullable="true" unique="false" length="20" type="C" />
+			<property name="upid1" field="UPID1_"  nullable="true" unique="false" length="20" type="C" />
+			<property name="upid2" field="UPID2_"  nullable="true" unique="false" length="20" type="C" />
+		
+		</properties>
+		
+		<indexes>
+			<index name="INDEX_ID_NAME" fields="CITYID_" unique="true"/>
+		</indexes>
+		
+		<!--
+		    定义树形的属性
+			root(*): 根节点的upid
+			id(*)： id字段的属性名
+			upid(*)： upid字段的属性名
+			btype： 是否叶子节点的标记，一般0-非叶子节点，1-叶子节点
+			upids：UPID的冗余字段
+		-->
+		<tree root="--" id="cityId" upid="parent" btype="btype" upids="upid0,upid1,upid2"/> 
+		
+	</entity>
+</mapping>

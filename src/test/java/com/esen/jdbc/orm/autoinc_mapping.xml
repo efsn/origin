@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+	<entity name="orm.AutoInc" table="ES_AUTOINC" bean="com.esen.jdbc.orm.AutoInc">
+		<properties>
+			<property name="id" field="ID_"  nullable="false" unique="true" length="20" pk="true" autoinc="true" />
+			<property name="value" field="VALUE_" length="100" />
+		</properties>
+		
+	</entity>
+</mapping>

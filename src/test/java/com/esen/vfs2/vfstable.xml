@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tablemeta primarykey="PARENTDIR,FILENAME">
+	<fields>
+		<field fieldname="PARENTDIR_" len="1024" sqltype="C" />
+		<field fieldname="FILENAME_" len="255" sqltype="C" />
+		<field fieldname="ISFILE_" len="1" sqltype="C" />
+		<field fieldname="CREATETIME_" sqltype="P" />
+		<field fieldname="MODIFYTIME_" sqltype="P" />
+		<field fieldname="OWNER_" len="50" sqltype="C" />
+		<field fieldname="MENDER_" len="50" sqltype="C" />
+		<field fieldname="CHARSET_" len="20" sqltype="C" />
+		<field fieldname="MIMETYPE_" len="30" sqltype="C" />
+		<field fieldname="SIZE_" len="12" sqltype="N" />
+		<field fieldname="CONTENT_" sqltype="X" />
+	</fields>
+</tablemeta>

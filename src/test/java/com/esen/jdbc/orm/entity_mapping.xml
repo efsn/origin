@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+	<entity name="orm.Entity" table="ES_ENTITY" bean="com.esen.jdbc.orm.Entity">
+		<caches>
+			<cache enable="false" />
+		</caches>
+		
+		<properties>
+			<property name="id" field="ID_"  nullable="false" unique="true" length="20" pk="true" />
+			<property name="name" field="NAME_"  nullable="false" length="100" />
+			<property name="price" field="PRICE_"  nullable="true" length="10" scale="2" />
+			<property name="saleDay" field="SALEDAY_" />
+			
+		</properties>
+		
+		<indexes>
+			<index name="INDEX_ID_NAME" fields="ID_, NAME_" unique="true"/>
+		</indexes>
+		
+	</entity>
+</mapping>

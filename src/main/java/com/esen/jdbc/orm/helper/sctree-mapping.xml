@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- (*) 表示必须定义  -->
+<mapping>
+	<!--
+			<entity>:定义一个实体对象
+			name(*):实体ID
+			table(*):实体对应的数据库表名
+			bean(*):实体对应的javabean对象
+			uniqueConstraints：联合唯一约束字段
+			*每个数据库表中必须要求有个PK属性*
+		-->
+	<entity name="ul_cs" table="UL_CS" bean="com.esen.orm.bean.Bbh">
+		<!--
+		  实体的缓存策略
+		-->
+		<cache>
+			<cachepolicy name="sql"  maxsize="100" idle="18000" enable = "true"/>
+			<cachepolicy name="entity" maxsize="100" idle="18000" enable = "true"/>
+		</cache>
+		<properties>
+			<!--
+					<property>:定义实体对象的一个属性
+					name(*):javabean中对应的属性名,javabean中必须提供该属性get、set方法
+					field：数据库对应的字段名，如果不定义默认与java的属性名保持一致
+					nullale：是否允许为空
+					unique:唯一约束
+					length：字段长度，原始类型(*)String、int、double必须定义
+					pk:是否为PK
+					type:允许下面集中类型的定义,Int("int"), Str("string"), Date("date"), clob("clob"), memo("memo"), Double("double"), Map("map");
+				-->
+			<property name="id" field="ID_"  nullale="false" unique="true" length="20" pk="true" />
+			<property name="name" field="NAME_"  nullale="false" length="100" />
+			<property name="btype" field="BTYPE_"  nullale="false" length="1" />
+			<property name="upid" field="PARENT_"  nullale="false" length="20" />
+			<property name="upid0" field="UPID0"  nullale="false" length="20" />
+			<property name="upid1" field="UPID1"  nullale="false" length="20" />
+			<property name="upid2" field="UPID2"  nullale="false" length="20" />
+			<property name="upid3" field="UPID3"  nullale="false" length="20" />
+			<property name="upid4" field="UPID4"  nullale="false" length="20" />
+			<property name="upid5" field="UPID5"  nullale="false" length="20" />
+			<property name="upid6" field="UPID6"  nullale="false" length="20" />
+			<property name="upid7" field="UPID7"  nullale="false" length="20" />
+			<property name="fromDate" field="FROMDATE_"  nullale="false" />
+			<property name="toDate" field="TODATE_"  nullale="false" />
+		</properties>
+		<indexs>
+			<!--
+			  <index>:定义索引
+			  name(*):索引名字
+			  fields(*)：索引字段
+			  unique(*)：是否唯一约束
+			-->
+			<index name="INDEX_ID_NAME" fields="ID_,UPID_" unique="true"/>
+		</indexs>
+		<!--
+		   定义树形的属性
+		  root(*): 根节点的upid
+		    id(*)： id字段的属性名
+	      upid(*)： upid字段的属性名
+	        btype： 是否叶子节点的标记，一般0-非叶子节点，1-叶子节点
+	        upids：UPID的冗余字段
+		-->
+		<tree root="-" id="id" upid="upid" btype="btype" upids="upid0,upid1,upid2,upid3,upid4,upid5,upid6,upid7" />
+		<!--
+		缓慢增长属性设置：
+		fromdate：数据开始有效期,必须为时间类型
+		  todate：数据结束有效期,必须为时间类型
+		-->
+		<slowlychange fromdate="fromDate" todate="toDate" />
+	</entity>
+</mapping>
