@@ -4,8 +4,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import net.sf.ehcache.CacheManager;
-
 @WebListener
 public class FrontEndCacheListener implements ServletContextListener{
 

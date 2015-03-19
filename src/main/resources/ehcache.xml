@@ -18,7 +18,9 @@
 				3.Less Frequently Used(specified as LFU)最少使用。 
 	 -->
 
-<ehcache updateCheck="true" dynamicConfig="false">
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:noNamespaceSchemaLocation="../config/ehcache.xsd"
+		 updateCheck="true" dynamicConfig="false">
 
 	
 	<!-- Sets the path to the directory where cache .data files are created.
@@ -44,11 +46,11 @@
 	/>
 	
 	<cache
-		name="SimplePageCachingFilter"
+		name="cachePageFilter"
 		maxElementsInMemory="10"
 		maxElementsOnDisk="10"
 		eternal="false"
-		overflowToDisk="flase"
+		overflowToDisk="false"
 		timeToIdleSeconds="30"
 		timeToLiveSeconds="60"
 	/>

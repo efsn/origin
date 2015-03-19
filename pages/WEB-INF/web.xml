@@ -4,12 +4,24 @@
   
   
   <filter>
-    <filter-name>frontEndCache</filter-name>
-    <filter-class>net.sf.ehcache.constructs.web.filter.SimplePageCachingFilter</filter-class>
+    <filter-name>cachePageFilter</filter-name>
+    <filter-class>org.efsn.web.controller.cache.CachePageFilter</filter-class>
+    <init-param>
+    	<param-name>patterns</param-name>
+    	<param-value>/cache.jsp,cache.do,*.ftl</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
-    <filter-name>frontEndCache</filter-name>
+    <filter-name>cachePageFilter</filter-name>
     <url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+  	<filter-name>cachePageFilter</filter-name>
+  	<url-pattern>*.cache</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+  	<filter-name>cachePageFilter</filter-name>
+  	<url-pattern>*.jsp</url-pattern>
   </filter-mapping>
   
   <filter>
