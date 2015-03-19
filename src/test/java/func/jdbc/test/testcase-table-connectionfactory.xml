@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tablemeta>
-	<fields>
-		<field fieldname="ID_" len="50" sqltype="C" />
-		<field fieldname="USER_" len="50" sqltype="C" />
-	</fields>
-</tablemeta>
