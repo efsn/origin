@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import template.bean.User;
@@ -16,6 +17,7 @@ import template.bean.User;
 
 @Controller
 @RequestMapping("/wizard.do")
+@SessionAttributes
 public class WizardFormController{
     
     private String cancelView = "redirect:/hello.do";
@@ -71,6 +73,5 @@ public class WizardFormController{
     
     public void postProcessPage() throws Exception{
     }
-    
     
 }
