@@ -15,7 +15,7 @@ import java.util.Random;
 public final class GUID implements Serializable{
 
     private static final long serialVersionUID = 3826200632731090939L;
-    
+
     private final static byte[] RANDOMCHARS = {'Y', 'A', 'U', '8', 'K', 'V',
             'C', 'U', '6', 'D', 'N', 'E', 'I', 'F', 'L', 'J', 'U', 'K', 'M',
             'W', 'L', 'T', '4', 'I', 'N', '2', 'O', 'P', 'X', 'S', 'T', '7',
@@ -24,11 +24,11 @@ public final class GUID implements Serializable{
     private final static int[] INDEXS = {9, 17, 0, 18, 27, 3, 8, 25, 13, 11, 6,
             14, 19, 28, 30, 31, 21, 26, 15, 1, 2, 29, 16, 12, 22, 10, 7, 23,
             20, 24, 4, 5};
-    
+
     private String guid;
     private static long counter = 1;
     private static int[] localAddr;
-    
+
     private static String getLocalMachineCode(){
         String r = null;
         try {
