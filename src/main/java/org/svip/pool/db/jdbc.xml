@@ -3,6 +3,8 @@
 	<pool id="blues">
 		<driver>com.mysql.jdbc.Driver</driver>
 		<url>jdbc:mysql://localhost:3306/blues</url>
+		<useUnicode>true</useUnicode>
+		<characterEncoding>UTF8</characterEncoding>
 		<username>blues</username>
 		<password>blues</password>
         <miniNum>3</miniNum>
@@ -14,6 +16,8 @@
 	<pool id="root">
 		<driver>com.mysql.jdbc.Driver</driver>
 		<url>jdbc:mysql://localhost:3306/blues</url>
+		<useUnicode>true</useUnicode>
+		<characterEncoding>UTF8</characterEncoding>
 		<username>root</username>
 		<password>456987</password>
         <miniNum>4</miniNum>

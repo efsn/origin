@@ -19,6 +19,8 @@ public class PoolParam{
 
     private static final String DRIVER = "driver";
     private static final String URL = "url";
+    private static final String USE_UNICODE = "useUnicode";
+    private static final String CHARACTER_ENCODING = "characterEncoding";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String MINI_NUM_Str = "miniNum";
@@ -28,6 +30,8 @@ public class PoolParam{
 
     private String driver;
     private String url;
+    private String useUnicode;
+    private String encoding;
     private String username;
     private String password;
 
@@ -37,11 +41,11 @@ public class PoolParam{
     private int waitTime;
 
     public PoolParam(Properties pro){
-        this.init(pro);
+        init(pro);
     }
 
     public PoolParam(Element element){
-        this.init(element);
+        init(element);
     }
 
     public PoolParam(String driver, String url, String username, String password){
@@ -80,7 +84,13 @@ public class PoolParam{
     }
 
     public String getUrl(){
-        return url;
+        int len = url.length();
+        StringBuffer sb = new StringBuffer(url);
+        if(!StrUtil.isNull(useUnicode))
+            sb.append(sb.length() > len ? useUnicode : "?").append(useUnicode);
+        if(!StrUtil.isNull(encoding))
+            sb.append(sb.length() > len ? encoding : "?").append(encoding);
+        return sb.toString();
     }
 
     public void setUrl(String url){
@@ -153,6 +163,8 @@ public class PoolParam{
     private void init(Properties pro){
         this.driver = pro.getProperty(DRIVER);
         this.url = pro.getProperty(URL);
+        this.useUnicode = pro.getProperty(USE_UNICODE);
+        this.encoding = pro.getProperty(CHARACTER_ENCODING);
         this.username = pro.getProperty(USERNAME);
         this.password = pro.getProperty(PASSWORD);
         String mini = pro.getProperty(MINI_NUM_Str);

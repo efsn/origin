@@ -62,7 +62,7 @@ public class ConnPoolMgr{
             Element root = doc.getRootElement();
             for(Object obj : root.elements("pool")){
                 Element element = (Element)obj;
-                String key = element.attributeValue("name");
+                String key = element.attributeValue("id");
                 if(StrUtil.isNull(key)){
                     throw new DbPoolException("PoolParam Element has no id attribute.");
                 }

@@ -1,4 +1,4 @@
-package org.svip.db.sql.impl;
+package org.svip.db.annotation.util;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -8,29 +8,37 @@ import org.svip.db.annotation.meta.Constraint;
 import org.svip.db.annotation.meta.Index;
 import org.svip.db.annotation.meta.Table;
 import org.svip.db.sql.DDL;
+import org.svip.db.sql.DML;
 import org.svip.db.sql.SQL;
+import org.svip.util.ArrUtil;
 import org.svip.util.StrUtil;
 
+
 /**
- * Data Definition Language
+ * Parse bean object to database structure
  *
- * @author Chan
+ * @author Arthur
  * @version 1.0
  * Created on 2014/08/20
  */
-public final class MySqlDDL implements DDL{
+public final class Parser{
+    private DDL ddl;
+    private DML dml;
+
+    private Parser(){
+//        ddl =
+    }
+
+    public static Parser getInstance(){
+        return Singleton.instance;
+    }
 
     /**
-     * 
+     * new a Parser obj
+     * inner class auto synchronized
      */
-    private static final long serialVersionUID = 2955496431949973831L;
-
-    @Override
-    public String getCreateSql(Class<?> clazz) throws SQLException{
-        if(clazz != null){
-            return parseBean(clazz);
-        }
-        return null;
+    private static class Singleton{
+        private static Parser instance = new Parser();
     }
 
     /**
@@ -38,7 +46,7 @@ public final class MySqlDDL implements DDL{
      *
      * @param clazz bean object
      */
-    private String parseBean(Class<?> clazz) throws SQLException{
+    public synchronized String parseBean(Class<?> clazz) throws SQLException{
         Table ann = clazz.getAnnotation(Table.class);
         if(ann == null){
             return null;
@@ -70,8 +78,8 @@ public final class MySqlDDL implements DDL{
         }
         StringBuffer sb = new StringBuffer();
         for(Index idx : idxs){
-            sb.append(SQL.IDX).append(SQL.S_Q).append(idx.name()).append(SQL.S_Q);
-            sb.append(SQL.SPACE).append(SQL.L).append(StrUtil.concat(idx.column(), SQL.S_Q, SQL.D)).append(SQL.R);
+            sb.append(SQL.IDX).append(SQL.S_Q).append(StrUtil.getDbName(idx.name())).append(SQL.S_Q);
+            sb.append(SQL.SPACE).append(SQL.L).append(ArrUtil.concat(idx.column(), SQL.S_Q, SQL.D)).append(SQL.R);
             sb.append(SQL.USING).append(idx.mode().toString()).append(SQL.S_Q);
         }
         return sb.toString();

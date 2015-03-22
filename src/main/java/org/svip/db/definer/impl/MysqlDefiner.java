@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
-import org.svip.db.anno.util.Parser;
+import org.svip.db.annotation.util.Parser;
 import org.svip.db.definer.DbDefiner;
 import org.svip.pool.db.ConnMgr;
 import org.svip.util.StrUtil;
@@ -13,7 +13,7 @@ import template.DbMgr;
 import template.bean.User;
 
 /**
- * @author Chan
+ * @author Arthur
  * @version 1.0
  * Created on 2014/08/20
  */
@@ -21,8 +21,6 @@ public class MysqlDefiner implements DbDefiner{
     private static final int TIMEOUT = 0;
     
     private Connection con;
-    
-    private static MysqlDefiner definer;
     
     public MysqlDefiner(){
         try {
@@ -32,13 +30,12 @@ public class MysqlDefiner implements DbDefiner{
         }
     }
     
-    public static MysqlDefiner getDefiner(){
-        if(definer == null)
-            synchronized(MysqlDefiner.class){
-                if(definer == null)
-                    definer = new MysqlDefiner();
-            }
-        return definer;
+    public static DbDefiner getDefiner(){
+        return Singleton.definer;
+    }
+    
+    private static class Singleton{
+        private static MysqlDefiner definer = new MysqlDefiner();
     }
     
     @Override

@@ -4,10 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import org.svip.db.anno.meta.Column;
-import org.svip.db.anno.meta.Constraint;
-import org.svip.db.anno.meta.Index;
-import org.svip.db.anno.meta.Table;
+import org.svip.db.annotation.meta.Column;
+import org.svip.db.annotation.meta.Constraint;
+import org.svip.db.annotation.meta.Index;
+import org.svip.db.annotation.meta.Table;
 import org.svip.db.enumeration.mysql.DbType;
 
 @Table(index = @Index(name = "essayIdIdx", column = "essayId"))

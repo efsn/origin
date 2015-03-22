@@ -1,11 +1,15 @@
 package org.blue.sys.vo;
 
-import org.svip.db.anno.meta.*;
-import org.svip.db.enumeration.mysql.DbType;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
+import org.svip.db.annotation.meta.Column;
+import org.svip.db.annotation.meta.Constraint;
+import org.svip.db.annotation.meta.Foreign;
+import org.svip.db.annotation.meta.Index;
+import org.svip.db.annotation.meta.Table;
+import org.svip.db.enumeration.mysql.DbType;
 
 @Table(index = {@Index(name = "checkId_idx", column = "checkId")})
 public class CheckEssay{
