@@ -13,6 +13,11 @@ import java.util.Map;
 
 import org.codeyn.util.yn.StrUtil;
 
+/**
+ * 
+ * @author Arthur
+ * @version 1.0
+ */
 public class Ini{
 
     private Map<String, Map<String, String>> sections = new HashMap<String, Map<String, String>>();

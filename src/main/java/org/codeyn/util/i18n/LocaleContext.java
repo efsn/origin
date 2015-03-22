@@ -13,6 +13,7 @@ import java.util.Locale;
  * </ul>
  * <p>
  * 线程内获取LocaleContext的方法：
+ * 
  * <pre>
  * LocaleContext ctx = LocaleContext.getLocaleContext();
  * Locale locale = ctx.getLocale();
@@ -21,47 +22,46 @@ import java.util.Locale;
  *
  * @author chxb
  */
-public class LocaleContext implements Serializable {
+public class LocaleContext implements Serializable{
 
-	private static final long serialVersionUID = 7817352765639990968L;
+    private static final long serialVersionUID = 7817352765639990968L;
 
-	//此变量所有子线程共享
-	private static InheritableThreadLocal localeContext = new InheritableThreadLocal();  
-	
-	private Locale locale;
-	
-	public Locale getLocale() {
-		if( locale==null ){
-			return I18N.getDefaultLocale();//返回环境默认值
-		}else{
-			return locale;
-		}
-	}
+    // 此变量所有子线程共享
+    private static InheritableThreadLocal localeContext = new InheritableThreadLocal();
 
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-		setLocaleContext(this);
-	}
+    private Locale locale;
 
-	/**
-	 * 取得当前线程环境下的LocaleContext对象。
-	 * @return
-	 */
-	public static LocaleContext getLocaleContext(){
-		LocaleContext s = (LocaleContext)localeContext.get();
-		if( s==null )
-			s = new LocaleContext();
-		return s;
-	}
-	
-	/**
-	 * 设置当前线程的LocaleContext对象。应该在每个线程内部调用。
-	 * @param ctx
-	 */
-	public static void setLocaleContext(LocaleContext ctx){
-		localeContext.set(ctx);
-	}
-	
+    public Locale getLocale(){
+        if (locale == null) {
+            return I18N.getDefaultLocale();// 返回环境默认值
+        } else {
+            return locale;
+        }
+    }
+
+    public void setLocale(Locale locale){
+        this.locale = locale;
+        setLocaleContext(this);
+    }
+
+    /**
+     * 取得当前线程环境下的LocaleContext对象。
+     * 
+     * @return
+     */
+    public static LocaleContext getLocaleContext(){
+        LocaleContext s = (LocaleContext) localeContext.get();
+        if (s == null) s = new LocaleContext();
+        return s;
+    }
+
+    /**
+     * 设置当前线程的LocaleContext对象。应该在每个线程内部调用。
+     * 
+     * @param ctx
+     */
+    public static void setLocaleContext(LocaleContext ctx){
+        localeContext.set(ctx);
+    }
+
 }
-
-

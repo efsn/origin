@@ -21,8 +21,8 @@ import org.codeyn.util.GUID;
 import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.exception.IllegalParameterException;
 import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StrmUtil;
 import org.codeyn.util.yn.StrUtil;
+import org.codeyn.util.yn.StrmUtil;
 
 /**
  * <p>
@@ -37,8 +37,7 @@ public final class FileUtil{
 
     public static final String separator = "/";
     public static final char separatorChar = separator.charAt(0);
-    public static final String DEFAULT_PATH = System
-            .getProperty("java.io.tmpdir");
+    public static final String DEFAULT_PATH = System.getProperty("java.io.tmpdir");
 
     public static final int SORT_SIZE = 0;
     public static final int SORT_TIME = 1;
@@ -106,7 +105,7 @@ public final class FileUtil{
         return result;
     }
 
-    private static void listFilesRec(List l, File dir, Pattern p, boolean rec,
+    private static void listFilesRec(List<File> l, File dir, Pattern p, boolean rec,
             boolean includeDir, boolean excludeFile){
         File[] fs = dir.listFiles();
         if (fs == null) return;
@@ -467,8 +466,6 @@ public final class FileUtil{
         if (StrUtil.isNull(tempfile) && throwExceptionIfFail) {
             // throw new Exception("在目录:" + dir.getAbsolutePath() +
             // " 下创建临时文件失败");
-            throw new Exception(I18N.getString("com.esen.util.FileFunc.3",
-                    "在目录:{0} 下创建临时文件失败", new String[] {dir.getAbsolutePath()}));
         }
         return tempfile;
     }
@@ -633,7 +630,6 @@ public final class FileUtil{
         if (!pf2.exists()) {
             pf2.mkdirs();
         }
-        boolean result = true;
         BufferedInputStream in = new BufferedInputStream(
                 new FileInputStream(f1));
         try {
@@ -734,9 +730,6 @@ public final class FileUtil{
         }
         if (!ff.renameTo(ft)) {
             // throw new RuntimeException("无法重命名from:"+afrom+" ;to:"+ato);
-            throw new RuntimeException(I18N.getString(
-                    "com.esen.util.FileFunc.7", "无法重命名from:{0} ;to:{1}",
-                    new String[] {afrom, ato}));
         }
     }
 
@@ -1645,18 +1638,7 @@ public final class FileUtil{
             }
             // 文件类型与isdir不一致
             if (!isoverwrite) {
-                // throw new Exception("该路径对应的" + (isdir ? "目录" : "文件") +
                 // "已存在:"+file.getAbsolutePath());
-                throw new Exception(
-                        I18N.getString(
-                                "com.esen.util.FileFunc.11",
-                                "该路径对应的{0}已存在:{1}",
-                                new String[] {
-                                        (isdir ? I18N.getString(
-                                                "com.esen.util.FileFunc.12",
-                                                "目录") : I18N.getString(
-                                                "com.esen.util.FileFunc.13",
-                                                "文件")), file.getAbsolutePath()}));
             } else {
                 file.delete();
             }
@@ -1905,10 +1887,8 @@ public final class FileUtil{
 
 /**
  * 对文件排序,如果type>0,按时间排序,否则按大小排序 desc确定是否降序排序
- * 
- * @author zhuchx
  */
-class FileComparator implements Comparator{
+class FileComparator implements Comparator<File>{
     private int _type = 0;
 
     private boolean _desc = true;
@@ -1918,9 +1898,7 @@ class FileComparator implements Comparator{
         _desc = desc;
     }
 
-    public int compare(Object o1, Object o2){
-        File f1 = (File) o1;
-        File f2 = (File) o2;
+    public int compare(File f1, File f2){
         long result = _type > 0 ? f1.lastModified() - f2.lastModified() : f1
                 .length() - f2.length();
         if (result > 0) {

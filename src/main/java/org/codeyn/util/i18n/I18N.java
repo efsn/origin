@@ -40,7 +40,8 @@ public final class I18N{
 
     public final static String[] LANGUAGE_CODES = {"zh_CN", "zh_TW", "en"};
 
-    public final static String[] LANGUAGE_NAMES = new String[] {"简体中文", "繁體中文", "English"};
+    public final static String[] LANGUAGE_NAMES = new String[] {"简体中文", "繁體中文",
+            "English"};
 
     /**
      * 支持的Locale
@@ -84,8 +85,7 @@ public final class I18N{
         return getString(key, defValue, new Object[0]);
     }
 
-    public static String getString(String key, String defValue,
-            Object... params){
+    public static String getString(String key, String defValue, Object... params){
         return getString(key, defValue, null, params);
     }
 
@@ -163,7 +163,8 @@ public final class I18N{
             if ("all".equals(lang)) {
                 return;
             }
-            supports = new Locale[] {LOCALES[ArrayUtil.find(LANGUAGE_CODES, lang)]};
+            supports = new Locale[] {LOCALES[ArrayUtil.find(LANGUAGE_CODES,
+                    lang)]};
         } catch (IOException e) {
             ExceptionHandler.handleException(e);
         } finally {

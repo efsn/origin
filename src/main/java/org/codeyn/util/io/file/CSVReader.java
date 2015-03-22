@@ -121,9 +121,6 @@ public class CSVReader{
      *            the line number to skip for start reading
      */
     public CSVReader(Reader reader, char separator, char quotechar, int line){
-        /**
-         * 20090807 如果reader参数在外部已经封装成BufferReader，这里就不用在封装了；
-         */
         this.br = reader instanceof BufferedReader ? (BufferedReader) reader
                 : new BufferedReader(reader);
         this.separator = separator;
@@ -141,15 +138,13 @@ public class CSVReader{
      * @throws IOException
      *             if bad things happen during the read
      */
-    public List readAll() throws IOException{
-
-        List allElements = new ArrayList();
+    public List<String[]> readAll() throws IOException{
+        List<String[]> allElements = new ArrayList<String[]>();
         while (hasNext) {
             String[] nextLineAsTokens = readNext();
             if (nextLineAsTokens != null) allElements.add(nextLineAsTokens);
         }
         return allElements;
-
     }
 
     /**
@@ -203,7 +198,7 @@ public class CSVReader{
             return null;
         }
 
-        List tokensOnThisLine = new ArrayList();
+        List<String> tokensOnThisLine = new ArrayList<String>();
         /**
          * 初始化长度；
          */

@@ -24,7 +24,7 @@ import org.codeyn.util.yn.StrmUtil;
  * 所有文件的压缩流
  */
 public class FileZip{
-    
+
     final static String ZIPID = "{EB71174D-FD89-468E-B932-42A8286CC745}";
     final static String GZIPID = "{E1A571E4-DDB4-4DE2-82A1-F1263B15B7E6}";
     final static String ID = "{DF3D6B55-6BC0-4E7C-A307-23503B12767F}";
@@ -59,7 +59,8 @@ public class FileZip{
     }
 
     /**
-     * @param fn 压缩包文件名，绝对路径
+     * @param fn
+     *            压缩包文件名，绝对路径
      */
     public FileZip(String fn) throws Exception{
         zipFileName = fn;
@@ -93,7 +94,8 @@ public class FileZip{
 
     /**
      * @param fn
-     * @param destfn, 相对路径
+     * @param destfn
+     *            , 相对路径
      */
     public void addFile(String fn, String destfn) throws Exception{
         File f = new File(fn);

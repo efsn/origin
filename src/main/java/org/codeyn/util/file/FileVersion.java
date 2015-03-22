@@ -428,9 +428,6 @@ public class FileVersion{
                 aInt = Integer.parseInt(sver[j]);
             } catch (Exception e) {
                 // throw new Exception(version + "不是一个有效的版本号");
-                throw new Exception(version
-                        + I18N.getString("com.esen.util.FileVersion.3",
-                                "不是一个有效的版本号"));
             }
         } // 版本号合法
         long adWord;
