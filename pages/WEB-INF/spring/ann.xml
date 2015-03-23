@@ -16,20 +16,40 @@
 	<bean id="i1" class="org.demo.interceptor.Interceptor1"/>
     <bean id="i2" class="org.demo.interceptor.Interceptor2"/>
     <bean id="conversion" class="org.springframework.web.servlet.handler.ConversionServiceExposingInterceptor">
-    	<constructor-arg name="conversionService">
-			<bean class="org.springframework.core.convert.support.DefaultConversionService"/>
-    	</constructor-arg>
+    	<constructor-arg name="conversionService" ref="conversionService"/>
     </bean>
 	
 	
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-<!-- 		<property name="webBindingInitializer" ref="webBindingInitializer"/> -->
+		<property name="webBindingInitializer" ref="webBindingInitializer1"/>
 	</bean>
+	
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
 		<property name="prefix" value="/jsp/"/>
 		<property name="suffix" value=".jsp"/>
 	</bean>
+	
+	<!-- ConfigurableWebBindingInitializer registry conversionService -->
+	<bean id="webBindingInitializer1" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+		<property name="conversionService" ref="conversionService"/>
+	</bean>
+	
+	<!-- ConversionFactory -->
+	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="org.demo.data.converter.StringToPhoneNumberConverter"/>
+				<bean class="org.demo.data.converter.PhoneNumberToStringConverter"/>
+				<bean class="org.demo.data.converter.StringToDateConverter">
+					<constructor-arg value="yyyy-MM-ddHH:mm:ss"/>
+				</bean>
+				<bean class="org.demo.data.converter.StringToUserStateConverter"/>
+			</list>
+		</property>
+	</bean>
+	
+	
 
 	<!-- Below is controller -->
 	<bean class="org.demo.annotation.controller.UserController"/>

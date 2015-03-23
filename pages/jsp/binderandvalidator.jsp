@@ -8,11 +8,13 @@
 </head>
 <body>
 	<f:form commandName="dataBinder">
-		<f:errors style="color:red">
-			<f:input path="date"/>
-		</f:errors><br/>
-		<spring:bind path="dataBinder.phoneNumber">${status.value}</spring:bind><br/>
+<%-- 		<f:errors style="color:red"> --%>
+			Date<f:input path="date"/>
+			phoneNumber<f:input path="phoneNumber"/>
+		<spring:bind path="phoneNumber">${phoneNumber.value}</spring:bind><br/>
 		<spring:eval expression="dataBinder.date"></spring:eval>
+<%-- 		</f:errors><br/> --%>
+		<input type="submit" value="Submit">
 	</f:form>
 </body>
 </html>

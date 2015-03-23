@@ -17,8 +17,7 @@ public class UserStateEditor extends PropertyEditorSupport{
         }else{
             int idx = 0;
             if((idx = ArrayUtil.find(STATES, text)) != -1){
-                UserState us = new UserState();
-                us.setState(STATES[idx].toUpperCase());
+                UserState us = new UserState(STATES[idx].toUpperCase());
                 setValue(us);
             }
         }
