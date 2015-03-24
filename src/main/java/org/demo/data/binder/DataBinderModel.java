@@ -7,6 +7,8 @@ import java.util.Map;
 import org.demo.data.PhoneNumber;
 import org.demo.data.SchoolInfo;
 import org.demo.data.UserState;
+import org.demo.data.formatter.PhoneNumberA;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class DataBinderModel{
     private String username;
@@ -15,7 +17,11 @@ public class DataBinderModel{
     private SchoolInfo sInfo;
     private List list;
     private Map map;
+    
+    @PhoneNumberA
     private PhoneNumber phoneNumber;
+    
+    @DateTimeFormat(pattern="yyyy-MM-ddHH:mm:ss")
     private Date date;
     private UserState state;
     

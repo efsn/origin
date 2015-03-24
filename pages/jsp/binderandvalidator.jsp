@@ -7,14 +7,14 @@
 <title>Insert title here</title>
 </head>
 <body>
+	phoneNumber<spring:bind path="dataBinder.phoneNumber">${status.value}</spring:bind><br/>
+	<!-- 
+		if not configurate ConversionServiceExposingInterceptor will become exception
+	 -->
+	phoneNumber<spring:eval expression="dataBinder.phoneNumber"></spring:eval><br/>
 	<f:form commandName="dataBinder">
-<%-- 		<f:errors style="color:red"> --%>
-			Date<f:input path="date"/>
-			phoneNumber<f:input path="phoneNumber"/>
-		<spring:bind path="phoneNumber">${phoneNumber.value}</spring:bind><br/>
-		<spring:eval expression="dataBinder.date"></spring:eval>
-<%-- 		</f:errors><br/> --%>
-		<input type="submit" value="Submit">
+		Date<f:input path="date"/>
+		phoneNumber<f:input path="phoneNumber"/>
 	</f:form>
 </body>
 </html>

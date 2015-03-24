@@ -1,21 +1,18 @@
 package org.demo.data.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.validation.BindException;
+import org.demo.data.binder.DataBinderModel;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractCommandController;
 
-public class ErrorController extends AbstractCommandController{
+@Controller
+public class ErrorController{
     
-    private String errorView;
-    
-    @Override
-    protected ModelAndView handle(HttpServletRequest request,
-                                  HttpServletResponse response, 
-                                  Object command, 
-                                  BindException errors)throws Exception{
+    @RequestMapping("/error.do")
+    public ModelAndView handle(@ModelAttribute("command") DataBinderModel command, Model model, BindingResult errors)throws Exception{
         errors.reject("username.not.empty");
         errors.reject("username.not.empty1", "Username not empty1");
         errors.reject("username.length.error", new Object[]{6, 10}, "Username length should six to ten");
@@ -23,11 +20,7 @@ public class ErrorController extends AbstractCommandController{
     }
 
     public String getErrorView(){
-        return errorView;
+        return "error/error";
     }
 
-    public void setErrorView(String errorView){
-        this.errorView = errorView;
-    }
-    
 }

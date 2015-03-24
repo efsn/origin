@@ -10,7 +10,7 @@
 	</head>
 	<body>
 		${data.username}<br/>
-		${data.bl}<br/>
+		${data.bool}<br/>
 		${data.sInfo}<br/>
 		${data.list}<br/>
 		${data.map}<br/>

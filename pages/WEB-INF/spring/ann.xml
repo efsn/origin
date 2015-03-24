@@ -7,7 +7,7 @@
 		<property name="interceptors">
     		<list>
     			<ref bean="i1"/>
-<!--     			<ref bean="conversion"/> -->
+    			<ref bean="conversion"/>
     			<ref bean="i2"/>
     		</list>
     	</property>
@@ -37,6 +37,7 @@
 	
 	<!-- ConversionFactory -->
 	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+
 		<property name="converters">
 			<list>
 				<bean class="org.demo.data.converter.StringToPhoneNumberConverter"/>
@@ -45,6 +46,12 @@
 					<constructor-arg value="yyyy-MM-ddHH:mm:ss"/>
 				</bean>
 				<bean class="org.demo.data.converter.StringToUserStateConverter"/>
+			</list>
+		</property>
+		
+		<property name="formatters">
+			<list>
+				<bean class="org.demo.data.formatter.PhoneNunberFactory"/>
 			</list>
 		</property>
 	</bean>
@@ -135,16 +142,11 @@
 
 	-->
 
-	<bean name="/data.do" class="org.demo.data.controller.DataBinderController">
-		<property name="webBindingInitializer" ref="webBindingInitializer"/>
-	</bean>
+	<bean class="org.demo.data.controller.DataBinderController"/>
 	
 	<bean id="webBindingInitializer" class="org.demo.data.binder.BinderInit"/>
 
-	<bean name="/error.do" class="org.demo.data.controller.ErrorController">
-		<property name="commandClass" value="org.demo.data.binder.DataBinderModel"/>
-		<property name="errorView" value="error/error"/>
-	</bean>
+	<bean class="org.demo.data.controller.ErrorController"/>
 	
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basename" value="classpath:messages"/>
