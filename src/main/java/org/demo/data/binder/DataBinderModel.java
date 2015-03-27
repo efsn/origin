@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import org.demo.data.PhoneNumber;
 import org.demo.data.SchoolInfo;
 import org.demo.data.UserState;
@@ -11,7 +15,12 @@ import org.demo.data.formatter.PhoneNumberA;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class DataBinderModel{
+    
+    @NotNull(message="{username.not.empty}")
+    @Size(min=5, max=20, message="{username.length}")
+    @Pattern(regexp="^[a-zA-Z_]\\w{4,19}$", message="{username.patterns}")
     private String username;
+    
     private String password;
     private boolean bool;
     private SchoolInfo sInfo;

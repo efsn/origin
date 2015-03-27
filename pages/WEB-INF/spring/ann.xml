@@ -141,32 +141,37 @@
 	</bean>
 
 	-->
-
-	<bean class="org.demo.data.controller.DataBinderController"/>
-	
-	<bean id="webBindingInitializer" class="org.demo.data.binder.BinderInit"/>
-
-	<bean class="org.demo.data.controller.ErrorController"/>
 	
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basename" value="classpath:messages"/>
 		<property name="fileEncodings" value="uft-8"/>
 		<property name="cacheSeconds" value="120"/>
 	</bean>
-	
-	<bean id="validator" class="org.demo.data.validator.DataBinderModelValidator"/>
 
-	<bean name="/ee.do" class="org.demo.multi.controller.DataBindErrorController">
-		<property name="validators">
-			<array>
-				<ref bean="validator"/>
-			</array>
-		</property>
-		<property name="commandClass" value="org.demo.data.binder.DataBinderModel"/>
-		<property name="formView" value="error/validator"/>
-		<property name="successView" value="error/validator"/>
-	</bean>
+	<bean class="org.demo.data.controller.DataBinderController"/>
+	
+	<bean class="org.demo.data.controller.ErrorController"/>
+	
+	<bean class="org.demo.multi.controller.DataBindErrorController"/>
 	
 	<bean class="org.demo.data.BinderAndValidatorController"/>
+	
+	
+	<!-- 
+		below validator ConversionService use mvc:annotaion-driven auto-registry
+		
+		<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+			<property name="providerClass" value="org.hebernate.validator.HebernateValidator"/>
+			default is classpath:ValidationMessages.properties 
+			<property name="validatioinMessageSource" ref="messageSource"/>	
+		</bean>
+		
+		<bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+			<property name="conversionService" ref="conversionService"/>
+			<property name="validator" ref="validator"/>
+		</bean>	
+	 -->
+	
+	
 
 </beans> 
