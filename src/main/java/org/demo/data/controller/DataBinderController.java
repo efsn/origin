@@ -1,11 +1,5 @@
 package org.demo.data.controller;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.demo.data.PhoneNumber;
 import org.demo.data.SchoolInfo;
 import org.demo.data.UserState;
@@ -22,23 +16,28 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Controller
-public class DataBinderController{
-    
+public class DataBinderController {
+
     @RequestMapping("/data.do")
-    public ModelAndView handle(@ModelAttribute("command") DataBinderModel command, Model model)throws Exception{
+    public ModelAndView handle(@ModelAttribute("command") DataBinderModel command, Model model) throws Exception {
         return new ModelAndView("data").addObject("data", command);
     }
-    
+
     @ModelAttribute("command")
-    public DataBinderModel getModel(){
+    public DataBinderModel getModel() {
         DataBinderModel model = new DataBinderModel();
         model.setUsername("xxx");
         return model;
     }
-    
+
     @InitBinder
-    public void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception{
+    public void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         DateFormat df = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss");
         binder.registerCustomEditor(Date.class, new CustomDateEditor(df, true));
         binder.registerCustomEditor(PhoneNumber.class, new PhoneNumberEditor());

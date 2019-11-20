@@ -10,7 +10,7 @@ import java.util.Properties;
  * @version 1.0
  * Created on 2014/8/24
  */
-public class PoolParam{
+public class PoolParam {
 
     public static final int MINI_NUM = 3;
     public static final int MAXI_NUM = 15;
@@ -40,22 +40,22 @@ public class PoolParam{
     private int timeout;
     private int waitTime;
 
-    public PoolParam(Properties pro){
+    public PoolParam(Properties pro) {
         init(pro);
     }
 
-    public PoolParam(Element element){
+    public PoolParam(Element element) {
         init(element);
     }
 
-    public PoolParam(String driver, String url, String username, String password){
+    public PoolParam(String driver, String url, String username, String password) {
         this.driver = driver;
         this.url = url;
         this.username = username;
         this.password = password;
     }
 
-    public PoolParam(String driver, String url, String username, String password, int miniNum, int maxiNum, int timeout, int waitTime){
+    public PoolParam(String driver, String url, String username, String password, int miniNum, int maxiNum, int timeout, int waitTime) {
         this(driver, url, username, password);
         this.maxiNum = maxiNum;
         this.miniNum = miniNum;
@@ -64,88 +64,88 @@ public class PoolParam{
     }
 
     @Override
-    public boolean equals(Object pool){
-        if(this == pool){
+    public boolean equals(Object pool) {
+        if (this == pool) {
             return true;
-        }else if(pool instanceof PoolParam){
+        } else if (pool instanceof PoolParam) {
             return StrUtil.equals(url, ((PoolParam) pool).getDriver()) &&
-                   StrUtil.equals(username, ((PoolParam) pool).getDriver());
-        }else{
+                    StrUtil.equals(username, ((PoolParam) pool).getDriver());
+        } else {
             return false;
         }
     }
 
-    public String getDriver(){
+    public String getDriver() {
         return driver;
     }
 
-    public void setDriver(String driver){
+    public void setDriver(String driver) {
         this.driver = driver;
     }
 
-    public String getUrl(){
+    public String getUrl() {
         int len = url.length();
         StringBuffer sb = new StringBuffer(url);
-        if(!StrUtil.isNull(useUnicode))
+        if (!StrUtil.isNull(useUnicode))
             sb.append(sb.length() > len ? useUnicode : "?").append(useUnicode);
-        if(!StrUtil.isNull(encoding))
+        if (!StrUtil.isNull(encoding))
             sb.append(sb.length() > len ? encoding : "?").append(encoding);
         return sb.toString();
     }
 
-    public void setUrl(String url){
+    public void setUrl(String url) {
         this.url = url;
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username){
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public int getMiniNum(){
+    public int getMiniNum() {
         return miniNum;
     }
 
-    public void setMiniNum(int miniNum){
+    public void setMiniNum(int miniNum) {
         this.miniNum = miniNum;
     }
 
-    public int getMaxiNum(){
+    public int getMaxiNum() {
         return maxiNum;
     }
 
-    public void setMaxiNum(int maxiNum){
+    public void setMaxiNum(int maxiNum) {
         this.maxiNum = maxiNum;
     }
 
-    public int getTimeout(){
+    public int getTimeout() {
         return timeout;
     }
 
-    public void setTimeout(int timeout){
+    public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
 
-    public int getWaitTime(){
+    public int getWaitTime() {
         return waitTime;
     }
 
-    public void setWaitTime(int waitTime){
+    public void setWaitTime(int waitTime) {
         this.waitTime = waitTime;
     }
 
-    private void init(Element element){
+    private void init(Element element) {
         this.driver = element.elementText(DRIVER);
         this.url = element.elementText(URL);
         this.username = element.elementText(USERNAME);
@@ -160,7 +160,7 @@ public class PoolParam{
         this.waitTime = StrUtil.isNull(wt) ? WAIT_TIME : Integer.parseInt(wt);
     }
 
-    private void init(Properties pro){
+    private void init(Properties pro) {
         this.driver = pro.getProperty(DRIVER);
         this.url = pro.getProperty(URL);
         this.useUnicode = pro.getProperty(USE_UNICODE);

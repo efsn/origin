@@ -1,36 +1,36 @@
 package org.codeyn.util.file;
 
+import org.codeyn.util.i18n.I18N;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.codeyn.util.i18n.I18N;
-
-public class FileVersion{
-    private static long rva; // 记录偏移的位置
+public class FileVersion {
     private final static String[] fixs = {"exe", "ocx", "dll", "res"};
+    private static long rva; // 记录偏移的位置
     private static long resPos; // 资源节开始的位置//v-rva+resPos数据所在的位置
     private static boolean isRes; // 设置是否资源文件标签
     private static long curpos;
     private static long verPos;
     private static int nameEntryCount, numEntryCount; // 资源的入口数,在其中寻找 0X10
-                                                      // //版本资源
+    // //版本资源
     private static RandomAccessFile stm;
     private static long fpos = 0;
     private static boolean hasVer;
 
-    public FileVersion(){
+    public FileVersion() {
     }
 
-    private static void setCur() throws IOException{
+    private static void setCur() throws IOException {
         stm.seek(curpos);
     }
 
-    private static int byteToInt(byte b){
+    private static int byteToInt(byte b) {
         return ((b & 0x80) << 1) + b;
     }
 
-    private static int bytesToInt(byte[] b, int offset, int len){
+    private static int bytesToInt(byte[] b, int offset, int len) {
         int i, temp, result = 0;
         for (i = 0; i < len; i++) {
             temp = ((b[i + offset] & 0x80) << 1) + b[i + offset];
@@ -39,7 +39,7 @@ public class FileVersion{
         return result;
     }
 
-    private static long bytesToLong(byte[] b, int offset, int len){
+    private static long bytesToLong(byte[] b, int offset, int len) {
         int i;
         long temp, result = 0;
         for (i = 0; i < len; i++) {
@@ -51,10 +51,10 @@ public class FileVersion{
 
     /**
      * Obtain a word(double byte)
-     * 
+     *
      * @throws IOException
      */
-    private static int getWord() throws IOException{
+    private static int getWord() throws IOException {
         byte[] word = new byte[2];
         byte bt = stm.readByte();
         word[1] = bt;
@@ -65,12 +65,11 @@ public class FileVersion{
 
     /**
      * 改写一个字,注意写的位置
-     * 
-     * @param value
-     *            int
+     *
+     * @param value int
      * @throws IOException
      */
-    private static void setWord(int value) throws IOException{
+    private static void setWord(int value) throws IOException {
         byte[] word = new byte[2];
         short b = (short) (value % 0x10000);
         word[0] = (byte) (b % 0x100);
@@ -78,7 +77,7 @@ public class FileVersion{
         stm.write(word);
     }
 
-    private static long getalWord() throws IOException{
+    private static long getalWord() throws IOException {
         byte aByte;
         byte[] alWord = new byte[4];
         aByte = stm.readByte();
@@ -92,7 +91,7 @@ public class FileVersion{
         return bytesToLong(alWord, 0, 4);
     }
 
-    private static int getaiWord() throws IOException{
+    private static int getaiWord() throws IOException {
         byte aByte;
         byte[] alWord = new byte[4];
         aByte = stm.readByte();
@@ -106,7 +105,7 @@ public class FileVersion{
         return bytesToInt(alWord, 0, 4);
     }
 
-    private static boolean comstr(String str) throws IOException{
+    private static boolean comstr(String str) throws IOException {
         int len;
         char aChar, bChar;
         len = str.length();
@@ -121,23 +120,23 @@ public class FileVersion{
         return true;
     }
 
-    public static void pln(String msg){
+    public static void pln(String msg) {
         System.out.println("result is (" + msg + ")");
     }
 
     /**
      * 是否为资源文件 exe ,res,ocx,dll 三种文件，否则报异常
-     * 
+     *
      * @return boolean
      */
-    private static boolean isResFile(String fn) throws Exception{
+    private static boolean isResFile(String fn) throws Exception {
         int pos = fn.lastIndexOf(".");
         if (pos == -1) {
             throw new Exception(fn
                     + I18N.getString("com.esen.util.FileVersion.1",
-                            "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
+                    "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
         }
-        String fix = fn.substring(pos + 1, fn.length());
+        String fix = fn.substring(pos + 1);
         boolean checkFix = false;
         for (int i = 0; i < fixs.length; i++) {
             if (fix.compareToIgnoreCase(fixs[i]) == 0) {
@@ -148,7 +147,7 @@ public class FileVersion{
         if (!checkFix) {
             throw new Exception(fn
                     + I18N.getString("com.esen.util.FileVersion.2",
-                            "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
+                    "不是可以处理版本的文件类型(exe,dll,ocx,res)"));
         }
         return fix.compareToIgnoreCase("res") == 0;
     }
@@ -156,7 +155,7 @@ public class FileVersion{
     /**
      * 创建文件处理的流对象
      */
-    private static void init(String fn) throws Exception{
+    private static void init(String fn) throws Exception {
         try {
             stm = new RandomAccessFile(fn, "rw"); // 读写的方式
             stm.seek(0);
@@ -167,19 +166,19 @@ public class FileVersion{
         }
     }
 
-    private static void close() throws IOException{
+    private static void close() throws IOException {
         if (stm != null) {
             stm.close(); // 关闭文件流
         }
     }
 
-    static void step(int len) throws IOException{
+    static void step(int len) throws IOException {
         long pos;
         pos = stm.getFilePointer() + len;
         stm.seek(pos);
     }
 
-    private static long gotoResData() throws IOException{
+    private static long gotoResData() throws IOException {
         long aWord, numSection;
         byte aByte;
         long pePos, secPos, aDword;
@@ -219,13 +218,12 @@ public class FileVersion{
 
     /**
      * 通过文件获得版本
-     * 
-     * @param fileName
-     *            String 文件不存在，不是可以处理的文件
-     * @throws Exception
+     *
+     * @param fileName String 文件不存在，不是可以处理的文件
      * @return String 没有版本信息返回""
+     * @throws Exception
      */
-    public static String getVersion(String fileName) throws Exception{
+    public static String getVersion(String fileName) throws Exception {
         String result = ""; // 通过文件的绝对路径获得版本
         String[] sver = new String[4];
         long adWord;
@@ -254,14 +252,14 @@ public class FileVersion{
 
     /**
      * 到达资源部分开始位置
-     * 
+     *
      * @return long 返回文件版本所在位置
      */
-    private static long getFverPos() throws IOException{
+    private static long getFverPos() throws IOException {
         // 资源数据开始的位置
         // VS_VERSIONINFO
         step(2 * 3 + (15 + 1) * 2); // Contains the Unicode string
-                                    // "VS_VERSION_INFO".
+        // "VS_VERSION_INFO".
         goBoundary(); // a
         // VS_FIXEDFILEINFO
         step(4 * 2);
@@ -269,24 +267,24 @@ public class FileVersion{
         return fpos;
     }
 
-    private static void gotoPos(long adWord) throws IOException{
+    private static void gotoPos(long adWord) throws IOException {
         stm.seek(adWord);
     }
 
-    private static void goBoundary() throws IOException{
+    private static void goBoundary() throws IOException {
         int add = 0;
         add = (int) (stm.getFilePointer() % 4);
         step(add);
     }
 
-    private static long getPos() throws IOException{
+    private static long getPos() throws IOException {
         return stm.getFilePointer();
     }
 
     /**
      * 获得资源文件版本开始的地方
      */
-    private static int findResVer() throws IOException{
+    private static int findResVer() throws IOException {
         int dsize, hSize;
         short aword;
         boolean hasVer;
@@ -313,7 +311,7 @@ public class FileVersion{
         return 0;
     }
 
-    private static long findExeVer() throws IOException{
+    private static long findExeVer() throws IOException {
         long aint;
         aint = gotoResData();
         if (aint == 0) {
@@ -323,18 +321,18 @@ public class FileVersion{
         }
     }
 
-    private static void getCur() throws IOException{
+    private static void getCur() throws IOException {
         curpos = stm.getFilePointer();
     }
 
-    private static int getaByte() throws IOException{
+    private static int getaByte() throws IOException {
         byte aByte;
         aByte = stm.readByte();
         return byteToInt(aByte);
     }
 
     // ////////////////////////////////
-    private static long go(long dentry) throws IOException{
+    private static long go(long dentry) throws IOException {
         // 遍历找到第一个语言版本, 当32位为1指向IMAGE_RESOURCE_DIRECTORY,
         // o指向数据结构（16位）
         long aDword;
@@ -375,7 +373,7 @@ public class FileVersion{
     }
 
     // /////////////////////////////////////
-    private static long gotoVerData() throws IOException{
+    private static long gotoVerData() throws IOException {
         long aDword = 0; // 遍历整个资源节，获得版本信息资源的位置
         hasVer = false;
         getCur(); // 到达RESOURCE_DIRECTORY所在的位置
@@ -406,7 +404,7 @@ public class FileVersion{
     }
 
     public static final void setVersion(String fn, String version)
-            throws Exception{
+            throws Exception {
         String[] source;
         if (version.indexOf(",") != -1) {
             source = version.split(",");
@@ -452,18 +450,16 @@ public class FileVersion{
     }
 
     // 1,2.3,4-->1.2.3.5
+
     /**
-     * @param fn
-     *            String
-     * @param part
-     *            int 1.2.3.4标志四个位置
-     * @param value
-     *            int 为负数表示减版本号
-     * @throws Exception
+     * @param fn    String
+     * @param part  int 1.2.3.4标志四个位置
+     * @param value int 为负数表示减版本号
      * @return String 版本的完整信息 如 1.0.0.0没有版本号返回空
+     * @throws Exception
      */
     public static final String incVersion(String fn, int part, int value)
-            throws Exception{
+            throws Exception {
         String result = "";
         String[] sver = new String[4];
         if (part < 1 || part > 4) part = 4;
@@ -512,10 +508,10 @@ public class FileVersion{
 
     /**
      * 跳过资源文件开头的32个标志性字节（内容是固定的）
-     * 
+     *
      * @throws IOException
      */
-    private static void isres() throws IOException{
+    private static void isres() throws IOException {
         step(32);
     }
 }

@@ -8,7 +8,7 @@ import java.util.Comparator;
  * isDescNull 默认为false即降序时NULL排序到最后
  */
 
-public class AdvSortComparator implements Comparator{
+public class AdvSortComparator implements Comparator {
 
     protected boolean asc;// 是否升序。默认降序
 
@@ -20,43 +20,43 @@ public class AdvSortComparator implements Comparator{
 
     private Collator localstrcmp;
 
-    public AdvSortComparator(){
+    public AdvSortComparator() {
         super();
     }
 
-    public final boolean isAsc(){
+    public final boolean isAsc() {
         return asc;
     }
 
-    public final void setAsc(boolean asc){
+    public final void setAsc(boolean asc) {
         this.asc = asc;
     }
 
-    public final boolean isAscNullLast(){
+    public final boolean isAscNullLast() {
         return isAscNullLast;
     }
 
-    public final void setAscNullLast(boolean isAscNull){
+    public final void setAscNullLast(boolean isAscNull) {
         this.isAscNullLast = isAscNull;
     }
 
-    public final boolean isDescNullFirst(){
+    public final boolean isDescNullFirst() {
         return isDescNullFirst;
     }
 
-    public final void setDescNullFirst(boolean isDescNull){
+    public final void setDescNullFirst(boolean isDescNull) {
         this.isDescNullFirst = isDescNull;
     }
 
-    public boolean isNullEqualBlank(){
+    public boolean isNullEqualBlank() {
         return isNullEqualBlank;
     }
 
-    public void setNullEqualBlank(boolean isNullEqualBlank){
+    public void setNullEqualBlank(boolean isNullEqualBlank) {
         this.isNullEqualBlank = isNullEqualBlank;
     }
 
-    public int compare(Object a, Object b){
+    public int compare(Object a, Object b) {
         Comparable sza = (Comparable) a;
         Comparable szb = (Comparable) b;
         if (sza == szb) return 0;
@@ -85,14 +85,14 @@ public class AdvSortComparator implements Comparator{
         return r;
     }
 
-    private Collator getLocalStrCompare(){
+    private Collator getLocalStrCompare() {
         if (this.localstrcmp == null)
             this.localstrcmp = java.text.Collator
                     .getInstance(java.util.Locale.CHINA);
         return this.localstrcmp;
     }
 
-    private boolean isNull(Comparable o){
+    private boolean isNull(Comparable o) {
         if (o == null) return true;
         if (o instanceof Double)
             return ((Double) o).isNaN();

@@ -7,12 +7,12 @@ import java.util.Random;
  * <p>
  * Generate a guid object, almost none of duplicate, length is always 32
  * </p>
- * 
+ *
  * @author Codeyn
  * @version 1.0
  */
 
-public final class GUID implements Serializable{
+public final class GUID implements Serializable {
 
     private static final long serialVersionUID = 3826200632731090939L;
 
@@ -24,22 +24,8 @@ public final class GUID implements Serializable{
     private final static int[] INDEXS = {9, 17, 0, 18, 27, 3, 8, 25, 13, 11, 6,
             14, 19, 28, 30, 31, 21, 26, 15, 1, 2, 29, 16, 12, 22, 10, 7, 23,
             20, 24, 4, 5};
-
-    private String guid;
     private static long counter = 1;
     private static int[] localAddr;
-
-    private static String getLocalMachineCode(){
-        String r = null;
-        try {
-            r = MacAddress.getMacAddress();
-            if (r != null)
-                r = r.replaceAll("-", "").replaceAll(":", "").trim();
-            return r;
-        } catch (Exception ex) {
-            return r;
-        }
-    }
 
     static {
         long l = System.currentTimeMillis();
@@ -60,27 +46,41 @@ public final class GUID implements Serializable{
         }
     }
 
-    private static synchronized long getNextSerial(){
-        return counter++;
-    }
+    private String guid;
 
-    static synchronized void setNextSerial(long value){
-        counter = value;
-    }
-
-    public GUID(){
+    public GUID() {
         this.guid = makeGuid(null);
     }
 
-    public GUID(String id){
+    public GUID(String id) {
         this.guid = makeGuid(id);
     }
 
-    public static final String makeGuid(){
+    private static String getLocalMachineCode() {
+        String r = null;
+        try {
+            r = MacAddress.getMacAddress();
+            if (r != null)
+                r = r.replaceAll("-", "").replaceAll(":", "").trim();
+            return r;
+        } catch (Exception ex) {
+            return r;
+        }
+    }
+
+    private static synchronized long getNextSerial() {
+        return counter++;
+    }
+
+    static synchronized void setNextSerial(long value) {
+        counter = value;
+    }
+
+    public static final String makeGuid() {
         return makeGuid(null);
     }
 
-    public static final String makeGuid(String id){
+    public static final String makeGuid(String id) {
         byte[] buf = new byte[32];
         long ns = getNextSerial();
         long l = System.currentTimeMillis();
@@ -90,8 +90,8 @@ public final class GUID implements Serializable{
         int idx = getRandomAbsInt(rd);
         // Local machine code
         for (int i = 0; i < 12; i++) {
-            int b = (int) (localAddr[i] + i);
-            idx = (int) ((b + idx) % rcl);
+            int b = localAddr[i] + i;
+            idx = (b + idx) % rcl;
             buf[INDEXS[i]] = RANDOMCHARS[idx];
         }
 
@@ -108,7 +108,7 @@ public final class GUID implements Serializable{
         for (int i = 0; i < 8; i++) {
             int b = (int) (((ns) >> (i * 8)) & 0xFF);
             b = (b == 0) ? getRandomAbsInt(rd) : b + idx;
-            idx = (int) ((b) % rcl);
+            idx = (b) % rcl;
             buf[INDEXS[i + 20]] = RANDOMCHARS[idx];
         }
 
@@ -121,14 +121,14 @@ public final class GUID implements Serializable{
                 st = getRandomAbsInt(rd);
                 b = id.charAt(st % id.length());
             }
-            idx = (int) ((b + idx) % rcl);
+            idx = (b + idx) % rcl;
             buf[INDEXS[i + 28]] = RANDOMCHARS[idx];
         }
 
         return new String(buf);
     }
 
-    private static int getRandomAbsInt(Random rd){
+    private static int getRandomAbsInt(Random rd) {
         /**
          * Bug: Bad attempt to compute absolute value of signed 32-bit random
          * integer Pattern id: RV_ABSOLUTE_VALUE_OF_RANDOM_INT, type: RV,
@@ -143,11 +143,11 @@ public final class GUID implements Serializable{
         return r;
     }
 
-    public int hashCode(){
+    public int hashCode() {
         return guid.hashCode();
     }
 
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -157,7 +157,7 @@ public final class GUID implements Serializable{
         return false;
     }
 
-    public String toString(){
+    public String toString() {
         return guid;
     }
 }

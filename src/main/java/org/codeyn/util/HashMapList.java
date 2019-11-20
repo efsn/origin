@@ -1,9 +1,9 @@
 package org.codeyn.util;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Comparator;
-import java.util.Arrays;
 
 /**
  * <p>
@@ -18,52 +18,12 @@ import java.util.Arrays;
  * <p>
  * Company:
  * </p>
- * 
+ *
  * @author not attributable
  * @version 1.0
  */
 
-public final class HashMapList extends HashMap{
-
-    public HashMapList(){
-    }
-
-    public HashMapList(int initialCapacity, float loadFactor){
-        super(initialCapacity, loadFactor);
-    }
-
-    public HashMapList(int initialCapacity){
-        super(initialCapacity);
-    }
-
-    public HashMapList(Map m){
-        super(m);
-    }
-
-    public void clear(){
-        super.clear();
-        valuesArray = null;
-    }
-
-    public Object put(Object key, Object value){
-        valuesArray = null;
-        return super.put(key, value);
-    }
-
-    public void putAll(Map t){
-        valuesArray = null;
-        super.putAll(t);
-    }
-
-    public Object remove(Object key){
-        valuesArray = null;
-        return super.remove(key);
-    }
-
-    public Object get(int i){
-        makeArray();
-        return valuesArray[i];
-    }
+public final class HashMapList extends HashMap {
 
     private transient volatile Object[] valuesArray;
     /*
@@ -72,7 +32,47 @@ public final class HashMapList extends HashMap{
      */
     private transient Comparator arraySortComparator;
 
-    private void makeArray(){
+    public HashMapList() {
+    }
+
+    public HashMapList(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
+
+    public HashMapList(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public HashMapList(Map m) {
+        super(m);
+    }
+
+    public void clear() {
+        super.clear();
+        valuesArray = null;
+    }
+
+    public Object put(Object key, Object value) {
+        valuesArray = null;
+        return super.put(key, value);
+    }
+
+    public void putAll(Map t) {
+        valuesArray = null;
+        super.putAll(t);
+    }
+
+    public Object remove(Object key) {
+        valuesArray = null;
+        return super.remove(key);
+    }
+
+    public Object get(int i) {
+        makeArray();
+        return valuesArray[i];
+    }
+
+    private void makeArray() {
         if (valuesArray == null) {
             valuesArray = this.values().toArray();
             if (arraySortComparator != null) {
@@ -83,20 +83,20 @@ public final class HashMapList extends HashMap{
 
     /**
      * 设置一个比较器，数组将按照这个排序
-     * 
+     *
      * @param c
      */
-    public void setArraySortComparator(Comparator c){
+    public void setArraySortComparator(Comparator c) {
         arraySortComparator = c;
         valuesArray = null;
     }
 
-    public Object[] valuesToArray(){
+    public Object[] valuesToArray() {
         makeArray();
         return valuesArray;
     }
 
-    public Object[] valuesToArray(Object a[]){
+    public Object[] valuesToArray(Object[] a) {
         int size = size();
         if (a.length < size) {
             a = (Object[]) java.lang.reflect.Array.newInstance(a.getClass()

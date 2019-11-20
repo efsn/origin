@@ -14,7 +14,7 @@ import java.util.List;
  * @version 1.0
  * Created on 2014/8/24
  */
-public class ConnPool{
+public class ConnPool {
 
     /*
      4> when time out, auto close needless conn
@@ -29,61 +29,61 @@ public class ConnPool{
     private PoolParam param;
 
 
-    public ConnPool(PoolParam param){
+    public ConnPool(PoolParam param) {
         this.param = param;
         this.init();
     }
 
-    public synchronized Connection getConnection() throws Exception{
-        if(active.size() >= param.getMaxiNum()){
+    public synchronized Connection getConnection() throws Exception {
+        if (active.size() >= param.getMaxiNum()) {
             Thread.sleep(param.getWaitTime());
         }
-        return this.getValidConnection(free.size() > 0 ? false : active.size() < param.getMaxiNum());
+        return this.getValidConnection(free.size() <= 0 && active.size() < param.getMaxiNum());
     }
 
-    public void close(Connection con) throws SQLException{
-        if(active.remove(con) && free.size() < param.getMiniNum()){
+    public void close(Connection con) throws SQLException {
+        if (active.remove(con) && free.size() < param.getMiniNum()) {
             free.add(con);
-        }else{
+        } else {
             throw new DbPoolException("Can not remove con from active.");
         }
     }
 
-    private Connection getValidConnection(boolean isAdd) throws SQLException{
+    private Connection getValidConnection(boolean isAdd) throws SQLException {
         Connection con = null;
-        if(isAdd){
+        if (isAdd) {
             con = this.getConnectionProxy();
-        }else{
-            if(free.size() > 0){
+        } else {
+            if (free.size() > 0) {
                 con = free.remove(0);
-            }else{
+            } else {
                 return con;
             }
         }
-        if(con.isValid(param.getTimeout())){
+        if (con.isValid(param.getTimeout())) {
             active.add(con);
             return con;
         }
         return this.getValidConnection(isAdd);
     }
 
-    private void init(){
-        try{
+    private void init() {
+        try {
             free = new LinkedList<Connection>();
             active = new LinkedList<Connection>();
             Class.forName(param.getDriver());
-            for(int i = 0; i < param.getMiniNum(); i++){
+            for (int i = 0; i < param.getMiniNum(); i++) {
                 free.add(this.getConnectionProxy());
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private Connection getConnectionProxy() throws SQLException{
+    private Connection getConnectionProxy() throws SQLException {
         Connection con = DriverManager.getConnection(param.getUrl(), param.getUsername(), param.getPassword());
-        if(con != null){
-            return (Connection)ProxyFactory.getProxy(con, new AdviceImpl());
+        if (con != null) {
+            return (Connection) ProxyFactory.getProxy(con, new AdviceImpl());
         }
         return con;
     }

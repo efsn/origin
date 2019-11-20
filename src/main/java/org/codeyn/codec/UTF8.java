@@ -1,12 +1,12 @@
 package org.codeyn.codec;
 
-public final class UTF8{
+public final class UTF8 {
 
-    byte[] decode(byte[] bytes, int start, int len){
+    byte[] decode(byte[] bytes, int start, int len) {
         byte[] s = new byte[len];
         int k = 0;
         int end = start + len;
-        for (int i = start; i < end;) {
+        for (int i = start; i < end; ) {
             byte b = bytes[i++];
             if ((b >> 7) == 0)
                 s[k++] = b;
@@ -21,7 +21,7 @@ public final class UTF8{
         return r;
     }
 
-    byte[] utf8_encode(String s){
+    byte[] utf8_encode(String s) {
         int len = 0;
         int strlen = s.length();
         for (int i = 0; i < strlen; i++) {

@@ -1,8 +1,8 @@
 package org.codeyn.util;
 
-public class MathYn{
+public class MathYn {
 
-    public static double roundFloat(double d, int dec){
+    public static double roundFloat(double d, int dec) {
         if (dec <= 0) {
             return Math.round(d);
         }
@@ -13,7 +13,7 @@ public class MathYn{
     /**
      * 值是否满足逻辑运算符
      */
-    public static boolean isValueSatisfyLogicOperator(double value, String lOp){
+    public static boolean isValueSatisfyLogicOperator(double value, String lOp) {
         boolean result = false;
         if (lOp.equals("=")) {
             result = value == 0;
@@ -33,7 +33,7 @@ public class MathYn{
      * 公式两边的值是否满足逻辑运算符
      */
     public static boolean isValueSatisfyLogicOperator(double leftValue,
-            double rightValue, String lOp){
+                                                      double rightValue, String lOp) {
         double sub = leftValue - rightValue;
         return isValueSatisfyLogicOperator(sub, lOp);
     }

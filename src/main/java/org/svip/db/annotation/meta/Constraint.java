@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Constraint{
-    public boolean primary() default false;
+public @interface Constraint {
+    boolean primary() default false;
 
-    public String unique() default "";
+    String unique() default "";
 
-    public boolean nullAble() default true;
+    boolean nullAble() default true;
 
-    public boolean autoIncrement() default false;
+    boolean autoIncrement() default false;
 }

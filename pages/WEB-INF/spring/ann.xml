@@ -1,85 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
-		<property name="interceptors">
-    		<list>
-    			<ref bean="i1"/>
-    			<ref bean="conversion"/>
-    			<ref bean="i2"/>
-    		</list>
-    	</property>
-	</bean>
-	
-	<bean id="i1" class="org.demo.interceptor.Interceptor1"/>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="i1"/>
+                <ref bean="conversion"/>
+                <ref bean="i2"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="i1" class="org.demo.interceptor.Interceptor1"/>
     <bean id="i2" class="org.demo.interceptor.Interceptor2"/>
     <bean id="conversion" class="org.springframework.web.servlet.handler.ConversionServiceExposingInterceptor">
-    	<constructor-arg name="conversionService" ref="conversionService"/>
+        <constructor-arg name="conversionService" ref="conversionService"/>
     </bean>
-	
-	
-	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-		<property name="webBindingInitializer" ref="webBindingInitializer1"/>
-	</bean>
-	
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-		<property name="prefix" value="/jsp/"/>
-		<property name="suffix" value=".jsp"/>
-	</bean>
-	
-	<!-- ConfigurableWebBindingInitializer registry conversionService -->
-	<bean id="webBindingInitializer1" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
-		<property name="conversionService" ref="conversionService"/>
-	</bean>
-	
-	<!-- ConversionFactory -->
-	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
 
-		<property name="converters">
-			<list>
-				<bean class="org.demo.data.converter.StringToPhoneNumberConverter"/>
-				<bean class="org.demo.data.converter.PhoneNumberToStringConverter"/>
-				<bean class="org.demo.data.converter.StringToDateConverter">
-					<constructor-arg value="yyyy-MM-ddHH:mm:ss"/>
-				</bean>
-				<bean class="org.demo.data.converter.StringToUserStateConverter"/>
-			</list>
-		</property>
-		
-		<property name="formatters">
-			<list>
-				<bean class="org.demo.data.formatter.PhoneNunberFactory"/>
-			</list>
-		</property>
-	</bean>
-	
-	
 
-	<!-- Below is controller -->
-	<bean class="org.demo.annotation.controller.UserController"/>
-	<bean class="org.demo.annotation.controller.RestFulController"/>
-	
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="webBindingInitializer" ref="webBindingInitializer1"/>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- ConfigurableWebBindingInitializer registry conversionService -->
+    <bean id="webBindingInitializer1" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+        <property name="conversionService" ref="conversionService"/>
+    </bean>
+
+    <!-- ConversionFactory -->
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+
+        <property name="converters">
+            <list>
+                <bean class="org.demo.data.converter.StringToPhoneNumberConverter"/>
+                <bean class="org.demo.data.converter.PhoneNumberToStringConverter"/>
+                <bean class="org.demo.data.converter.StringToDateConverter">
+                    <constructor-arg value="yyyy-MM-ddHH:mm:ss"/>
+                </bean>
+                <bean class="org.demo.data.converter.StringToUserStateConverter"/>
+            </list>
+        </property>
+
+        <property name="formatters">
+            <list>
+                <bean class="org.demo.data.formatter.PhoneNunberFactory"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- Below is controller -->
+    <bean class="org.demo.annotation.controller.UserController"/>
+    <bean class="org.demo.annotation.controller.RestFulController"/>
+
     <bean class="org.efsn.web.controller.HwController">
-    	<property name="requireSession" value="false"/>
-    	<property name="cacheSeconds" value="5"/>
+        <property name="requireSession" value="false"/>
+        <property name="cacheSeconds" value="5"/>
     </bean>
 
     <bean class="org.efsn.web.controller.FormController"/>
     <bean class="org.efsn.web.controller.WizardFormController"/>
-    
+
     <bean name="/p.do" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-    	<property name="viewName" value="param"/>
+        <property name="viewName" value="param"/>
     </bean>
 
-	<bean name="/f.do" class="org.springframework.web.servlet.mvc.ServletForwardingController">
-		<property name="servletName" value="forwarding"/>
-	</bean>
+    <bean name="/f.do" class="org.springframework.web.servlet.mvc.ServletForwardingController">
+        <property name="servletName" value="forwarding"/>
+    </bean>
 
-	<bean class="org.efsn.web.controller.CommandController"/>
-	
+    <bean class="org.efsn.web.controller.CommandController"/>
+
     <!-- 
 	 longest name priority 
 	<bean name="/jsp/*" class="org.sprigframework.web.servlet.mvc.UrlFilenameViewController"/>
@@ -141,37 +140,36 @@
 	</bean>
 
 	-->
-	
-	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basename" value="classpath:messages"/>
-		<property name="fileEncodings" value="uft-8"/>
-		<property name="cacheSeconds" value="120"/>
-	</bean>
 
-	<bean class="org.demo.data.controller.DataBinderController"/>
-	
-	<bean class="org.demo.data.controller.ErrorController"/>
-	
-	<bean class="org.demo.multi.controller.DataBindErrorController"/>
-	
-	<bean class="org.demo.data.BinderAndValidatorController"/>
-	
-	
-	<!-- 
-		below validator ConversionService use mvc:annotaion-driven auto-registry
-		
-		<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
-			<property name="providerClass" value="org.hebernate.validator.HebernateValidator"/>
-			default is classpath:ValidationMessages.properties 
-			<property name="validatioinMessageSource" ref="messageSource"/>	
-		</bean>
-		
-		<bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
-			<property name="conversionService" ref="conversionService"/>
-			<property name="validator" ref="validator"/>
-		</bean>	
-	 -->
-	
-	
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="classpath:messages"/>
+        <property name="fileEncodings" value="uft-8"/>
+        <property name="cacheSeconds" value="120"/>
+    </bean>
+
+    <bean class="org.demo.data.controller.DataBinderController"/>
+
+    <bean class="org.demo.data.controller.ErrorController"/>
+
+    <bean class="org.demo.multi.controller.DataBindErrorController"/>
+
+    <bean class="org.demo.data.BinderAndValidatorController"/>
+
+
+    <!--
+        below validator ConversionService use mvc:annotaion-driven auto-registry
+
+        <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+            <property name="providerClass" value="org.hebernate.validator.HebernateValidator"/>
+            default is classpath:ValidationMessages.properties
+            <property name="validatioinMessageSource" ref="messageSource"/>
+        </bean>
+
+        <bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+            <property name="conversionService" ref="conversionService"/>
+            <property name="validator" ref="validator"/>
+        </bean>
+     -->
+
 
 </beans> 

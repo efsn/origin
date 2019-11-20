@@ -3,12 +3,12 @@ package org.jspsmart.upload;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-public class Request{
-    
+public class Request {
+
     private Hashtable<String, Hashtable<Integer, String>> hts = new Hashtable<String, Hashtable<Integer, String>>();
     private int count;
 
-    protected void putParameter(String name, String content){
+    protected void putParameter(String name, String content) {
         if (name == null)
             throw new IllegalArgumentException("The name of an element cannot be null");
         Hashtable<Integer, String> ht;
@@ -23,7 +23,7 @@ public class Request{
         }
     }
 
-    public String getParameter(String name){
+    public String getParameter(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Form's name is invalid or does not exist");
         }
@@ -32,11 +32,11 @@ public class Request{
         return ht.get(0);
     }
 
-    public Enumeration<String> getParameterNames(){
+    public Enumeration<String> getParameterNames() {
         return hts.keys();
     }
 
-    public String[] getParameterValues(String name){
+    public String[] getParameterValues(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Form's name is invalid or does not exist");
         }

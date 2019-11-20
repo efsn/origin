@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <pools>
-	<pool id="blues">
-		<driver>com.mysql.jdbc.Driver</driver>
-		<url>jdbc:mysql://localhost:3306/blues</url>
-		<useUnicode>true</useUnicode>
-		<characterEncoding>UTF8</characterEncoding>
-		<username>blues</username>
-		<password>blues</password>
+    <pool id="blues">
+        <driver>com.mysql.jdbc.Driver</driver>
+        <url>jdbc:mysql://localhost:3306/blues</url>
+        <useUnicode>true</useUnicode>
+        <characterEncoding>UTF8</characterEncoding>
+        <username>blues</username>
+        <password>blues</password>
         <miniNum>3</miniNum>
         <maxiNum>10</maxiNum>
         <timeout>0</timeout>
         <waitTime>60000</waitTime>
-	</pool>
+    </pool>
 
-	<pool id="root">
-		<driver>com.mysql.jdbc.Driver</driver>
-		<url>jdbc:mysql://localhost:3306/blues</url>
-		<useUnicode>true</useUnicode>
-		<characterEncoding>UTF8</characterEncoding>
-		<username>root</username>
-		<password>456987</password>
+    <pool id="root">
+        <driver>com.mysql.jdbc.Driver</driver>
+        <url>jdbc:mysql://localhost:3306/blues</url>
+        <useUnicode>true</useUnicode>
+        <characterEncoding>UTF8</characterEncoding>
+        <username>root</username>
+        <password>456987</password>
         <miniNum>4</miniNum>
         <maxiNum>11</maxiNum>
         <timeout>0</timeout>
         <waitTime>10000</waitTime>
-	</pool>
+    </pool>
 </pools>

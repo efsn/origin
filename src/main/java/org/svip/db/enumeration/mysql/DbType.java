@@ -5,7 +5,7 @@ package org.svip.db.enumeration.mysql;
  *
  * @author Blues
  */
-public enum DbType{
+public enum DbType {
     /**
      * fixed length string, at most 255 characters
      * char(length)

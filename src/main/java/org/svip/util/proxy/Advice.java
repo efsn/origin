@@ -1,6 +1,7 @@
 package org.svip.util.proxy;
 
-public interface Advice{
+public interface Advice {
     String before();
+
     String after();
 }

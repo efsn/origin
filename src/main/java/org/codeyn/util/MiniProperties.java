@@ -1,197 +1,187 @@
 package org.codeyn.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringReader;
+import org.codeyn.util.yn.StrUtil;
+import org.codeyn.util.yn.StrmUtil;
+
+import java.io.*;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.codeyn.util.yn.StrmUtil;
-import org.codeyn.util.yn.StrUtil;
-
 /**
  * 此类和Properties不同的地方是，提供一些更易用的get方法和set方法 存储的格式不编码unicode的，存储时带有编码信息
  */
-public class MiniProperties extends Properties{
+public class MiniProperties extends Properties {
     /**
-	 * 
-	 */
+     *
+     */
     private static final long serialVersionUID = 8556292079479092975L;
 
     private static final String HEADER_CHARSET = "#charset ";
+    private static final String commentChars = "#!";// 注释符号
+    private static final String specialLoadChars = " =:\\trnf#!";
+    /**
+     * A table of hex digits
+     */
+    private static final char[] hexDigit = {'0', '1', '2', '3', '4', '5', '6',
+            '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final String specialSaveChars = "=:\\\t\r\n\f#!";// =,:,\,\t,\t,\n,\f,＃，!
 
-    public MiniProperties(){
+    public MiniProperties() {
+    }
+
+    /**
+     * Convert a nibble to a hex character
+     *
+     * @param nibble the nibble to convert.
+     */
+    private static char toHex(int nibble) {
+        return hexDigit[(nibble & 0xF)];
+    }
+
+    private static void writeln(BufferedWriter bw, String s) throws IOException {
+        bw.write(s);
+        bw.newLine();
     }
 
     /**
      * 根据key值返回对应的value值
-     * 
-     * @param key
-     *            指定的key值
+     *
+     * @param key 指定的key值
      * @return 返回value
      */
-    public String getString(String key){
+    public String getString(String key) {
         return getProperty(key);
     }
 
     /**
      * 根据指定key值返回对应的value值，当value值为null或""时，返回缺省值defaultValue
-     * 
-     * @param key
-     *            指定的key值
-     * @param defaultValue
-     *            缺省值
+     *
+     * @param key          指定的key值
+     * @param defaultValue 缺省值
      * @return 返回value或defaultValue
      */
-    public String getString(String key, String defaultValue){
+    public String getString(String key, String defaultValue) {
         return getProperty(key, defaultValue);
     }
 
     /**
      * 根据指定的key返回对应的value值的long类型，如果value不能转换为long类型，默认返回0
-     * 
-     * @param key
-     *            指定的key值
+     *
+     * @param key 指定的key值
      * @return 返回value的long类型
      */
-    public long getLong(String key){
+    public long getLong(String key) {
         return StrUtil.str2long(getProperty(key), 0);
     }
 
     /**
      * 根据指定的key返回对应的value值的long类型，如果value不能转换为long类型，则返回默认值defaultValue
-     * 
-     * @param key
-     *            指定的key值
-     * @param defaultValue
-     *            缺省值
+     *
+     * @param key          指定的key值
+     * @param defaultValue 缺省值
      * @return 返回value的long类型或缺省值
      */
-    public long getLong(String key, long defaultValue){
+    public long getLong(String key, long defaultValue) {
         return StrUtil.str2long(getProperty(key), defaultValue);
     }
 
     /**
      * 根据指定的key返回对应的value值的int类型，如果value不能转换为int类型，默认返回0
-     * 
-     * @param key
-     *            指定的key值
+     *
+     * @param key 指定的key值
      * @return 返回value的int类型或0
      */
-    public int getInt(String key){
+    public int getInt(String key) {
         return StrUtil.str2int(getProperty(key), 0);
     }
 
     /**
      * 根据指定的key返回对应的value值的int类型，如果value不能转换为int类型，则返回默认值defaultValue
-     * 
-     * @param key
-     *            指定的key值
-     * @param defaultValue
-     *            缺省值
+     *
+     * @param key          指定的key值
+     * @param defaultValue 缺省值
      * @return 返回value的int类型或defaultValue
      */
-    public int getInt(String key, int defaultValue){
+    public int getInt(String key, int defaultValue) {
         return StrUtil.str2int(getProperty(key), defaultValue);
     }
 
     /**
      * 根据指定的key返回对应的value值的float类型，如果value不能转换为float类型，则返回默认值0
-     * 
-     * @param key
-     *            指定的key值
+     *
+     * @param key 指定的key值
      * @return 返回value的float类型或0
      */
-    public float getFloat(String key){
+    public float getFloat(String key) {
         return StrUtil.str2float(getProperty(key), 0);
     }
 
     /**
      * 根据指定的key返回对应的value值的float类型，如果value不能转换为float类型，则返回默认值defaultValue
-     * 
-     * @param key
-     *            指定的key值
+     *
+     * @param key          指定的key值
      * @param defaultValue
      * @return 返回value的float类型或defaultValue
      */
-    public float getFloat(String key, float defaultValue){
+    public float getFloat(String key, float defaultValue) {
         return StrUtil.str2float(getProperty(key), defaultValue);
     }
 
     /**
      * 根据指定的key返回对应的value值的double类型，如果value不能转换为double类型，则返回默认值0
-     * 
-     * @param key
-     *            指定的key值
+     *
+     * @param key 指定的key值
      * @return 返回value的double类型或0
      */
-    public double getDouble(String key){
+    public double getDouble(String key) {
         return StrUtil.str2double(getProperty(key), 0);
     }
 
     /**
      * 根据指定的key返回对应的value值的double类型，如果value不能转换为double类型，则返回默认值defaultValue
-     * 
-     * @param key
-     *            指定的key值
-     * @param defaultValue
-     *            缺省值
+     *
+     * @param key          指定的key值
+     * @param defaultValue 缺省值
      * @return
      */
-    public double getDouble(String key, double defaultValue){
+    public double getDouble(String key, double defaultValue) {
         return StrUtil.str2double(getProperty(key), defaultValue);
     }
 
     /**
      * 根据指定的key返回对应的value值的boolean类型
-     * 
-     * @param key
-     *            指定的key值
+     *
+     * @param key 指定的key值
      * @return 返回value的boolean类型
      */
-    public boolean getBoolean(String key){
+    public boolean getBoolean(String key) {
         return StrUtil.str2boolean(getProperty(key));
     }
 
     /**
      * 根据指定的key返回对应的value值的boolean类型,如果value值为null或"",则返回缺省值defaultValue
-     * 
-     * @param key
-     *            指定key值
-     * @param defaultValue
-     *            缺省值
+     *
+     * @param key          指定key值
+     * @param defaultValue 缺省值
      * @return
      */
-    public boolean getBoolean(String key, boolean defaultValue){
+    public boolean getBoolean(String key, boolean defaultValue) {
         return StrUtil
                 .str2boolean(getProperty(key, String.valueOf(defaultValue)));
     }
 
     /**
      * 设置MiniProperties的值，key为键值，value为对应的值
-     * 
-     * @param key
-     *            指定键值
-     * @param v
-     *            对应的value值
-     * @param ifnullOrBlankThenRemoveIt
-     *            如果为true则不插入value值为null或""的键值对，反之插入
+     *
+     * @param key                       指定键值
+     * @param v                         对应的value值
+     * @param ifnullOrBlankThenRemoveIt 如果为true则不插入value值为null或""的键值对，反之插入
      */
     public void setString(String key, String v,
-            boolean ifnullOrBlankThenRemoveIt){
+                          boolean ifnullOrBlankThenRemoveIt) {
         if (ifnullOrBlankThenRemoveIt && (v == null || v.length() == 0)) {
             this.remove(key);
         } else {
@@ -201,14 +191,12 @@ public class MiniProperties extends Properties{
 
     /**
      * 增加键值对，当value为空时，插入""
-     * 
-     * @param key
-     *            要插入的键值
-     * @param value
-     *            要插入的value值
+     *
+     * @param key   要插入的键值
+     * @param value 要插入的value值
      * @return 返回输入键值的旧值，如果没有值，则为 null。
      */
-    public String setString(String key, String value){
+    public String setString(String key, String value) {
         if (value == null) {
             return (String) setProperty(key, "");
         }
@@ -217,81 +205,71 @@ public class MiniProperties extends Properties{
 
     /**
      * 插入键值对，value为int类型
-     * 
-     * @param key
-     *            要插入的key值
-     * @param value
-     *            要插入的value值
+     *
+     * @param key   要插入的key值
+     * @param value 要插入的value值
      * @return 返回value值
      */
-    public int setInt(String key, int value){
+    public int setInt(String key, int value) {
         setProperty(key, String.valueOf(value));
         return value;
     }
 
     /**
      * 插入键值对，value为float类型
-     * 
-     * @param key
-     *            要插入的key值
-     * @param value
-     *            要插入的value值
+     *
+     * @param key   要插入的key值
+     * @param value 要插入的value值
      * @return 返回value值
      */
-    public float setFloat(String key, float value){
+    public float setFloat(String key, float value) {
         setProperty(key, String.valueOf(value));
         return value;
     }
 
     /**
      * 插入键值对，value为double类型
-     * 
-     * @param key
-     *            要插入的key值
-     * @param value
-     *            要插入的value值
+     *
+     * @param key   要插入的key值
+     * @param value 要插入的value值
      * @return 返回value值
      */
-    public double setDouble(String key, double value){
+    public double setDouble(String key, double value) {
         setProperty(key, String.valueOf(value));
         return value;
     }
 
     /**
      * 插入键值对，value为boolean类型
-     * 
-     * @param key
-     *            要插入的key值
-     * @param value
-     *            要插入的value值
+     *
+     * @param key   要插入的key值
+     * @param value 要插入的value值
      * @return 返回value值
      */
-    public boolean setBoolean(String key, boolean value){
+    public boolean setBoolean(String key, boolean value) {
         setProperty(key, String.valueOf(value));
         return value;
     }
 
     /**
      * 插入键值对，value为long类型
-     * 
-     * @param key
-     *            要插入的key值
-     * @param value
-     *            要插入的value值
+     *
+     * @param key   要插入的key值
+     * @param value 要插入的value值
      * @return 返回value值
      */
-    public long setLong(String key, long value){
+    public long setLong(String key, long value) {
         setProperty(key, String.valueOf(value));
         return value;
     }
 
     /**
      * 从文件导入
-     * 
+     *
      * @param fn
      * @throws IOException
      */
-    public synchronized void loadIfExists(String fn) throws IOException{
+    public synchronized void loadIfExists(String fn) throws IOException {
         File fobj = new File(fn);
         if (fobj.exists() && fobj.isFile()) {
             FileInputStream fin = new FileInputStream(fobj);
@@ -305,41 +283,36 @@ public class MiniProperties extends Properties{
 
     /**
      * 保存到文件
-     * 
+     *
      * @param fn
      * @throws IOException
      */
-    public synchronized void saveToFile(String fn) throws IOException{
+    public synchronized void saveToFile(String fn) throws IOException {
         saveToFile(fn, null);
     }
 
     /**
      * 将MiniProperties保存到文件中，header为文件头注释
-     * 
-     * @param fn
-     *            文件路径
-     * @param header
-     *            文件头注释
+     *
+     * @param fn     文件路径
+     * @param header 文件头注释
      * @throws IOException
      */
     public synchronized void saveToFile(String fn, String header)
-            throws IOException{
+            throws IOException {
         saveToFile(fn, header, null);
     }
 
     /**
      * 将MiniProperties以指定编码保存到文件中，header为文件头注释
-     * 
-     * @param fn
-     *            文件路径
-     * @param header
-     *            文件头注释
-     * @param charset
-     *            编码
+     *
+     * @param fn      文件路径
+     * @param header  文件头注释
+     * @param charset 编码
      * @throws IOException
      */
     public synchronized void saveToFile(String fn, String header, String charset)
-            throws IOException{
+            throws IOException {
         FileOutputStream fout = new FileOutputStream(fn);
         try {
             File fobj = new File(fn);
@@ -352,23 +325,21 @@ public class MiniProperties extends Properties{
 
     /**
      * 将MiniProperties保存到指定的流中
-     * 
+     *
      * @throws IOException
      */
-    public synchronized void store(OutputStream out) throws IOException{
+    public synchronized void store(OutputStream out) throws IOException {
         this.store(out, null, null);
     }
 
     /**
      * 将MiniProperties保存到指定的流中
-     * 
-     * @param fn
-     *            文件路径
-     * @param header
-     *            文件头注释
+     *
+     * @param fn     文件路径
+     * @param header 文件头注释
      */
     public synchronized void store(OutputStream out, String header)
-            throws IOException{
+            throws IOException {
         this.store(out, header, null);
     }
 
@@ -376,7 +347,7 @@ public class MiniProperties extends Properties{
      * 如果指定了编码，那么按指定的编码保存，并且在第一行保存编码信息，例如： #charset UTF-8
      */
     public synchronized void store(OutputStream out, String header,
-            String encoding) throws IOException{
+                                   String encoding) throws IOException {
         BufferedWriter awriter;
         if (StrUtil.isNull(encoding)) {
             awriter = new BufferedWriter(new OutputStreamWriter(out));
@@ -391,7 +362,7 @@ public class MiniProperties extends Properties{
             }
         }
         writeln(awriter, "#" + new Date().toString());
-        for (Enumeration e = keys(); e.hasMoreElements();) {
+        for (Enumeration e = keys(); e.hasMoreElements(); ) {
             String key = (String) e.nextElement();
             String val = (String) get(key);
             // 空值不保存
@@ -407,7 +378,7 @@ public class MiniProperties extends Properties{
     /**
      * 编码字串
      */
-    private String saveConvert(String theString, boolean escapeSpace){
+    private String saveConvert(String theString, boolean escapeSpace) {
         int len = theString.length();
         StringBuffer outBuffer = new StringBuffer(len * 2);
 
@@ -448,11 +419,11 @@ public class MiniProperties extends Properties{
 
     /**
      * 解析字串
-     * 
+     *
      * @param s
      * @return
      */
-    private String loadConvert(String s){
+    private String loadConvert(String s) {
         int len = s.length();
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < len; i++) {
@@ -518,11 +489,10 @@ public class MiniProperties extends Properties{
 
     /**
      * 将流中的内容导入到MiniProperties中
-     * 
-     * @param InputStream
-     *            输入的流
+     *
+     * @param InputStream 输入的流
      */
-    public synchronized void load(InputStream in) throws IOException{
+    public synchronized void load(InputStream in) throws IOException {
         load(in, null);
     }
 
@@ -536,30 +506,30 @@ public class MiniProperties extends Properties{
      * 但是getString(String key, String defaultValue)方法的处理当键的对应值为null时，才返回默认值。 <br />
      * 由于该原因，主题集属性页面没有选中“分母为零时的处理”的单选框组合中的单选框，导致在进行保存时，由于服务器端
      * 接收到的参数为null，进而导致抛出了空指针异常。
-     * 
+     *
      * @param in
      * @param charset
      */
-    public String getProperty(String key, String defaultValue){
+    public String getProperty(String key, String defaultValue) {
         String val = getProperty(key);
         return (StrUtil.isNull(val)) ? defaultValue : val;
     }
 
     /**
      * 支持传入一个编码， 如果流中带有编码信息，比如下面的格式
-     * 
+     * <p>
      * #charset UTF-8
-     * 
+     * <p>
      * 那么自动使用流中的编码设置。
-     * 
+     * <p>
      * fixme:在websphere上，如果没有指定明确的charset且in中有中文就算是注释，也会有问题
-     * 
+     *
      * @param in
      * @param charset
      * @throws IOException
      */
     public synchronized void load(InputStream in, String charset)
-            throws IOException{
+            throws IOException {
         if (in == null) return;
         if (!in.markSupported()) in = new BufferedInputStream(in);
         in.mark(50);
@@ -581,24 +551,22 @@ public class MiniProperties extends Properties{
 
     /**
      * 将字符串中的内容导入MiniProperties中
-     * 
-     * @param in
-     *            输入的流
+     *
+     * @param in 输入的流
      * @throws IOException
      */
-    public synchronized void load(String in) throws IOException{
+    public synchronized void load(String in) throws IOException {
         if (in == null || in.length() == 0) return;
         load(new StringReader(in));
     }
 
     /**
      * 将流in中的内容导入到MiniProperties中
-     * 
-     * @param in
-     *            输入的流
+     *
+     * @param in 输入的流
      * @throws IOException
      */
-    public synchronized void load(Reader in) throws IOException{
+    public synchronized void load(Reader in) throws IOException {
         if (in == null) {
             return;
         }
@@ -620,7 +588,7 @@ public class MiniProperties extends Properties{
                     continue;
                 }
                 key = loadConvert(s.substring(0, p));
-                value = loadConvert(s.substring(p + 1, s.length()));
+                value = loadConvert(s.substring(p + 1));
                 if (!StrUtil.isNull(key) && !StrUtil.isNull(value)) {
                     put(key, value);
                 }
@@ -632,11 +600,11 @@ public class MiniProperties extends Properties{
 
     /**
      * 返回等号（=或:）的位置
-     * 
+     *
      * @param s
      * @return
      */
-    private int getEqualsPos(String s){
+    private int getEqualsPos(String s) {
         Pattern p = Pattern
                 .compile("(^(\\\\\\\\)*[=:])|([^\\\\](\\\\\\\\)*[=:])");
         Matcher m = p.matcher(s);
@@ -644,30 +612,5 @@ public class MiniProperties extends Properties{
             return m.end() - 1;
         }
         return -1;
-    }
-
-    /**
-     * Convert a nibble to a hex character
-     * 
-     * @param nibble
-     *            the nibble to convert.
-     */
-    private static char toHex(int nibble){
-        return hexDigit[(nibble & 0xF)];
-    }
-
-    private static final String commentChars = "#!";// 注释符号
-
-    private static final String specialLoadChars = " =:\\trnf#!";
-
-    /** A table of hex digits */
-    private static final char[] hexDigit = {'0', '1', '2', '3', '4', '5', '6',
-            '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
-    private static final String specialSaveChars = "=:\\\t\r\n\f#!";// =,:,\,\t,\t,\n,\f,＃，!
-
-    private static void writeln(BufferedWriter bw, String s) throws IOException{
-        bw.write(s);
-        bw.newLine();
     }
 }

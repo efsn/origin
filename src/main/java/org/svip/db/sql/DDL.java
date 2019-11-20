@@ -10,7 +10,7 @@ import java.sql.SQLException;
  * @version 1.0
  * Created on 2014/08/20
  */
-public interface DDL extends SQL{
+public interface DDL extends SQL {
 
     /**
      * Create table according to bean clazz

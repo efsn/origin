@@ -7,161 +7,162 @@ import org.codeyn.util.exception.CancelException;
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: </p>
+ *
  * @author not attributable
  * @version 1.0
  */
 
 
 public class ProgressProxy
-    implements IProgress {
-  private IProgress i;
-  public ProgressProxy(IProgress i) {
-    this.i = i;
-  }
+        implements IProgress {
+    private IProgress i;
 
-  public void setMessage(String msg) {
-    if (i != null) {
-      i.setMessage(msg);
-    }
-  }
-
-  public void addLog(String log) {
-    if (i != null) {
-      i.addLog(log);
-    }
-  }
-  
-  public void setLastLog(String log) {
-    if (i != null) {
-      i.setLastLog(log);
-    }
-  }
-
-  public void setProgress(int min, int max, int step) {
-    if (i != null) {
-      i.setProgress(min, max, step);
-    }
-  }
-
-  public void setPosition(int p) {
-    if (i != null) {
-      i.setPosition(p);
-    }
-  }
-
-  public void step(int st) {
-    if (i != null) {
-      i.step(st);
-    }
-  }
-
-  public void stepit() {
-    if (i != null) {
-      i.stepit();
-    }
-  }
-
-  public boolean isCancel() {
-    if (i != null) {
-      return i.isCancel();
-    }
-    else {
-      return false;
-    }
-  }
-
-  public void checkCancel() throws CancelException {
-    if (i != null) {
-      i.checkCancel();
-    }
-  }
-
-  /**
-   * showException
-   *
-   * @param e Exception
-   */
-  public void showException(Exception e) {
-    if (i != null) {
-      i.showException(e);
+    public ProgressProxy(IProgress i) {
+        this.i = i;
     }
 
-  }
-
-  public String getLogs() {
-    if (i != null) {
-      return i.getLogs();
+    public void addLog(String log) {
+        if (i != null) {
+            i.addLog(log);
+        }
     }
-    return null;
-  }
 
-  public void addLogWithTime(String log) {
-    if (i != null) {
-      i.addLogWithTime(log);
+    public void setProgress(int min, int max, int step) {
+        if (i != null) {
+            i.setProgress(min, max, step);
+        }
     }
-  }
 
-	public String getLastLog() {
-		if (i != null) {
-      return i.getLastLog();
+    public void step(int st) {
+        if (i != null) {
+            i.step(st);
+        }
     }
-		
-		return null;
-	}
 
-  public int getLogCount() {
-    if (i != null) {
-      return i.getLogCount();
+    public void stepit() {
+        if (i != null) {
+            i.stepit();
+        }
     }
-    return 0;
-  }
 
-  public String getLog(int i) {
-    if (this.i != null) {
-      return this.i.getLog(i);
+    public boolean isCancel() {
+        if (i != null) {
+            return i.isCancel();
+        } else {
+            return false;
+        }
     }
-    return null;
-  }
 
-  public void setLastLogWithTime(String log) {
-    if (this.i != null) {
-      this.i.setLastLogWithTime(log);
+    public void checkCancel() throws CancelException {
+        if (i != null) {
+            i.checkCancel();
+        }
     }
-  }
 
-public void setCancel(boolean value,String msg) {
-	if(this.i!=null){
-		this.i.setCancel(value,msg);
-	}
-	
-}
+    /**
+     * showException
+     *
+     * @param e Exception
+     */
+    public void showException(Exception e) {
+        if (i != null) {
+            i.showException(e);
+        }
 
-  public int getStep() {
-    return this.i.getStep();
-  }
+    }
 
-  public int getMin() {
-    return this.i.getMin();
-  }
+    public String getLogs() {
+        if (i != null) {
+            return i.getLogs();
+        }
+        return null;
+    }
 
-  public int getMax() {
-    return this.i.getMax();
-  }
+    public void addLogWithTime(String log) {
+        if (i != null) {
+            i.addLogWithTime(log);
+        }
+    }
 
-  public int getPosition() {
-    return this.i.getPosition();
-  }
+    public String getLastLog() {
+        if (i != null) {
+            return i.getLastLog();
+        }
 
-  public String getMessage() {
-    return this.i.getMessage();
-  }
+        return null;
+    }
 
-  public void setFinished() {
-    this.i.setFinished();
-  }
+    public void setLastLog(String log) {
+        if (i != null) {
+            i.setLastLog(log);
+        }
+    }
 
-  public boolean isFinshed() {
-    return this.i.isFinshed();
-  }
+    public int getLogCount() {
+        if (i != null) {
+            return i.getLogCount();
+        }
+        return 0;
+    }
+
+    public String getLog(int i) {
+        if (this.i != null) {
+            return this.i.getLog(i);
+        }
+        return null;
+    }
+
+    public void setLastLogWithTime(String log) {
+        if (this.i != null) {
+            this.i.setLastLogWithTime(log);
+        }
+    }
+
+    public void setCancel(boolean value, String msg) {
+        if (this.i != null) {
+            this.i.setCancel(value, msg);
+        }
+
+    }
+
+    public int getStep() {
+        return this.i.getStep();
+    }
+
+    public int getMin() {
+        return this.i.getMin();
+    }
+
+    public int getMax() {
+        return this.i.getMax();
+    }
+
+    public int getPosition() {
+        return this.i.getPosition();
+    }
+
+    public void setPosition(int p) {
+        if (i != null) {
+            i.setPosition(p);
+        }
+    }
+
+    public String getMessage() {
+        return this.i.getMessage();
+    }
+
+    public void setMessage(String msg) {
+        if (i != null) {
+            i.setMessage(msg);
+        }
+    }
+
+    public void setFinished() {
+        this.i.setFinished();
+    }
+
+    public boolean isFinshed() {
+        return this.i.isFinshed();
+    }
 
 }

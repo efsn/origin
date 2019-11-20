@@ -1,13 +1,13 @@
 package org.codeyn.util.file;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.codeyn.util.GUID;
+import org.codeyn.util.exception.ExceptionHandler;
+import org.codeyn.util.exception.IllegalParameterException;
+import org.codeyn.util.i18n.I18N;
+import org.codeyn.util.yn.StrUtil;
+import org.codeyn.util.yn.StrmUtil;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -17,19 +17,12 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.codeyn.util.GUID;
-import org.codeyn.util.exception.ExceptionHandler;
-import org.codeyn.util.exception.IllegalParameterException;
-import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StrUtil;
-import org.codeyn.util.yn.StrmUtil;
-
 /**
  * <p>
  * File tool
  * </p>
  */
-public final class FileUtil{
+public final class FileUtil {
 
     public static final int LISTFILE_OPTION_RECUR = 0x1;// 是否递归遍历子目录
     public static final int LISTFILE_OPTION_INCLUDEDIR = 0x2;// 是否遍历目录名
@@ -43,11 +36,21 @@ public final class FileUtil{
     public static final int SORT_TIME = 1;
     public static final int SIZE = SORT_SIZE;
     public static final int TIME = SORT_TIME;
+    /**
+     * 文件名内不能包含的字符
+     */
+    public final static String invalidFnChar = "/\\:*?\"\'<>|\r\n\t\b\f";// 增加了一些不能包含特殊字符
+    public static final char SEPCHAR = '/';
+    public static final String SEPSTR = "" + SEPCHAR;
+    /**
+     * 文件名不能包含的字符提示,增加了转义,报错时使用于前台显示 ISSUE:BI-8584 add by wandj 2013.6.18
+     */
+    private final static String invalidFnCharthrow = "/\\:*?\"\'<>|\\r\\n\\t\\b\\f";
 
-    private FileUtil(){
+    private FileUtil() {
     }
 
-    public static String[] listSubDir(String dir){
+    public static String[] listSubDir(String dir) {
         List<String> subDirs = new ArrayList<String>();
         File dirF = new File(dir);
         File[] files = dirF.listFiles();
@@ -65,7 +68,7 @@ public final class FileUtil{
     /**
      * Change separator in file path
      */
-    public static String changeSeparator(String path){
+    public static String changeSeparator(String path) {
         if (path == null) {
             return null;
         }
@@ -82,13 +85,13 @@ public final class FileUtil{
      * "sandown.*\\([0-9]*,[0-9]*,[0-9]*,[0-9]*\\)\\.cab";
      * option是LISTFILE_OPTION_RECUR
      * ，LISTFILE_OPTION_INCLUDEDIR和LISTFILE_OPTION_EXCLUDEFILE的组合
-     * 
+     *
      * @param path
      * @param filter
      * @param option
      * @return
      */
-    public static File[] listFiles(String path, String filter, int option){
+    public static File[] listFiles(String path, String filter, int option) {
         if (StrUtil.isNull(path)) return null;
         boolean rec = LISTFILE_OPTION_RECUR == (option & LISTFILE_OPTION_RECUR);
         boolean includeDir = LISTFILE_OPTION_INCLUDEDIR == (option & LISTFILE_OPTION_INCLUDEDIR);
@@ -106,7 +109,7 @@ public final class FileUtil{
     }
 
     private static void listFilesRec(List<File> l, File dir, Pattern p, boolean rec,
-            boolean includeDir, boolean excludeFile){
+                                     boolean includeDir, boolean excludeFile) {
         File[] fs = dir.listFiles();
         if (fs == null) return;
         for (int i = 0; i < fs.length; i++) {
@@ -127,11 +130,11 @@ public final class FileUtil{
 
     /**
      * 提取文件名后缀
-     * 
+     *
      * @param fn
      * @return 文件后缀串，带点，比如".COD"，".txt"
      */
-    public static String extractFileExt(String fn){
+    public static String extractFileExt(String fn) {
         int i = fn.lastIndexOf('.');
         int j = lastIndexOfPathSeparator(fn); // separator leng always 1
         if (j >= i) {
@@ -141,10 +144,10 @@ public final class FileUtil{
             return null;
         }
         // 如果i==0,则传入的就是一个文件后缀,直接返回
-        return i == 0 ? fn : fn.substring(i, fn.length());
+        return i == 0 ? fn : fn.substring(i);
     }
 
-    public static String extractFileName(String fn){
+    public static String extractFileName(String fn) {
         int j = lastIndexOfPathSeparator(fn);
         if (j == -1) {
             return fn;
@@ -152,7 +155,7 @@ public final class FileUtil{
         return (fn.substring(j + 1));
     }
 
-    public final static String extractFileDir(String fn){
+    public final static String extractFileDir(String fn) {
         int i = lastIndexOfPathSeparator(fn);
         if (i < 0) {
             return "";
@@ -161,7 +164,7 @@ public final class FileUtil{
         }
     }
 
-    public static String extractFileName(String fn, boolean includeExt){
+    public static String extractFileName(String fn, boolean includeExt) {
         int j = lastIndexOfPathSeparator(fn);
         String s;
         if (j == -1) {
@@ -175,7 +178,7 @@ public final class FileUtil{
         return s;
     }
 
-    public static int lastIndexOf(String str, char ch){
+    public static int lastIndexOf(String str, char ch) {
         if (str == null) return -1;
 
         int length = str.length();
@@ -190,11 +193,11 @@ public final class FileUtil{
 
     /**
      * 去掉文件的扩展名，返回剩下的部分
-     * 
+     *
      * @param fn
      * @return
      */
-    public static final String excludeFileExt(String fn){
+    public static final String excludeFileExt(String fn) {
         if (fn == null) return fn;
         int i = lastIndexOf(fn, '.');
         if (i != -1) {
@@ -205,11 +208,11 @@ public final class FileUtil{
 
     /**
      * 从s的后面开始向前寻找/或者\，返回找到的字符对应的序号，s为null或者没有找到都返回-1
-     * 
+     *
      * @param str
      * @return
      */
-    public static int lastIndexOfPathSeparator(String str){
+    public static int lastIndexOfPathSeparator(String str) {
         if (str == null) return -1;
 
         int length = str.length();
@@ -225,17 +228,17 @@ public final class FileUtil{
 
     /**
      * 删除文件路径中的驱动符号
-     * 
+     *
      * @param fn
      * @return 不含驱动符号的文件名
      */
-    public static String delDriver(String fn){
+    public static String delDriver(String fn) {
         int i = fn.indexOf(":");
         if (i == fn.length() - 1) {
             return null;
         }
         if (i != -1) {
-            fn = fn.substring(i + 1, fn.length());
+            fn = fn.substring(i + 1);
         }
         return fn;
     }
@@ -243,18 +246,18 @@ public final class FileUtil{
     /**
      * 删除文件,可以是文件也可以是目录
      */
-    public static boolean remove(String file){
+    public static boolean remove(String file) {
         if (StrUtil.isNull(file)) return true;
         return remove(new File(file));
     }
 
-    public static boolean remove(File file){
+    public static boolean remove(File file) {
         if (file == null || !file.exists()) return true;
         return file.isFile() ? removeFile(file.getAbsolutePath())
                 : removeDir(file);
     }
 
-    public static boolean removeFile(String file){
+    public static boolean removeFile(String file) {
         if (file == null || file.length() == 0) return true;
 
         File f = new File(file);
@@ -265,12 +268,11 @@ public final class FileUtil{
 
     /**
      * 删除目录
-     * 
-     * @param dir
-     *            目录名
+     *
+     * @param dir 目录名
      * @return 如果目录下所有文件删除成功，返回true，否则false;
      */
-    public static boolean removeDir(String dir){
+    public static boolean removeDir(String dir) {
         if (dir == null || dir.length() == 0) {
             return true;
         }
@@ -280,28 +282,24 @@ public final class FileUtil{
 
     /**
      * 删除目录
-     * 
-     * @param dir
-     *            目录文件
+     *
+     * @param dir 目录文件
      * @return 如果目录下所有文件删除成功，返回true，否则false; 一遇到无法成功删除的文件即中止
      */
-    public static boolean removeDir(File dir){
+    public static boolean removeDir(File dir) {
         if (!dirExists(dir)) {
             return false;
         }
         if (!clearDir(dir)) {
             return false;
         }
-        if (!dir.delete()) {
-            return false;
-        }
-        return true;
+        return dir.delete();
     }
 
     /**
      * 清空一个文件夹内的所有文件
      */
-    public static boolean clearDir(File dir){
+    public static boolean clearDir(File dir) {
         File[] files = dir.listFiles();
         for (int i = 0, len = files == null ? 0 : files.length; i < len; i++) {
             File file = files[i];
@@ -318,22 +316,22 @@ public final class FileUtil{
 
     /**
      * 创建目录
-     * 
+     *
      * @param dir
      * @return 成功创建返回true；
      */
-    public static boolean createDir(String dir){
+    public static boolean createDir(String dir) {
         File f = new File(dir);
         return f.mkdirs();
     }
 
     /**
      * 创建给定的目录及其所有父目录,创建不成功会触发异常。 如果目录已存在则直接返回 传入的目录名可以带后面的斜杠
-     * 
+     *
      * @param dir
      * @return
      */
-    public static void forceDir(String dir){
+    public static void forceDir(String dir) {
         File f = new File(excludePathSeparator(dir));
         if (f.exists() && f.isDirectory()) {
             return;
@@ -346,27 +344,27 @@ public final class FileUtil{
     }
 
     public static String createTempDir(String path, String dir)
-            throws Exception{
+            throws Exception {
         return createTempDir(path, dir, true);
     }
 
     /**
      * 创建一个文件夹，位于路径path下，名称以dir打头，要求所创建的文件家不是已存在的，如果 存在path\dir则创建path\dir1...
      * path可以为空，自动取系统的临时路径。 dir可以为空，
-     * 
+     *
      * @param path
      * @param dir
      * @return
      */
     public static String createTempDir(String path, String dir, boolean mkdirs)
-            throws Exception{
+            throws Exception {
         return createTempFile(path, dir, true, mkdirs);
     }
 
     /**
      * 返回一个文件名，位于路径path下，名称以name打头，要求所返回的文件名不是已存在的，如果
      * 存在path\name则创建path\name1... path可以为空，自动取系统的临时路径。 name可以为空，
-     * 
+     *
      * @param path
      * @param name
      * @param isdir是否是返回一个文件夹名称如果不是则返回一个文件名称
@@ -374,7 +372,7 @@ public final class FileUtil{
      * @return 如果不成功返回null
      */
     public static File createTempFileObj(String path, String name,
-            boolean isdir, boolean createit) throws IOException{
+                                         boolean isdir, boolean createit) throws IOException {
         /**
          * by zcx 090626 原来的方法创建临时文件,多次调用可能会获得同一个路径,
          * 同时因为调用了File.exist()方法,非常耗时,此处修改不会再调用此方法 创建文件修改:
@@ -409,13 +407,13 @@ public final class FileUtil{
     }
 
     public static String createTempFile(String path, String name,
-            boolean isdir, boolean createit) throws IOException{
+                                        boolean isdir, boolean createit) throws IOException {
         return createTempFileObj(path, name, isdir, createit).getAbsolutePath();
     }
 
     /**
      * 在默认的目录下创建临时文件
-     * 
+     *
      * @param name
      * @param isdir
      * @param throwExceptionIfFail
@@ -423,33 +421,27 @@ public final class FileUtil{
      * @throws Exception
      */
     public static String createTempFile(String path, String name,
-            boolean isdir, boolean createit, boolean throwExceptionIfFail)
-            throws Exception{
+                                        boolean isdir, boolean createit, boolean throwExceptionIfFail)
+            throws Exception {
         return createTempFile(path, name, isdir, createit,
                 throwExceptionIfFail, true);
     }
 
     /**
      * 创建临时文件
-     * 
-     * @param path
-     *            父目录
-     * @param name
-     *            文件名,如果为空,则会随机创建一个文件名
-     * @param isdir
-     *            当前临时文件是否是目录
-     * @param createit
-     *            如果不存在,是否创建
-     * @param throwExceptionIfFail
-     *            如果创建失败并且此参数为true,则抛出异常
-     * @param checkPathExist
-     *            是否检查父目录存在,如果为true,则检查,为false,则不检查
+     *
+     * @param path                 父目录
+     * @param name                 文件名,如果为空,则会随机创建一个文件名
+     * @param isdir                当前临时文件是否是目录
+     * @param createit             如果不存在,是否创建
+     * @param throwExceptionIfFail 如果创建失败并且此参数为true,则抛出异常
+     * @param checkPathExist       是否检查父目录存在,如果为true,则检查,为false,则不检查
      * @return
      * @throws Exception
      */
     public static String createTempFile(String path, String name,
-            boolean isdir, boolean createit, boolean throwExceptionIfFail,
-            boolean checkPathExist) throws Exception{
+                                        boolean isdir, boolean createit, boolean throwExceptionIfFail,
+                                        boolean checkPathExist) throws Exception {
         if (path == null || path.length() == 0) {
             path = DEFAULT_PATH;
         }
@@ -472,31 +464,27 @@ public final class FileUtil{
 
     /**
      * 创建文件所在路径中的所有目录
-     * 
+     *
      * @param f
      * @return成功创建返回true；
      */
-    public static boolean createDirsOfFile(File f){
+    public static boolean createDirsOfFile(File f) {
         return f.getParentFile().mkdirs();
     }
 
     /**
      * 拷贝目录下的所有文件到另一个目录
-     * 
-     * @param srcDir
-     *            源目录
-     * @param desDir
-     *            目的目录
-     * @param overwrite
-     *            是否覆盖
+     *
+     * @param srcDir    源目录
+     * @param desDir    目的目录
+     * @param overwrite 是否覆盖
      * @return 若成功拷贝目录下所有文件，返回true，否则false
-     * @throws Exception
-     *             overwrite只对文件拷贝起作用，目录不存在覆盖不覆盖的问题；
-     *             如果目的文件已经存在，而overwrite=false，即不可覆盖，继续拷贝其他文件，
+     * @throws Exception overwrite只对文件拷贝起作用，目录不存在覆盖不覆盖的问题；
+     *                   如果目的文件已经存在，而overwrite=false，即不可覆盖，继续拷贝其他文件，
      */
     // copy all files from srcDir to desDir, including subdirs;
     public static boolean copyDir(String srcDir, String desDir,
-            boolean overwrite) throws Exception{
+                                  boolean overwrite) throws Exception {
         File sdir = new File(srcDir);
         File desf = new File(desDir);
         if (!dirExists(sdir)) {
@@ -533,23 +521,18 @@ public final class FileUtil{
 
     /**
      * 拷贝目录下的所有文件到另一个目录（可以对文件进行过滤）
-     * 
-     * @param srcDir
-     *            源目录
-     * @param desDir
-     *            目的目录
-     * @param overwrite
-     *            是否覆盖
-     * @param fileter
-     *            文件过滤
+     *
+     * @param srcDir    源目录
+     * @param desDir    目的目录
+     * @param overwrite 是否覆盖
+     * @param fileter   文件过滤
      * @return 若成功拷贝目录下所有文件，返回true，否则false
-     * @throws Exception
-     *             overwrite只对文件拷贝起作用，目录不存在覆盖不覆盖的问题；
-     *             如果目的文件已经存在，而overwrite=false，即不可覆盖，继续拷贝其他文件，
+     * @throws Exception overwrite只对文件拷贝起作用，目录不存在覆盖不覆盖的问题；
+     *                   如果目的文件已经存在，而overwrite=false，即不可覆盖，继续拷贝其他文件，
      */
     // copy all files from srcDir to desDir, including subdirs;
     public static boolean copyDir(String srcDir, String desDir,
-            boolean overwrite, java.io.FileFilter fileter) throws Exception{
+                                  boolean overwrite, java.io.FileFilter fileter) throws Exception {
         File sdir = new File(srcDir);
         File desf = new File(desDir);
         if (!dirExists(sdir)) {
@@ -586,19 +569,15 @@ public final class FileUtil{
 
     /**
      * 文件拷贝
-     * 
-     * @param f1
-     *            原文件名
-     * @param f2
-     *            目的文件名
-     * @param overwrite
-     *            是否覆盖
+     *
+     * @param f1        原文件名
+     * @param f2        目的文件名
+     * @param overwrite 是否覆盖
      * @return 成功拷贝，返回true，否则false;
-     * @throws Exception
-     *             如果目的文件已经存在，而overwrite=false，即不可覆盖，返回false;
+     * @throws Exception 如果目的文件已经存在，而overwrite=false，即不可覆盖，返回false;
      */
     public static boolean copyFile(String f1, String f2, boolean overwrite)
-            throws Exception{
+            throws Exception {
         File fa = new File(f1);
         File fb = new File(f2);
         return (copyFile(fa, fb, overwrite));
@@ -606,19 +585,15 @@ public final class FileUtil{
 
     /**
      * 文件拷贝
-     * 
-     * @param f1
-     *            原文件指针
-     * @param f2
-     *            目的文件指针
-     * @param overwrite
-     *            是否覆盖
+     *
+     * @param f1        原文件指针
+     * @param f2        目的文件指针
+     * @param overwrite 是否覆盖
      * @return 成功拷贝，返回true，否则false;
-     * @throws Exception
-     *             如果目的文件已经存在，而overwrite=false，即不可覆盖，返回false;
+     * @throws Exception 如果目的文件已经存在，而overwrite=false，即不可覆盖，返回false;
      */
     public static boolean copyFile(File f1, File f2, boolean overwrite)
-            throws Exception{
+            throws Exception {
         if (!f1.exists()) {
             return false; // 源文件不存在不应该触发异常
         }
@@ -648,19 +623,16 @@ public final class FileUtil{
 
     /**
      * 将源目录下的所有文件移动到另一个目录下
-     * 
-     * @param srcDir
-     *            原目录名
-     * @param desDir
-     *            目的目录名
-     * @param overwrite
-     *            是否覆盖
+     *
+     * @param srcDir    原目录名
+     * @param desDir    目的目录名
+     * @param overwrite 是否覆盖
      * @return 若所有文件成功移动，返回true，否则false
-     *         如果目的文件已经存在，而overwrite=false，即不可替换，继续移动其他文件;
+     * 如果目的文件已经存在，而overwrite=false，即不可替换，继续移动其他文件;
      */
     // rename all files under srcDir to desDir, including subdirs;
     public static boolean moveDir(String srcDir, String desDir,
-            boolean overwrite){
+                                  boolean overwrite) {
         File sdir = new File(srcDir);
         File desf = new File(desDir);
         if (!dirExists(sdir)) {
@@ -696,7 +668,7 @@ public final class FileUtil{
         return true;
     }
 
-    public static final void mkdirs(String dir){
+    public static final void mkdirs(String dir) {
         File dd = new File(dir);
         if (!dd.exists() || !dd.isDirectory()) {
             if (!dd.mkdirs()) {
@@ -709,13 +681,11 @@ public final class FileUtil{
 
     /**
      * 重命名一个目录或文件，不成功触发异常。
-     * 
-     * @param afrom
-     *            String
-     * @param ato
-     *            String
+     *
+     * @param afrom String
+     * @param ato   String
      */
-    public static final void rename(String afrom, String ato){
+    public static final void rename(String afrom, String ato) {
         File ff = new File(afrom);
         if (!ff.exists()) {
             // throw new RuntimeException("要重命名的文件或目录不存在："+afrom);
@@ -733,7 +703,7 @@ public final class FileUtil{
         }
     }
 
-    public static String includePathSeparator(String s){
+    public static String includePathSeparator(String s) {
         if (s == null || s.length() == 0) {
             return s;
         }
@@ -746,11 +716,11 @@ public final class FileUtil{
 
     /**
      * 确保路径s最末一个字符不是\或者/
-     * 
+     *
      * @param s
      * @return
      */
-    public static String excludePathSeparator(String s){
+    public static String excludePathSeparator(String s) {
         if (s == null || s.length() == 0) {
             return s;
         }
@@ -761,33 +731,32 @@ public final class FileUtil{
         }
     }
 
-    public static boolean fileExists(String fn){
+    public static boolean fileExists(String fn) {
         File f = new File(fn);
         return f.exists() && f.isFile();
     }
 
     /**
      * 判断目录是否存在
-     * 
-     * @param dir
-     *            目录名
+     *
+     * @param dir 目录名
      * @return
      */
-    public static boolean dirExists(String dir){
+    public static boolean dirExists(String dir) {
         File dd = new File(dir);
         return dirExists(dd);
     }
 
     /**
      * 判断一个目录是否存在并返回，如果目录不存在并且throwIfNotExists＝true则触发异常
-     * 
+     *
      * @param dir
      * @param throwIfNotExists
      * @return
      * @throws java.lang.Exception
      */
     public static boolean dirExists(String dir, boolean throwIfNotExists)
-            throws Exception{
+            throws Exception {
         boolean exists = dirExists(dir);
         if (!exists && throwIfNotExists) {
             // throw new Exception("目录不存在：" + dir);
@@ -800,16 +769,15 @@ public final class FileUtil{
 
     /**
      * 判断目录是否存在
-     * 
-     * @param dir
-     *            目录文件指针
+     *
+     * @param dir 目录文件指针
      * @return
      */
-    public static boolean dirExists(File dir){
+    public static boolean dirExists(File dir) {
         return (dir.exists() && dir.isDirectory());
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             System.out.println(FileUtil.formatUnixDir("/\\xxx"));
             System.out.println(formatPath("/abc\\aaa/abc.aaa"));
@@ -832,23 +800,23 @@ public final class FileUtil{
 
     /**
      * 将文件fn中的内容读出作为一个字符串返回
-     * 
+     *
      * @param fn
      * @return
      */
-    public static String file2str(String fn){
+    public static String file2str(String fn) {
         return readFileToStr(fn);
     }
 
-    public static String file2str(String fn, String charset){
+    public static String file2str(String fn, String charset) {
         return readFileToStr(fn, charset);
     }
 
-    public static String readFileToStr(String fn){
+    public static String readFileToStr(String fn) {
         return readFileToStr(fn, null);
     }
 
-    public static String readFileToStr(String fn, String charset){
+    public static String readFileToStr(String fn, String charset) {
         FileInputStream in = null;
         try {
             in = new FileInputStream(fn);
@@ -868,43 +836,39 @@ public final class FileUtil{
 
     /**
      * 将s写入文件fn中
-     * 
+     *
      * @param fn
      * @param s
      */
-    public static void str2file(String fn, String s){
+    public static void str2file(String fn, String s) {
         writeStrToFile(fn, s);
     }
 
     /**
      * 将s写入文件fn中
-     * 
+     *
      * @param fn
      * @param s
      */
-    public static void str2file(String fn, String s, String charset){
+    public static void str2file(String fn, String s, String charset) {
         writeStrToFile(fn, s, false, charset);
     }
 
-    public static void writeStrToFile(String fn, String s){
+    public static void writeStrToFile(String fn, String s) {
         writeStrToFile(fn, s, false);
     }
 
-    public static void writeStrToFile(String fn, String s, boolean append){
+    public static void writeStrToFile(String fn, String s, boolean append) {
         writeStrToFile(fn, s, append, null);
     }
 
     /**
-     * 
-     * @param fn
-     *            文件名
-     * @param s
-     *            字符
-     * @param append
-     *            是否用增加的方式写入字符串
+     * @param fn     文件名
+     * @param s      字符
+     * @param append 是否用增加的方式写入字符串
      */
     public static void writeStrToFile(String fn, String s, boolean append,
-            String charset){
+                                      String charset) {
         try {
             File fd = new File(fn).getParentFile();
             if (!fd.exists() || !fd.isDirectory()) {
@@ -928,12 +892,12 @@ public final class FileUtil{
 
     /**
      * 将流in中的内容写入fn
-     * 
+     *
      * @param in
      * @param fn
      * @throws IOException
      */
-    public static void stm2file(InputStream in, String fn) throws IOException{
+    public static void stm2file(InputStream in, String fn) throws IOException {
         FileOutputStream out = new FileOutputStream(fn);
         try {
             StrmUtil.stmTryCopyFrom(in, out);
@@ -947,7 +911,7 @@ public final class FileUtil{
      * 创建临时文件,并将将流写入到临时文件中,返回临时文件路径
      */
     public static String stm2Tempfile(InputStream in, String filename)
-            throws Exception{
+            throws Exception {
         return stm2Tempfile(in, null, filename);
     }
 
@@ -955,7 +919,7 @@ public final class FileUtil{
      * 创建临时文件,并将将流写入到临时文件中,返回临时文件路径 dir为临时文件存放目录
      */
     public static String stm2Tempfile(InputStream in, String dir,
-            String filename) throws Exception{
+                                      String filename) throws Exception {
         /**
          * BI-1625 数据库管理中导入同一db文件自动命名出错,每次导入都会在上次名称上面加1
          * 原因:上传的文件没有放入指定的临时目录中,在导入完成后就没有清除临时文件,
@@ -975,14 +939,14 @@ public final class FileUtil{
 
     /**
      * 将流中指定长度内容写入文件
-     * 
+     *
      * @param in
      * @param length
      * @param fn
      * @throws Exception
      */
     static public final void stm2file(InputStream in, int length, String fn)
-            throws Exception{
+            throws Exception {
         FileOutputStream out = new FileOutputStream(fn);
         try {
             StrmUtil.stmCopyFrom(in, out, length);
@@ -993,7 +957,7 @@ public final class FileUtil{
         }
     }
 
-    public static void buf2file(byte[] buf, String fn) throws IOException{
+    public static void buf2file(byte[] buf, String fn) throws IOException {
         FileOutputStream out = new FileOutputStream(fn);
         try {
             out.write(buf);
@@ -1005,11 +969,11 @@ public final class FileUtil{
 
     /**
      * 将文件内容转换成byte数组返回 ,如果文件不存在或者读入错误返回null
-     * 
+     *
      * @param fn
      * @return
      */
-    public static byte[] file2buf(String fn){
+    public static byte[] file2buf(String fn) {
         if (fn == null || fn.length() == 0) {
             return null;
         }
@@ -1020,11 +984,11 @@ public final class FileUtil{
 
     /**
      * 将文件内容转换成byte数组返回 ,如果文件不存在或者读入错误返回null
-     * 
+     *
      * @param fn
      * @return
      */
-    public static byte[] file2buf(File fobj){
+    public static byte[] file2buf(File fobj) {
         if (fobj == null || !fobj.exists() || !fobj.isFile()) {
             return null;
         }
@@ -1047,7 +1011,7 @@ public final class FileUtil{
     /**
      * 返回压缩后的文件内容
      */
-    public static byte[] file2GzipBuf(File file){
+    public static byte[] file2GzipBuf(File file) {
         if (file == null || !file.exists() || !file.isFile()) {
             return null;
         }
@@ -1066,10 +1030,9 @@ public final class FileUtil{
 
     /**
      * 将文件内容写入到OutputStream流中.如果文件为空或文件不存在或是目录,则直接返回,不会写入任何信息到OutputStream中
-     * 
+     *
      * @param out
-     * @param zip
-     *            按以下情况处理
+     * @param zip 按以下情况处理
      *            <ol>
      *            <li>
      *            zip=true,file为zip文件,则将file的内容直接写入到OutputStream中(压缩后的内容不会再次压缩
@@ -1081,7 +1044,7 @@ public final class FileUtil{
      * @throws IOException
      */
     public static void file2OutStm(File file, OutputStream out, boolean zip)
-            throws IOException{
+            throws IOException {
         if (file == null || !file.isFile()) return;
         FileInputStream fin = new FileInputStream(file);
         try {
@@ -1098,27 +1061,17 @@ public final class FileUtil{
     }
 
     /**
-     * 文件名内不能包含的字符
-     */
-    public final static String invalidFnChar = "/\\:*?\"\'<>|\r\n\t\b\f";// 增加了一些不能包含特殊字符
-
-    /**
-     * 文件名不能包含的字符提示,增加了转义,报错时使用于前台显示 ISSUE:BI-8584 add by wandj 2013.6.18
-     * */
-    private final static String invalidFnCharthrow = "/\\:*?\"\'<>|\\r\\n\\t\\b\\f";
-
-    /**
      * 将给定的文件名格式化成一个合法的文件名
-     * 
+     *
      * @param fn
      * @return
      */
-    public static String formatFileName(String fn){
+    public static String formatFileName(String fn) {
         if (fn == null || fn.length() == 0) {
             return "unknwon";
         }
         StringBuffer sb = new StringBuffer(fn.trim());
-        for (int i = 0; i < sb.length();) {
+        for (int i = 0; i < sb.length(); ) {
             if (invalidFnChar.indexOf(sb.charAt(i)) != -1) {
                 sb.deleteCharAt(i);
             } else {
@@ -1143,25 +1096,25 @@ public final class FileUtil{
      * 文件名是可以以.开头的，但不能是.和..也不能全部是.或空格组成的
      * 如果参数throwiffail为true且fn不是一个合法的文件名，那么触发异常
      */
-    public static final void checkValidFileName(String fn){
+    public static final void checkValidFileName(String fn) {
         boolean r = isValidFileName(fn);
         if (!r) {
             /*
              * 增加提示信息，让用户知道是哪里出错了 此信息不用加入日志
-             * 
+             *
              * edit by zhushy 2014.11.10 ISSUE:[资源管理器]ESENFACE-738
              * 修改文件名不合法的提示内容。
              */
             throw new IllegalParameterException(I18N.getString(
                     "com.esen.util.FileFunc.9",
                     "文件名不合法：{0}\r\n不能包含这些字符{1},也不能只由空格和.组成,并且长度不能超过256个字符。",
-                    new Object[] {fn, invalidFnCharthrow}));
+                    fn, invalidFnCharthrow));
         }
     }
 
-    public static final boolean isValidFileName(String fn){
+    public static final boolean isValidFileName(String fn) {
         if (fn == null || fn.length() == 0 || fn.length() > 256) {// fix me
-                                                                  // fn.length()是unicode长度
+            // fn.length()是unicode长度
             return false;
         }
         for (int i = 0; i < fn.length(); i++) {
@@ -1171,17 +1124,13 @@ public final class FileUtil{
         }
 
         // 文件名可以以.开头，但不能只是.或者..，因为这两个字符串有特殊意义
-        if (isAll_Dot_Blank(fn)) {
-            return false;
-        }
-
-        return true;
+        return !isAll_Dot_Blank(fn);
     }
 
     /**
      * 字符s是否都是由空格和点号组成的，如果是这样，那不是一个合法的字符画
      */
-    private static final boolean isAll_Dot_Blank(String s){
+    private static final boolean isAll_Dot_Blank(String s) {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c != '.' && c != '\n' && c != '\r' && c != '\t' && c != ' ') {
@@ -1194,10 +1143,10 @@ public final class FileUtil{
     /**
      * 将原来的文件更名为*.*~.backup,备份起来, 如:c:\test.ini ----> c:\test.ini~.backup;
      * 如果c:\test.ini~.backup存在则删除它
-     * 
+     *
      * @param fn
      */
-    public static void backupFile(String fn){
+    public static void backupFile(String fn) {
         String s = fn + "~.backup";
         File f = new File(s);
         if (f.exists() && f.isFile()) {
@@ -1207,7 +1156,7 @@ public final class FileUtil{
         oldf.renameTo(f);
     }
 
-    public static void backupDir(String dir){
+    public static void backupDir(String dir) {
         String s = dir + "~.backup";
         File f = new File(s);
         if (f.exists() && f.isDirectory()) {
@@ -1219,18 +1168,15 @@ public final class FileUtil{
 
     /**
      * 文件列表排序 p路径 type排序类型 desc是否升序还是降序
-     * 
-     * @param p
-     *            String
-     * @param type
-     *            int
-     * @param desc
-     *            boolean
-     * @throws Exception
+     *
+     * @param p    String
+     * @param type int
+     * @param desc boolean
      * @return File[]
+     * @throws Exception
      */
     public static final File[] listFiles(String p, int type, boolean desc)
-            throws Exception{
+            throws Exception {
         if (p == null || p.length() == 0) {
             return null;
         }
@@ -1247,7 +1193,7 @@ public final class FileUtil{
      * 返回p+f 确保中间用separatorChar分割
      */
     public static final String makeFullPath(String p, String f,
-            char separatorChar){
+                                            char separatorChar) {
         if (p == null || f == null || p.length() + f.length() == 0)
             throw new RuntimeException("impossible!");
 
@@ -1267,24 +1213,20 @@ public final class FileUtil{
 
     /**
      * 判断一个路径是否是绝对路径
-     * 
+     *
      * @param fn
      * @return
      */
-    public static boolean isAbsolutePath(String fn){
+    public static boolean isAbsolutePath(String fn) {
         if (fn == null || fn.length() == 0) {
             return false;
         }
 
         if (File.separator.equals("\\")) { // 表示是windows系统
             // 第一个字母必须是A..z,第二个必须是:
-            if (fn.trim().length() > 1
+            return fn.trim().length() > 1
                     && StrUtil.isABC_xyz(fn.trim().charAt(0))
-                    && fn.trim().charAt(1) == ':') {
-                return true;
-            } else {
-                return false;
-            }
+                    && fn.trim().charAt(1) == ':';
         } else {
             // 第一个必须是"/"
             return (fn.trim().charAt(0) == '/');
@@ -1292,7 +1234,7 @@ public final class FileUtil{
     }
 
     public final static void unzip(InputStream in, String destdir)
-            throws Exception{
+            throws Exception {
         if (in == null) {
             throw new Exception("in==null");
         }
@@ -1340,15 +1282,13 @@ public final class FileUtil{
 
     /**
      * 将zipfn中的文件解压缩到destdir目录中,destdir不存在的话会自动创建
-     * 
-     * @param zipfn
-     *            String
-     * @param destdir
-     *            String
+     *
+     * @param zipfn   String
+     * @param destdir String
      * @throws Exception
      */
     public final static void unzip(String zipfn, String destdir)
-            throws Exception{
+            throws Exception {
         if (destdir == null || zipfn == null) {
             throw new Exception("destdir==null || zipfn==null");
         }
@@ -1363,7 +1303,7 @@ public final class FileUtil{
     /**
      * 对路径中的文件名格式化,去除不合法的字符
      */
-    private static String formatZipName(String path){
+    private static String formatZipName(String path) {
         path = includeSeparatorHeadExcludeTrail(path);
         String parentdir = FileUtil.extractFileDir(path);
         String filename = FileUtil.extractFileName(path);
@@ -1376,12 +1316,12 @@ public final class FileUtil{
     /**
      * 在dir(以File.separatorChar结尾)目录下查找与fn（忽略大小写后）同名的文件，并返回该文件，如果有多个同名文件，则返回null
      * dir为绝对路径,fn为文件名
-     * 
+     *
      * @param dir
      * @param fn
      * @return
      */
-    public final static File findFileIgnoreCase(String dir, String fn){
+    public final static File findFileIgnoreCase(String dir, String fn) {
         if (File.separatorChar == '\\') {
             String path = dir + fn;
             File file = new File(path);
@@ -1411,7 +1351,7 @@ public final class FileUtil{
         return null;
     }
 
-    public static String formatFullPath(String dir, String fn){
+    public static String formatFullPath(String dir, String fn) {
         if (isAbsolutePath(fn)) {
             return fn;
         }
@@ -1439,11 +1379,9 @@ public final class FileUtil{
      * 返回 /abc/d cd_unixlike("/abc","/d") 返回/d cd_unixlike("/abc",".") 返回 /abc
      * cd_unixlike("/abc","./d") 返回 /abc/d cd_unixlike("/abc","../d") 返回 /d
      * cd_unixlike("/abc","..") 返回 / cd_unixlike("/abc/d","../../d") 返回 /d
-     * 
-     * @param pwd
-     *            文件路径,如/abc/d/linuxabc/d或abc/d
-     * @param cd
-     *            绝对文件路径或相对文件路径 <br>
+     *
+     * @param pwd 文件路径,如/abc/d/linuxabc/d或abc/d
+     * @param cd  绝对文件路径或相对文件路径 <br>
      *            绝对文件路径以/开头,如cd_unixlike("/abc","/d")返回/d <br>
      *            相对文件路径中支持./(当前目录)和../(上级目录),如cd_unixlike("/abc","./d")返回
      *            /abc/d,cd_unixlike("/abc","../../d")返回 /d <br>
@@ -1453,7 +1391,7 @@ public final class FileUtil{
      *            d是无法获得正确的目录的 <br>
      *            相对路径中只支持存在一个./,../支持存在无限多个
      */
-    public static String cd_unixlike(String pwd, String cd){
+    public static String cd_unixlike(String pwd, String cd) {
         if (StrUtil.isNull(cd)) {
             return pwd;
         }
@@ -1492,7 +1430,7 @@ public final class FileUtil{
     /**
      * 将路径中的分隔符转化为当前操作系统的分隔符。
      */
-    public static String formatPath(String path){
+    public static String formatPath(String path) {
         if (path == null || path.length() == 0) {
             throw new RuntimeException("path is null!");
         }
@@ -1503,11 +1441,11 @@ public final class FileUtil{
 
     /**
      * 格式化成unix目录格式。如果目录为空或者""，都返回/，其目录必须为下列格式： /ab\aa bb\cc
-     * 
+     *
      * @param dir
      * @return
      */
-    public static String formatUnixDir(String dir){
+    public static String formatUnixDir(String dir) {
         if (dir == null || dir.length() == 0) {
             return "/";
         }
@@ -1518,13 +1456,13 @@ public final class FileUtil{
     /**
      * 把字符串中的某一段格式化成unix文件目录，例如： "" "/" ab/ac /ab/ac // / \\ / /ab/ab/ /ab/ab ?
      * /ab\ac\ /ab/ac ?
-     * 
+     *
      * @param dir
      * @param start
      * @param end
      * @return
      */
-    public static String formatUnixDir(String dir, int start, int end){
+    public static String formatUnixDir(String dir, int start, int end) {
         if (dir == null
                 || dir.length() == 0
                 || (dir.length() == 1 && (dir.charAt(0) == '/' || dir.charAt(0) == '\\'))) {
@@ -1571,13 +1509,13 @@ public final class FileUtil{
     /**
      * 判断字符串的某一段是否是UNIX格式目录，要注意 "/" 的判断，end 可以为-1，表示off开始的所有字符串。有可能 字符串包含连续的//
      * 、\\\\ 、/\ 等，但只保留一个
-     * 
+     *
      * @param dir
      * @param off
      * @param end
      * @return
      */
-    public static boolean isUnixDir(String dir, int off, int end){
+    public static boolean isUnixDir(String dir, int off, int end) {
         if (end == -1) {
             end = dir.length() - 1;
             if (end == -1) return false;
@@ -1619,18 +1557,14 @@ public final class FileUtil{
     /**
      * 判断文件或目录是否存在，如果不存在则创建它，如果创建不成功，则触发异常
      * 如果已存在，但不是isdir并且isoverwrite=false时，触发异常
-     * 
+     *
      * @param path
-     * @param isdir
-     *            是否是目录
-     * @param isoverwrite
-     *            当文件存在并与isdir不一致时是否覆盖
-     * @throws Exception
-     * 
-     *             by zcx 090522 在文件创建不成功时抛出的异常要带上路径,否则无法知道是哪个文件创建不成功
+     * @param isdir       是否是目录
+     * @param isoverwrite 当文件存在并与isdir不一致时是否覆盖
+     * @throws Exception by zcx 090522 在文件创建不成功时抛出的异常要带上路径,否则无法知道是哪个文件创建不成功
      */
     public static void ensureExists(File file, boolean isdir,
-            boolean isoverwrite) throws Exception{
+                                    boolean isoverwrite) throws Exception {
         if (file.exists()) {
             boolean b = file.isDirectory();
             if (b == isdir) {
@@ -1668,7 +1602,7 @@ public final class FileUtil{
     }
 
     /* 打开一个文件 */
-    public static void openFile(String fileName){
+    public static void openFile(String fileName) {
         try {
             Thread.sleep(2000);
             Runtime.getRuntime().exec("cmd /C " + fileName);
@@ -1680,26 +1614,22 @@ public final class FileUtil{
 
     /**
      * 将path中的\\转换成/
-     * 
+     *
      * @param path
      * @return
      */
-    public static String replaceSeparatorChar(String path){
+    public static String replaceSeparatorChar(String path) {
         String reg = "((\\\\+|/+)(\\\\*/*)*)+";
         return path.replaceAll(reg, "/");
     }
 
-    public static final char SEPCHAR = '/';
-
-    public static final String SEPSTR = "" + SEPCHAR;
-
     /**
      * 路径以/开头，不处理结尾
-     * 
+     *
      * @param path
      * @return
      */
-    public static String includeSeparatorHead(String path){
+    public static String includeSeparatorHead(String path) {
         if (path == null || path.length() == 0) {
             return SEPSTR;
         }
@@ -1712,11 +1642,11 @@ public final class FileUtil{
 
     /**
      * 路径不以/开头，不处理结尾
-     * 
+     *
      * @param path
      * @return
      */
-    public static String excludeSeparatorHead(String path){
+    public static String excludeSeparatorHead(String path) {
         if (path == null || path.length() == 0) {
             return "";
         }
@@ -1729,11 +1659,11 @@ public final class FileUtil{
 
     /**
      * 路径以/结尾，不处理开头
-     * 
+     *
      * @param path
      * @return
      */
-    public static String includeSeparatorTrail(String path){
+    public static String includeSeparatorTrail(String path) {
         if (path == null || path.length() == 0) {
             return SEPSTR;
         }
@@ -1747,11 +1677,11 @@ public final class FileUtil{
 
     /**
      * 返回文件路径，不以/结尾，不处理开头
-     * 
+     *
      * @param path
      * @return
      */
-    public static String excludeSeparatorTrail(String path){
+    public static String excludeSeparatorTrail(String path) {
         if (path == null || path.length() == 0) {
             return SEPSTR;
         }
@@ -1765,71 +1695,71 @@ public final class FileUtil{
 
     /**
      * 路径以/开头，以/结尾，处理开头和结尾
-     * 
+     *
      * @param path
      * @return
      */
-    public static String includeSeparatorBoth(String path){
+    public static String includeSeparatorBoth(String path) {
         return includeSeparatorHead(includeSeparatorTrail(path));
     }
 
     /**
      * 路径以/开头，不以/结尾，处理开头和结尾
-     * 
+     *
      * @param path
      * @return
      */
-    public static String includeSeparatorHeadExcludeTrail(String path){
+    public static String includeSeparatorHeadExcludeTrail(String path) {
         return excludeSeparatorTrail(includeSeparatorHead(path));
     }
 
     /**
      * 返回文件parentdir,以/开头，以/结尾,处理开头和结尾
-     * 
+     *
      * @param path
      * @return
      */
-    public static String extractParentDirIncludeSeparatorHead(String path){
+    public static String extractParentDirIncludeSeparatorHead(String path) {
         path = includeSeparatorHeadExcludeTrail(path);
         return path.substring(0, path.lastIndexOf(SEPSTR) + SEPSTR.length());
     }
 
     /**
      * 返回文件parentdir,以/结尾，不处理开头
-     * 
+     *
      * @param path
      * @return
      */
-    public static String extractParentDir(String path){
+    public static String extractParentDir(String path) {
         path = replaceSeparatorChar(path);
         return path.substring(0, path.lastIndexOf(SEPSTR) + SEPSTR.length());
     }
 
     /**
      * 返回文件名
-     * 
+     *
      * @param path
      * @return
      */
-    public static String extractName(String path){
+    public static String extractName(String path) {
         path = excludeSeparatorTrail(path);
         return path.substring(path.lastIndexOf(SEPSTR) + SEPSTR.length());
     }
 
     /**
      * 将源文件的内容压缩后保存到新的文件，源文件不变，返回压缩后的文件，使用gzip压缩 此方法不支持源文件和目的文件相同
-     * 
+     *
      * @param src
      * @return
      * @throws Exception
      */
-    public static File compressFile(File src, File dest) throws Exception{
+    public static File compressFile(File src, File dest) throws Exception {
         if (src == null)
-        // throw new RuntimeException("没有源文件");
+            // throw new RuntimeException("没有源文件");
             throw new RuntimeException(I18N.getString(
                     "com.esen.util.FileFunc.17", "没有源文件"));
         if (dest == null)
-        // throw new RuntimeException("没有目的文件");
+            // throw new RuntimeException("没有目的文件");
             throw new RuntimeException(I18N.getString(
                     "com.esen.util.FileFunc.18", "没有目的文件"));
 
@@ -1858,19 +1788,18 @@ public final class FileUtil{
      * 获取指定文件或目录的大小，当计算的目录过大时，不赞成用该方法，因为会耗费大量时间 建议改用sizeofdir(File fileOrDir,
      * long maxSize)方法
      */
-    public static long sizeofdir(File dir){
+    public static long sizeofdir(File dir) {
         return sizeofdir(dir, Long.MAX_VALUE);
     }
 
     /**
      * 获取指定文件或目录的大小，通过添加一个maxSize参数，当计算的结果大于或等于该数值时，停止计算，这样可以避免 在计算资源大小时耗费大量时间。
-     * 
+     *
      * @param fileOrDir
-     * @param maxSize
-     *            当已经计算的大小大于或等于这个值时，不再进行计算
+     * @param maxSize   当已经计算的大小大于或等于这个值时，不再进行计算
      * @return
      */
-    public static long sizeofdir(File fileOrDir, long maxSize){
+    public static long sizeofdir(File fileOrDir, long maxSize) {
         long size = 0;
         if (fileOrDir.isFile()) {
             size = fileOrDir.length();
@@ -1888,17 +1817,17 @@ public final class FileUtil{
 /**
  * 对文件排序,如果type>0,按时间排序,否则按大小排序 desc确定是否降序排序
  */
-class FileComparator implements Comparator<File>{
+class FileComparator implements Comparator<File> {
     private int _type = 0;
 
     private boolean _desc = true;
 
-    public FileComparator(int type, boolean desc){
+    public FileComparator(int type, boolean desc) {
         _type = type;
         _desc = desc;
     }
 
-    public int compare(File f1, File f2){
+    public int compare(File f1, File f2) {
         long result = _type > 0 ? f1.lastModified() - f2.lastModified() : f1
                 .length() - f2.length();
         if (result > 0) {

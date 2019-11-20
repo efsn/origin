@@ -9,14 +9,14 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Column{
-    public DbType type() default DbType.CHAR;
+public @interface Column {
+    DbType type() default DbType.CHAR;
 
-    public int length() default 0;
+    int length() default 0;
 
-    public String comment() default "";
+    String comment() default "";
 
-    public Constraint constraint() default @Constraint;
+    Constraint constraint() default @Constraint;
 
-    public Foreign foreign() default @Foreign();
+    Foreign foreign() default @Foreign();
 }

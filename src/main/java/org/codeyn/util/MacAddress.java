@@ -1,5 +1,9 @@
 package org.codeyn.util;
 
+import org.codeyn.util.file.FileUtil;
+import org.codeyn.util.yn.ArrayUtil;
+import org.codeyn.util.yn.StrmUtil;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -7,24 +11,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.codeyn.util.file.FileUtil;
-import org.codeyn.util.yn.ArrayUtil;
-import org.codeyn.util.yn.StrmUtil;
-
 /**
  * 获取本机网卡物理地址
  */
 
-public final class MacAddress{
+public final class MacAddress {
     /**
      * windows: Physical Address. . . . . . . . . : 00-13-02-9A-A2-3B
-     * 
+     * <p>
      * linux : eth0 Link encap:Ethernet HWaddr 00:10:5C:FC:B2:7C BROADCAST
      * MULTICAST MTU:1500 Metric:1 RX packets:0 errors:0 dropped:0 overruns:0
      * frame:0 TX packets:0 errors:0 dropped:0 overruns:0 carrier:0 collisions:0
      * txqueuelen:1000 RX bytes:0 (0.0 b) TX bytes:0 (0.0 b) Base address:0xd880
      * Memory:fe980000-fe9a0000
-     * 
+     * <p>
      * Solaris/SunOS
      * 在Solaris和SunOS系统中，以太网的设备一般被称为le0或ie0。为了找到以太网设备的MAC地址，首先你必须成为超级用户
      * ，即root，可以通过使用su命令实现。然后键入ifconfig –a并查看返回信息。例如： # ifconfig -a le0:
@@ -33,15 +33,15 @@ public final class MacAddress{
      * 8:0:20:10:d2:ae
      * 注意：在Solaris和SunOS系统中，默认是去掉了MAC地址各个字段中的排在前面的0。在上面的例子中，这台机器的实际MAC地址应该为
      * ：08:00:20:10:d2:ae。
-     * 
+     * <p>
      * aix: # netstat -in Name Mtu Network Address Ipkts Ierrs Opkts Oerrs Coll
      * en0 1500 link#2 0.11.25.8.1d.81 21609570 0 3880375 3 0 en0 1500
      * 150.100.16 150.100.16.183 21609570 0 3880375 3 0 lo0 16896 link#1 95267 0
      * 95830 0 0 lo0 16896 127 127.0.0.1 95267 0 95830 0 0 lo0 16896 ::1 95267 0
      * 95830 0 0
-     * 
+     * <p>
      * FreeBSD 在一个FreeBSD系统中，使用dmesg命令将显示本机的MAC地址和其他一些信息。
-     * 
+     * <p>
      * HP 在HP系统中，以太网的地址被典型的称为lan0。通过键入lanscan并查看返回信息就可以得到MAC地址。例如： $ lanscan
      * Hardware Station Dev Hardware Net-Interface NM Encapsulation Mjr Path
      * Address lu State NameUnit State ID Methods Num 2.0.2 0x08000935C99D 0 UP
@@ -64,7 +64,7 @@ public final class MacAddress{
      * 0x000000000000 903 DOWN lan903 snap903 18 ETHER Yes 119 LinkAgg4
      * 0x000000000000 904 DOWN lan904 snap904 19 ETHER Yes 119
      */
-    static private List<String> collectHWaddrByCMD(List<String> list){
+    static private List<String> collectHWaddrByCMD(List<String> list) {
         if (list == null) list = new ArrayList<String>(3);
         try {
             boolean linux = File.separatorChar == '/';
@@ -103,7 +103,7 @@ public final class MacAddress{
         }
     }
 
-    static private List<String> collectHWaddr_ByConfigFile(List<String> list){
+    static private List<String> collectHWaddr_ByConfigFile(List<String> list) {
         if (list == null) list = new ArrayList<String>(3);
         try {
             boolean linux = File.separatorChar == '/';
@@ -125,7 +125,7 @@ public final class MacAddress{
         return list;
     }
 
-    private static void collectMacAddressFromString(List<String> r, String s){
+    private static void collectMacAddressFromString(List<String> r, String s) {
         Pattern pattern = Pattern.compile("([1234567890ABCDEFabcdef]{1,2}(\\-|\\:|\\.)){5}[1234567890ABCDEFabcdef]{1,2}");
         Matcher mt = pattern.matcher(s);
         int end = 0;
@@ -154,7 +154,7 @@ public final class MacAddress{
         }
     }
 
-    public static final List<String> collectHWaddr(){
+    public static final List<String> collectHWaddr() {
         List<String> list = collectHWaddr_ByConfigFile(null);
         list = collectHWaddrByCMD(list);
         return list;
@@ -163,7 +163,7 @@ public final class MacAddress{
     /**
      * 返回找到的物理地址，可能返回长度为0的数组，数组的内容形如：00:15:58:2E:46:B7
      */
-    public static final String[] getMacAddresses(){
+    public static final String[] getMacAddresses() {
         List<String> list = collectHWaddr();
         return list.toArray(new String[0]);
     }
@@ -171,12 +171,12 @@ public final class MacAddress{
     /**
      * 返回第一个物理地址，如果不能找到物理地址，则返回""
      */
-    public static final String getMacAddress(){
+    public static final String getMacAddress() {
         String[] l = getMacAddresses();
         return l != null && l.length > 0 ? l[0] : "";
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println(ArrayUtil.array2displaystr(getMacAddresses()));
         System.out.println(ArrayUtil.array2displaystr(getMacAddresses()));
     }

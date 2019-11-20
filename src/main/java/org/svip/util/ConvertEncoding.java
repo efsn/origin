@@ -1,27 +1,17 @@
 package org.svip.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /**
- *
  * @author Blues
- * @date   2013-12-5
+ * @date 2013-12-5
  */
-public class ConvertEncoding{
+public class ConvertEncoding {
     /**
-     *
      * @param args
      * @throws Exception
      */
@@ -29,26 +19,27 @@ public class ConvertEncoding{
         String srcDir = "F:\\Java\\esen\\gbk";
         List<String> files = new ArrayList<String>();
         fetchFileList(srcDir, files, ".java");
-        for(String fileName : files){
+        for (String fileName : files) {
             convert(fileName, "UTF-8", fileName, "GBK");
         }
     }
-    public static void convert(String oldFile, String oldCharset, String newFlie, String newCharset){
+
+    public static void convert(String oldFile, String oldCharset, String newFlie, String newCharset) {
         BufferedReader bin;
         FileOutputStream fos;
         StringBuffer content = new StringBuffer();
         try {
             System.out.println(oldFile);
-            bin = new BufferedReader(new InputStreamReader(new FileInputStream(oldFile),  oldCharset));
+            bin = new BufferedReader(new InputStreamReader(new FileInputStream(oldFile), oldCharset));
             String line = null;
-            while((line=bin.readLine())!=null){
+            while ((line = bin.readLine()) != null) {
 //          System.out.println("content:" + content);
                 content.append(line);
                 content.append(System.getProperty("line.separator"));
             }
             bin.close();
             File dir = new File(newFlie.substring(0, newFlie.lastIndexOf("\\")));
-            if(!dir.exists()){
+            if (!dir.exists()) {
                 dir.mkdirs();
             }
             fos = new FileOutputStream(newFlie);
@@ -64,6 +55,7 @@ public class ConvertEncoding{
             e.printStackTrace();
         }
     }
+
     public static void fetchFileList(String strPath, List<String> filelist, final String regex) {
         File dir = new File(strPath);
         File[] files = dir.listFiles();
@@ -76,7 +68,7 @@ public class ConvertEncoding{
             } else {
                 String strFileName = files[i].getAbsolutePath().toLowerCase();
                 Matcher m = p.matcher(strFileName);
-                if(m.find()){
+                if (m.find()) {
                     filelist.add(strFileName);
                 }
             }

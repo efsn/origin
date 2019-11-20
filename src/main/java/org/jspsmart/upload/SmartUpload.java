@@ -1,5 +1,13 @@
 package org.jspsmart.upload;
 
+import org.codeyn.util.yn.StrUtil;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.PageContext;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,22 +16,13 @@ import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.util.Vector;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.PageContext;
+public class SmartUpload {
 
-import org.codeyn.util.yn.StrUtil;
-
-public class SmartUpload{
-    
     protected byte[] binaryArray;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
     protected ServletContext application;
-    
+
     private int totalBytes;
     private int currentIndex;
     private int startData;
@@ -41,21 +40,21 @@ public class SmartUpload{
     private Request formRequest = new Request();
 
     public final void initialize(ServletConfig paramServletConfig,
-            HttpServletRequest paramHttpServletRequest,
-            HttpServletResponse paramHttpServletResponse)
-            throws ServletException{
+                                 HttpServletRequest paramHttpServletRequest,
+                                 HttpServletResponse paramHttpServletResponse)
+            throws ServletException {
         application = paramServletConfig.getServletContext();
         request = paramHttpServletRequest;
         response = paramHttpServletResponse;
     }
 
-    public final void initialize(PageContext paramPageContext)throws ServletException{
+    public final void initialize(PageContext paramPageContext) throws ServletException {
         application = paramPageContext.getServletContext();
         request = ((HttpServletRequest) paramPageContext.getRequest());
         response = ((HttpServletResponse) paramPageContext.getResponse());
     }
 
-    public void upload() throws Exception{
+    public void upload() throws Exception {
         int i = 0, j = 0, k = 0;
         long l = 0L;
         totalBytes = request.getContentLength();
@@ -137,11 +136,11 @@ public class SmartUpload{
         }
     }
 
-    public int save(String paramString) throws Exception{
+    public int save(String paramString) throws Exception {
         return save(paramString, 0);
     }
 
-    public int save(String paramString, int paramInt) throws Exception{
+    public int save(String paramString, int paramInt) throws Exception {
         int i = 0;
 
         if (paramString == null) {
@@ -166,42 +165,42 @@ public class SmartUpload{
         return i;
     }
 
-    public int getSize(){
+    public int getSize() {
         return totalBytes;
     }
 
     public byte getBinaryData(int paramInt) {
         return binaryArray[paramInt];
     }
-    
-    public byte[] getBinaryArray(){
+
+    public byte[] getBinaryArray() {
         return binaryArray;
     }
 
-    public Files getFiles(){
+    public Files getFiles() {
         return files;
     }
 
-    public Request getRequest(){
+    public Request getRequest() {
         return formRequest;
     }
 
-    public void downloadFile(String path) throws Exception{
+    public void downloadFile(String path) throws Exception {
         downloadFile(path, null, null);
     }
 
-    public void downloadFile(String path, String type) throws Exception{
+    public void downloadFile(String path, String type) throws Exception {
         downloadFile(path, type, null);
     }
 
-    public void downloadFile(String path, String type, String disposition) throws Exception{
+    public void downloadFile(String path, String type, String disposition) throws Exception {
         downloadFile(path, type, disposition, 0xFDE8);
     }
 
-    public void downloadFile(String path, 
+    public void downloadFile(String path,
                              String type,
-                             String disposition, 
-                             int offset) throws Exception{
+                             String disposition,
+                             int offset) throws Exception {
         if (StrUtil.isNull(path))
             throw new IllegalArgumentException("File '" + path + "' not found");
         if ((!isVirtual(path)) && (denyPhysicalPath)) {
@@ -226,7 +225,7 @@ public class SmartUpload{
         else {
             response.setHeader("Content-Disposition", contentDisposition + " filename=" + URLEncoder.encode(disposition, "UTF-8"));
         }
-        for(int i = 0; i < len;){
+        for (int i = 0; i < len; ) {
             int count = in.read(arrayOfByte, 0, offset);
             response.getOutputStream().write(arrayOfByte, 0, count);
             i += count;
@@ -234,10 +233,10 @@ public class SmartUpload{
         in.close();
     }
 
-    public void downloadField(ResultSet resultSet, 
+    public void downloadField(ResultSet resultSet,
                               String path,
-                              String type, 
-                              String disposition) throws Exception{
+                              String type,
+                              String disposition) throws Exception {
         if (resultSet == null)
             throw new IllegalArgumentException("The resultSet cannot be null");
         if (StrUtil.isNull(path))
@@ -257,7 +256,7 @@ public class SmartUpload{
         response.getOutputStream().write(arrayOfByte, 0, arrayOfByte.length);
     }
 
-    public void fieldToFile(ResultSet resultSet, String field, String path) throws Exception{
+    public void fieldToFile(ResultSet resultSet, String field, String path) throws Exception {
         InputStream in = null;
         FileOutputStream out = null;
         try {
@@ -270,13 +269,13 @@ public class SmartUpload{
             while ((i = in.read()) != -1) out.write(i);
         } catch (Exception e) {
             throw new SmartUploadException("Unable to save file from the DataBase");
-        }finally{
-            if(in != null) in.close();
-            if(out != null) out.close();
+        } finally {
+            if (in != null) in.close();
+            if (out != null) out.close();
         }
     }
 
-    private String getDataFieldValue(String head, String field){
+    private String getDataFieldValue(String head, String field) {
         String str = field + "=" + '"';
         int i = head.indexOf(str);
         if (i > 0) {
@@ -288,27 +287,27 @@ public class SmartUpload{
         return "";
     }
 
-    private String getFileExt(String fileName){
+    private String getFileExt(String fileName) {
         if (StrUtil.isNull(fileName)) {
             return fileName;
         }
-        return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
-    private String getContentType(String type){
-        if(StrUtil.isNull(type)){
+    private String getContentType(String type) {
+        if (StrUtil.isNull(type)) {
             return type;
         }
         String ct = "Content-Type:";
         int i = type.indexOf(ct) + ct.length();
         if (i > -1) {
-            return type.substring(i, type.length());
+            return type.substring(i);
         }
         return "";
     }
 
-    private String getTypeMIME(String mime){
-        if(StrUtil.isNull(mime)){
+    private String getTypeMIME(String mime) {
+        if (StrUtil.isNull(mime)) {
             return mime;
         }
         int i = mime.indexOf("/");
@@ -318,8 +317,8 @@ public class SmartUpload{
         return mime;
     }
 
-    private String getSubTypeMIME(String mime){
-        if(StrUtil.isNull(mime)){
+    private String getSubTypeMIME(String mime) {
+        if (StrUtil.isNull(mime)) {
             return mime;
         }
         int i = mime.indexOf("/") + 1;
@@ -329,11 +328,11 @@ public class SmartUpload{
         return mime;
     }
 
-    private String getContentDisp(String content){
+    private String getContentDisp(String content) {
         return content.substring(content.indexOf(":") + 1, content.indexOf(";"));
     }
 
-    private void getDataSection(){
+    private void getDataSection() {
         int m = boundary.length();
         startData = currentIndex;
         for (int i = currentIndex; i < totalBytes; i++) {
@@ -351,7 +350,7 @@ public class SmartUpload{
         currentIndex = endData + m + 3;
     }
 
-    private String getDataHeader(){
+    private String getDataHeader() {
         int i = currentIndex, j = 0, m = 0;
         while (m == 0) {
             if ((binaryArray[currentIndex] == 13) && (binaryArray[currentIndex + 2] == 13)) {
@@ -365,35 +364,35 @@ public class SmartUpload{
         return new String(binaryArray, i, j - i + 1);
     }
 
-    public void setDeniedFilesList(String path) throws Exception{
+    public void setDeniedFilesList(String path) throws Exception {
         this.setFilesList(path, deniedFilesList);
     }
-    
-    public void setAllowedFilesList(String path){
+
+    public void setAllowedFilesList(String path) {
         this.setFilesList(path, allowedFilesList);
     }
 
-    public void setDenyPhysicalPath(boolean denyPhysicalPath){
+    public void setDenyPhysicalPath(boolean denyPhysicalPath) {
         this.denyPhysicalPath = denyPhysicalPath;
     }
 
-    public void setForcePhysicalPath(boolean forcePhysicalPath){
+    public void setForcePhysicalPath(boolean forcePhysicalPath) {
         this.forcePhysicalPath = forcePhysicalPath;
     }
 
-    public void setContentDisposition(String contentDisposition){
+    public void setContentDisposition(String contentDisposition) {
         this.contentDisposition = contentDisposition;
     }
 
-    public void setTotalMaxFileSize(long totalMaxFileSize){
+    public void setTotalMaxFileSize(long totalMaxFileSize) {
         this.totalMaxFileSize = totalMaxFileSize;
     }
 
-    public void setMaxFileSize(long maxFileSize){
+    public void setMaxFileSize(long maxFileSize) {
         this.maxFileSize = maxFileSize;
     }
 
-    protected String getPhysicalPath(String path, int offset)throws IOException{
+    protected String getPhysicalPath(String path, int offset) throws IOException {
         String parent = null;
         String name = null;
         String separator = System.getProperty("file.separator");
@@ -461,7 +460,7 @@ public class SmartUpload{
         return null;
     }
 
-    public void uploadInFile(String path) throws Exception{
+    public void uploadInFile(String path) throws Exception {
         if (StrUtil.isNull(path))
             throw new IllegalArgumentException("There is no specified destination file");
         if ((!isVirtual(path)) && (denyPhysicalPath)) {
@@ -489,15 +488,15 @@ public class SmartUpload{
             throw new SmartUploadException("The Form cannot be saved in the specified file");
         }
     }
-    
-    private void setFilesList(String path, Vector<String> list){
-        if(StrUtil.isNull(path)){
+
+    private void setFilesList(String path, Vector<String> list) {
+        if (StrUtil.isNull(path)) {
             list = null;
-        }else{
+        } else {
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < path.length(); i++) {
                 if (path.charAt(i) == ',') {
-                    if (!list.contains(sb.toString())){
+                    if (!list.contains(sb.toString())) {
                         list.addElement(sb.toString());
                     }
                     sb.delete(0, sb.length());
@@ -509,18 +508,18 @@ public class SmartUpload{
         }
     }
 
-    private boolean isVirtual(String path){
+    private boolean isVirtual(String path) {
         if (application.getRealPath(path) != null) {
             return new java.io.File(application.getRealPath(path)).exists();
         }
         return false;
     }
-    
-    private String getFileName(String name){
-        if(StrUtil.isNull(name))
+
+    private String getFileName(String name) {
+        if (StrUtil.isNull(name))
             return null;
         int i = name.lastIndexOf('/');
-        if (i != -1) return name.substring(i + 1, name.length());
+        if (i != -1) return name.substring(i + 1);
         i = name.lastIndexOf('\\');
         if (i != -1) {
             return name.substring(i + 1);

@@ -6,10 +6,10 @@ package org.codeyn.util.exception;
  */
 
 public class CancelException extends BusinessLogicException {
-  public CancelException() {
-  }
+    public CancelException() {
+    }
 
-  public CancelException(String message) {
-    super(message);
-  }
+    public CancelException(String message) {
+        super(message);
+    }
 }

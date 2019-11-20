@@ -1,24 +1,18 @@
 package org.codeyn.util.yn;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
 import org.codeyn.util.Comparators;
 import org.codeyn.util.MathUtil;
 import org.codeyn.util.i18n.I18N;
 
-public final class ArrayUtil{
+import java.lang.reflect.Array;
+import java.util.*;
 
-    private ArrayUtil(){
+public final class ArrayUtil {
+
+    private ArrayUtil() {
     }
 
-    public static final int[] clone(int[] a){
+    public static final int[] clone(int[] a) {
         if (a == null || a.length < 1) {
             return a;
         }
@@ -27,7 +21,7 @@ public final class ArrayUtil{
         return r;
     }
 
-    public static final int hash(final String s1, final String s2, final String[] a){
+    public static final int hash(final String s1, final String s2, final String[] a) {
         int len = a != null ? a.length : 0;
         int h = 0;
         h = hash(s1, h);
@@ -41,7 +35,7 @@ public final class ArrayUtil{
         return h;
     }
 
-    public static final int hash(final String[] a){
+    public static final int hash(final String[] a) {
         if (a == null || a.length < 1) {
             return 0;
         }
@@ -59,12 +53,12 @@ public final class ArrayUtil{
      * 如：对象class T{String f1;String f2} 算法1：(f1+f2).hashCode();
      * 但该算法要生成StringBuffer对象，对于hashCode这种频繁调用的函数效率应尽量高
      * 算法2：ArrayFunc.hash(f1,f2.hashCode()); 不会生成新对象，效率提高
-     * 
+     *
      * @param a
      * @param h
      * @return
      */
-    public static final int hash(final String a, int h){
+    public static final int hash(final String a, int h) {
         if (a == null || a.length() == 0) {
             return h;
         }
@@ -76,7 +70,7 @@ public final class ArrayUtil{
         return h;
     }
 
-    public static final boolean compareArray(int[] ar1, int[] ar2){
+    public static final boolean compareArray(int[] ar1, int[] ar2) {
         if (ar1 == ar2 || (ar1 == null && ar2.length < 1) || (ar2 == null && ar1.length < 1)) {
             return true;
         }
@@ -91,7 +85,7 @@ public final class ArrayUtil{
         return true;
     }
 
-    public static final boolean compareArray(String[] ar1, String[] ar2){
+    public static final boolean compareArray(String[] ar1, String[] ar2) {
         if (ar1 == ar2 || (ar1 == null && ar2.length == 0)
                 || (ar1.length == 0 && ar2 == null)) {
             return true;
@@ -108,7 +102,7 @@ public final class ArrayUtil{
     /**
      * 与Arrays.equals不同的是，此函数认为null和空数组是相等的
      */
-    public static final boolean compareArray(Object[] ar1, Object[] ar2){
+    public static final boolean compareArray(Object[] ar1, Object[] ar2) {
         if (ar1 == ar2 || (ar1 == null && ar2.length == 0)
                 || (ar1.length == 0 && ar2 == null)) {
             return true;
@@ -116,7 +110,7 @@ public final class ArrayUtil{
         return Arrays.equals(ar1, ar2);
     }
 
-    public static final int[] str2int(String[] ss, int def){
+    public static final int[] str2int(String[] ss, int def) {
         if (ss == null) {
             return null;
         }
@@ -130,11 +124,11 @@ public final class ArrayUtil{
 
     /**
      * 将字符串数组转换成整形数组，有可能有异常
-     * 
+     *
      * @param ss
      * @return
      */
-    public static final int[] str2int(String[] ss){
+    public static final int[] str2int(String[] ss) {
         if (ss == null) {
             return null;
         }
@@ -148,11 +142,11 @@ public final class ArrayUtil{
 
     /**
      * 将数组ii中的每个元素都加上step
-     * 
+     *
      * @param ii
      * @param step
      */
-    public static final void offset(int[] ii, int step){
+    public static final void offset(int[] ii, int step) {
         if (ii == null) {
             return;
         }
@@ -164,12 +158,12 @@ public final class ArrayUtil{
 
     /**
      * 将两个数组a1，a2合并生成一个新数组，并返回 如{1}, {34,4} 将返回{1,34,4}
-     * 
+     *
      * @param a1
      * @param a2
      * @return
      */
-    public static final int[] merge(int[] a1, int[] a2){
+    public static final int[] merge(int[] a1, int[] a2) {
         int l1 = a1 == null ? 0 : a1.length;
         int l2 = a2 == null ? 0 : a2.length;
         if (l1 + l2 == 0) return null;
@@ -181,12 +175,12 @@ public final class ArrayUtil{
 
     /**
      * 将两个数组合并生成一个新的数组，并返回
-     * 
+     *
      * @param o1
      * @param o2
      * @return
      */
-    public static final Object[] merge(Object[] o1, Object[] o2){
+    public static final Object[] merge(Object[] o1, Object[] o2) {
         if (o1 == null && o2 == null) {
             return null;
         }
@@ -207,12 +201,12 @@ public final class ArrayUtil{
 
     /**
      * 在数组ii中找寻i如果找到返回对应的序号，否则返回－1；
-     * 
+     *
      * @param ii
      * @param i
      * @return
      */
-    public static final int find(int[] ii, int i){
+    public static final int find(int[] ii, int i) {
         if (ii == null) {
             return -1;
         }
@@ -226,7 +220,7 @@ public final class ArrayUtil{
     }
 
     public static final int find(byte[] array, int beginIndex, int endIndex,
-            int target){
+                                 int target) {
         if (array == null) {
             return -1;
         }
@@ -240,12 +234,12 @@ public final class ArrayUtil{
 
     /**
      * 在数组ii中找寻i如果找到返回对应的序号，否则返回－1；
-     * 
+     *
      * @param ii
      * @param i
      * @return
      */
-    public static final int find(byte[] ii, int i){
+    public static final int find(byte[] ii, int i) {
         if (ii == null) {
             return -1;
         }
@@ -254,12 +248,12 @@ public final class ArrayUtil{
 
     /**
      * 在数组ii中找寻i如果找到返回对应的序号，否则返回－1；
-     * 
+     *
      * @param ii
      * @param i
      * @return
      */
-    public static final int find(Object[] ii, Object i){
+    public static final int find(Object[] ii, Object i) {
         if (ii == null) {
             return -1;
         }
@@ -268,7 +262,7 @@ public final class ArrayUtil{
 
     /**
      * 在数组ii中找寻i如果找到返回对应的序号，否则返回－1；
-     * 
+     *
      * @param array
      * @param beginIndex
      * @param endIndex
@@ -276,7 +270,7 @@ public final class ArrayUtil{
      * @return
      */
     public static int find(Object[] array, int beginIndex, int endIndex,
-            Object target){
+                           Object target) {
         if (array == null) {
             return -1;
         }
@@ -293,12 +287,12 @@ public final class ArrayUtil{
 
     /**
      * 在数组中找字符串，如果找不到，返回-1.
-     * 
+     *
      * @param ss
      * @param s
      * @return
      */
-    public static final int find(String[] ss, String s){
+    public static final int find(String[] ss, String s) {
         return find(ss, s, false, -1);
     }
 
@@ -306,7 +300,7 @@ public final class ArrayUtil{
      * 在数组ss中查找s，如果找不到则返回def
      */
     public static final int find(String[] ss, String s, boolean ignoreCase,
-            int def){
+                                 int def) {
         if (ss == null) {
             return def;
         }
@@ -333,7 +327,7 @@ public final class ArrayUtil{
     /**
      * 返回数组的不重复子集。
      */
-    public static final String[] distinct(String[] ss){
+    public static final String[] distinct(String[] ss) {
         if (ss == null || ss.length == 0) return null;
         List<String> dist = new ArrayList<String>();
         for (int i = 0; i < ss.length; i++) {
@@ -342,7 +336,7 @@ public final class ArrayUtil{
         return dist.toArray(new String[0]);
     }
 
-    public static final <E> void bubbleSort(List<E> list, Comparator<E> compare){
+    public static final <E> void bubbleSort(List<E> list, Comparator<E> compare) {
         if (list == null || list.size() < 2) return;
         for (int i = 0; i < list.size(); i++) {
             for (int j = i + 1; j < list.size(); j++) {
@@ -352,7 +346,7 @@ public final class ArrayUtil{
         }
     }
 
-    public static final <E> void swap(List<E> list, int i, int j){
+    public static final <E> void swap(List<E> list, int i, int j) {
         E obj = list.get(i);
         list.set(i, list.get(j));
         list.set(j, obj);
@@ -360,11 +354,11 @@ public final class ArrayUtil{
 
     /**
      * 冒泡排序
-     * 
+     *
      * @param list
      * @param compare
      */
-    public static final <E> void bubbleSort(E[] list, Comparator<E> compare){
+    public static final <E> void bubbleSort(E[] list, Comparator<E> compare) {
         if (list == null || list.length < 2) return;
         for (int i = 0; i < list.length; i++) {
             for (int j = i + 1; j < list.length; j++) {
@@ -375,15 +369,15 @@ public final class ArrayUtil{
 
     /**
      * 采用多个排序器的冒泡排序
-     * 
+     *
      * @param list
      * @param compare
      */
-    public static final <E> void bubbleSort(E[] list, Comparator<E>[] compare){
+    public static final <E> void bubbleSort(E[] list, Comparator<E>[] compare) {
         bubbleSort(list, new Comparators(compare));
     }
 
-    public static final void swap(Object[] list, int i, int j){
+    public static final void swap(Object[] list, int i, int j) {
         Object obj = list[i];
         list[i] = list[j];
         list[j] = obj;
@@ -391,11 +385,11 @@ public final class ArrayUtil{
 
     /**
      * 返回os中不为空的对象数组，如果os为空或长度为0，或元素都为空，返回null 否则返回由不为空的元素组成的数组
-     * 
+     *
      * @param os
      * @return
      */
-    public static final Object[] excludeNull(Object[] os){
+    public static final Object[] excludeNull(Object[] os) {
         if (os == null || os.length == 0) {
             return null;
         }
@@ -423,22 +417,22 @@ public final class ArrayUtil{
 
     /**
      * 返回strs中不为空并且长度不为0的字串数组，如果strs为空或长度为0，或元素都为空或长度为0，返回null 否则返回由不为空的元素组成的数组
-     * 
+     *
      * @param os
      * @return
      */
-    public static final String[] excludeNullStrs(String[] strs){
+    public static final String[] excludeNullStrs(String[] strs) {
         return excludeNullStrs(strs, true);
     }
 
     /**
      * 返回字串数组,去除源数组中为null的字串,如果excludeEmpty=true,则也会去除长度为0的字串 否则返回由不为空的元素组成的数组
-     * 
+     *
      * @param os
      * @return
      */
     public static final String[] excludeNullStrs(String[] strs,
-            boolean excludeEmpty){
+                                                 boolean excludeEmpty) {
         if (strs == null || strs.length == 0) {
             return null;
         }
@@ -465,18 +459,18 @@ public final class ArrayUtil{
         return r;
     }
 
-    public static String array2Str(Object[] list, char sept){
+    public static String array2Str(Object[] list, char sept) {
         return array2Str(list, StrUtil.strofascii(sept));
     }
 
     /**
      * 将数组list用分隔符sept连接起来，null处理为“”
-     * 
+     *
      * @param list
      * @param sept
      * @return
      */
-    public static String array2Str(Object[] list, String sept){
+    public static String array2Str(Object[] list, String sept) {
         if (list == null) {
             return null;
         }
@@ -501,7 +495,7 @@ public final class ArrayUtil{
     /**
      * 将浮点型数组list转换为一个指定分割符连接的字符串，不使用科学计数法，nan标识成空串
      */
-    public static String doublearray2Str(double[] list, char sept){
+    public static String doublearray2Str(double[] list, char sept) {
         if (list == null) {
             return null;
         }
@@ -513,17 +507,17 @@ public final class ArrayUtil{
         return sb.toString();
     }
 
-    public static String list2Str(List list, char sept){
+    public static String list2Str(List list, char sept) {
         Object[] obj = ArrayUtil.list2array(list);
         return array2Str(obj, sept);
     }
 
-    public static String list2Str(List list, String sept){
+    public static String list2Str(List list, String sept) {
         Object[] obj = ArrayUtil.list2array(list);
         return array2Str(obj, sept);
     }
 
-    public static String array2Str(Object items, char sept){
+    public static String array2Str(Object items, char sept) {
         if (items == null) {
             return null;
         }
@@ -540,12 +534,11 @@ public final class ArrayUtil{
     /**
      * 将数组转成字符串，要求字符串编译之后能求出这个数组。 比如对字符串数组，返回["1.23","3","4","",null,"5.76"]
      * 对数值数组，返回[1.23,3,4,5.76,NaN]
-     * 
-     * @param items
-     *            是一个数组
+     *
+     * @param items 是一个数组
      * @return
      */
-    public static final String array2ExpStr(Object items, String sept){
+    public static final String array2ExpStr(Object items, String sept) {
         if (items == null) {
             return null;
         }
@@ -588,11 +581,11 @@ public final class ArrayUtil{
         return sb.toString();
     }
 
-    public static String arrayExcludeNull2Str(Object[] list, char sept){
+    public static String arrayExcludeNull2Str(Object[] list, char sept) {
         return array2Str(excludeNull(list), sept);
     }
 
-    public static final String array2displaystr(Object[] datas){
+    public static final String array2displaystr(Object[] datas) {
         if (datas == null || datas.length == 0) {
             return "[]";
         }
@@ -607,18 +600,18 @@ public final class ArrayUtil{
 
     /**
      * 返回os从off开始len长度的元素
-     * 
+     *
      * @param os
      * @param off
      * @param len
      * @return
      */
-    public static final Object[] subElement(Object[] os, int off, int len){
+    public static final Object[] subElement(Object[] os, int off, int len) {
         Object obj = os;
         return (Object[]) subElement(obj, off, len);
     }
 
-    public static final Object subElement(Object source, int off, int len){
+    public static final Object subElement(Object source, int off, int len) {
         if (source == null) return null;
         if (!source.getClass().isArray()) {
             // throw new RuntimeException("源对象不是数组");
@@ -640,13 +633,13 @@ public final class ArrayUtil{
     /**
      * 将字串数组用指定的符号连接成一个字串返回。
      */
-    public static final String join(String[] arr, String delimeter){
+    public static final String join(String[] arr, String delimeter) {
         if (arr == null) return null;
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < arr.length; i++) {
             if (i > 0) buf.append(delimeter);
-            if (arr[i] == null || arr[i].length() == 0)
-                buf.append("");
+            if (arr[i] == null || arr[i].length() == 0) {
+            }
             else
                 buf.append(arr[i]);
         }
@@ -656,7 +649,7 @@ public final class ArrayUtil{
     /**
      * 反转数组
      */
-    public static final void reverse(double[] dd){
+    public static final void reverse(double[] dd) {
         if (dd == null || dd.length <= 1) return;
         int sz = dd.length;
         for (int i = 0, len = sz / 2; i < len; i++) {
@@ -666,7 +659,7 @@ public final class ArrayUtil{
         }
     }
 
-    public static final void reverse(long[] dd){
+    public static final void reverse(long[] dd) {
         if (dd == null || dd.length <= 1) return;
         int sz = dd.length;
         for (int i = 0, len = sz / 2; i < len; i++) {
@@ -676,7 +669,7 @@ public final class ArrayUtil{
         }
     }
 
-    public static final void reverse(int[] dd){
+    public static final void reverse(int[] dd) {
         if (dd == null || dd.length <= 1) return;
         int sz = dd.length;
         for (int i = 0, len = sz / 2; i < len; i++) {
@@ -686,7 +679,7 @@ public final class ArrayUtil{
         }
     }
 
-    public static final void reverse(Object[] os){
+    public static final void reverse(Object[] os) {
         if (os == null || os.length <= 1) return;
         int sz = os.length;
         for (int i = 0, len = sz / 2; i < len; i++) {
@@ -696,7 +689,7 @@ public final class ArrayUtil{
         }
     }
 
-    public static final void reverse(List a){
+    public static final void reverse(List a) {
         int sz = a.size();
         for (int i = 0, len = sz / 2; i < len; i++) {
             Collections.swap(a, i, sz - i - 1);
@@ -705,10 +698,10 @@ public final class ArrayUtil{
 
     /**
      * 排序一个对象，a可能是一个原始数组对象，也可能是List或者是Object[]
-     * 
+     *
      * @param a
      */
-    public static final void reverse(Object a){
+    public static final void reverse(Object a) {
         if (a == null) return;
 
         Class cls = a.getClass();
@@ -741,11 +734,11 @@ public final class ArrayUtil{
 
     /**
      * 判断数组a中的元素个数，如果distinct为true，那么多个相同的元素只计数一次
-     * 
+     *
      * @param a
      * @return
      */
-    public static int count(int[] a, boolean distinct){
+    public static int count(int[] a, boolean distinct) {
         if (a == null || a.length == 0) {
             return 0;
         }
@@ -762,7 +755,7 @@ public final class ArrayUtil{
         return r;
     }
 
-    public static int indexOf(int[] a, int i, int fromi, int toi){
+    public static int indexOf(int[] a, int i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
             if (a[j] == i) return j;
         }
@@ -771,11 +764,11 @@ public final class ArrayUtil{
 
     /**
      * 判断数组a中的元素个数，如果distinct为true，那么多个相同的元素只计数一次
-     * 
+     *
      * @param a
      * @return
      */
-    public static int count(long[] a, boolean distinct){
+    public static int count(long[] a, boolean distinct) {
         if (a == null || a.length == 0) {
             return 0;
         }
@@ -792,7 +785,7 @@ public final class ArrayUtil{
         return r;
     }
 
-    public static int indexOf(long[] a, long i, int fromi, int toi){
+    public static int indexOf(long[] a, long i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
             if (a[j] == i) return j;
         }
@@ -801,11 +794,11 @@ public final class ArrayUtil{
 
     /**
      * 判断数组a中的元素个数，忽略NaN，如果distinct为true，那么多个相同的元素只计数一次
-     * 
+     *
      * @param a
      * @return
      */
-    public static int count(double[] a, boolean distinct){
+    public static int count(double[] a, boolean distinct) {
         if (a == null || a.length == 0) {
             return 0;
         }
@@ -822,14 +815,14 @@ public final class ArrayUtil{
         return r;
     }
 
-    public static int indexOf(double[] a, double i, int fromi, int toi){
+    public static int indexOf(double[] a, double i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
             if (StrUtil.compareDouble(a[j], i) == 0) return j;
         }
         return -1;
     }
 
-    public static int count(Object[] a, boolean distinct){
+    public static int count(Object[] a, boolean distinct) {
         if (a == null || a.length == 0) {
             return 0;
         }
@@ -846,14 +839,14 @@ public final class ArrayUtil{
         return r;
     }
 
-    public static int indexOf(Object[] a, Object i, int fromi, int toi){
+    public static int indexOf(Object[] a, Object i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
             if (StrUtil.compareObject(a[j], i) == 0) return j;
         }
         return -1;
     }
 
-    public static int count(List a, boolean distinct){
+    public static int count(List a, boolean distinct) {
         if (a == null || a.size() == 0) {
             return 0;
         }
@@ -870,7 +863,7 @@ public final class ArrayUtil{
         return r;
     }
 
-    public static int indexOf(List a, Object i, int fromi, int toi){
+    public static int indexOf(List a, Object i, int fromi, int toi) {
         for (int j = fromi; j <= toi; j++) {
             if (StrUtil.compareObject(a.get(j), i) == 0) return j;
         }
@@ -880,10 +873,10 @@ public final class ArrayUtil{
     /**
      * 判断数组a中的元素个数，忽略NaN和null，如果distinct为true，那么多个相同的元素只计数一次
      * a可能是一个原始数组对象，也可能是List或者是Object[]
-     * 
+     *
      * @param a
      */
-    public static final int count(Object a, boolean distinct){
+    public static final int count(Object a, boolean distinct) {
         if (a == null) return 0;
 
         Class cls = a.getClass();
@@ -918,7 +911,7 @@ public final class ArrayUtil{
         }
     }
 
-    private static int indexOf(Object a, Object o, int fromi, int toi){
+    private static int indexOf(Object a, Object o, int fromi, int toi) {
         for (int j = fromi; j < toi; j++) {
             if (StrUtil.compareObject(Array.get(a, j), o) == 0) return j;
         }
@@ -928,7 +921,7 @@ public final class ArrayUtil{
     /**
      * 将一个数组对象转换为double数组
      */
-    public static double[] array2doubleArray(Object items){
+    public static double[] array2doubleArray(Object items) {
         if (items == null) {
             return null;
         }
@@ -948,7 +941,7 @@ public final class ArrayUtil{
     /**
      * 将一个数组对象转换为int数组
      */
-    public static int[] array2intArray(Object items){
+    public static int[] array2intArray(Object items) {
         if (items == null) {
             return null;
         }
@@ -968,7 +961,7 @@ public final class ArrayUtil{
     /**
      * 将一个数组对象转换为List对象
      */
-    public static List array2list(Object items, List list){
+    public static List array2list(Object items, List list) {
         if (items == null) {
             return list;
         }
@@ -984,11 +977,11 @@ public final class ArrayUtil{
 
     /**
      * 将一个数组类型的对象转换为Object[]数组，如果内部有基本类型，将被包装为对象
-     * 
+     *
      * @param items
      * @return
      */
-    public static Object[] array2ObjArray(Object items){
+    public static Object[] array2ObjArray(Object items) {
         if (items == null) {
             return null;
         }
@@ -1009,7 +1002,7 @@ public final class ArrayUtil{
     /**
      * 将一个数组对象转换成字符串数组
      */
-    public static String[] array2stringArray(Object items){
+    public static String[] array2stringArray(Object items) {
         if (items == null) {
             return null;
         }
@@ -1027,7 +1020,7 @@ public final class ArrayUtil{
     /**
      * 让一个数组有至少minCapacity个元素
      */
-    public static Object ensureCapacity(Object ar, int minCapacity){
+    public static Object ensureCapacity(Object ar, int minCapacity) {
         int oldCapacity = Array.getLength(ar);
         if (minCapacity > oldCapacity) {
             int newCapacity = (oldCapacity * 3) / 2 + 1;
@@ -1040,7 +1033,7 @@ public final class ArrayUtil{
     /**
      * 让一个数组的长度为capacity个元素
      */
-    public static Object setCapacity(Object ar, int capacity){
+    public static Object setCapacity(Object ar, int capacity) {
         int len = Array.getLength(ar);
         if (len == capacity) return ar;
 
@@ -1054,7 +1047,7 @@ public final class ArrayUtil{
     /**
      * 求数组ar中最大的元素并返回，ar如果为null或不是数组，都触发异常
      */
-    public final static Object max(Object ar){
+    public final static Object max(Object ar) {
         Class cls = _checkIsArray(ar);
         int len = Array.getLength(ar);
         if (cls == double.class) {// 优化速度
@@ -1077,7 +1070,7 @@ public final class ArrayUtil{
     /**
      * 求数组ar中最小的元素并返回，ar如果为null或不是数组，都触发异常
      */
-    public final static Object min(Object ar){
+    public final static Object min(Object ar) {
         Class cls = _checkIsArray(ar);
         int len = Array.getLength(ar);
         if (cls == double.class) {
@@ -1100,7 +1093,7 @@ public final class ArrayUtil{
     /**
      * 返回数组ar的维数，一维数组返回1，二维数组返回2....，不是数组返回0；
      */
-    public static int getArrayDimension(Object ar){
+    public static int getArrayDimension(Object ar) {
         if (ar == null) return 0;
         Class cls = ar.getClass();
         if (!cls.isArray()) {
@@ -1112,7 +1105,7 @@ public final class ArrayUtil{
         return 1 + getArrayDimension(Array.get(ar, 0));
     }
 
-    private static Class _checkIsArray(Object ar){
+    private static Class _checkIsArray(Object ar) {
         if (ar == null) throw new NullPointerException();
         Class cls = ar.getClass();
         if (!cls.isArray())
@@ -1123,19 +1116,19 @@ public final class ArrayUtil{
     /**
      * 将list装换为指定Class的数组，并返回 如果list为null或没有元素,则返回null
      * 如果有元素,并且所有的元素都为null，而且没有指定Class，抛出异常 所有的元素必须都是同一种类型
-     * 
+     *
      * @param list
      * @return
      */
-    public static Object[] list2array(Collection list){
+    public static Object[] list2array(Collection list) {
         return list2array(list, null);
     }
 
-    public static Object[] list2array(Collection list, Class c){
+    public static Object[] list2array(Collection list, Class c) {
         if (list == null || list.size() == 0) return null;
         if (c == null) {
             Object obj = null;
-            for (Iterator iter = list.iterator(); iter.hasNext();) {
+            for (Iterator iter = list.iterator(); iter.hasNext(); ) {
                 obj = iter.next();
                 if (obj != null) {
                     break;
@@ -1157,13 +1150,11 @@ public final class ArrayUtil{
     /**
      * 将集合list的大小改为size，如果size比list.size()小，则不改变原来的list
      * 如果size比list.size()大，则增加list的长度，填充null
-     * 
-     * @param lst
-     *            进行操作的集合
-     * @param size
-     *            集合的大小
+     *
+     * @param lst  进行操作的集合
+     * @param size 集合的大小
      */
-    public static void fillNull(List lst, int size){
+    public static void fillNull(List lst, int size) {
         for (int i = lst.size(); i < size; i++) {
             lst.add(null);
         }
@@ -1171,12 +1162,11 @@ public final class ArrayUtil{
 
     /**
      * 创建指定长度的链表，链表的每个元素用null填充。
-     * 
-     * @param size
-     *            链表长度。注意：这不是容量。
+     *
+     * @param size 链表长度。注意：这不是容量。
      * @return 返回的链表的size为指定长度。
      */
-    public static List createNullElementList(int size){
+    public static List createNullElementList(int size) {
         List lst = new ArrayList(size);
         for (int i = lst.size(); i < size; i++) {
             lst.add(null);
@@ -1184,7 +1174,7 @@ public final class ArrayUtil{
         return lst;
     }
 
-    public static Integer[] int2Objs(int[] ii){
+    public static Integer[] int2Objs(int[] ii) {
         Integer[] objs = new Integer[ii.length];
         for (int i = 0; i < objs.length; i++) {
             objs[i] = StrUtil.intobj(ii[i]);
@@ -1192,7 +1182,7 @@ public final class ArrayUtil{
         return objs;
     }
 
-    public static int[] obj2int(Integer[] ii){
+    public static int[] obj2int(Integer[] ii) {
         int[] objs = new int[ii.length];
         for (int i = 0; i < objs.length; i++) {
             objs[i] = ii[i].intValue();
@@ -1200,8 +1190,8 @@ public final class ArrayUtil{
         return objs;
     }
 
-    public static void main(String args[]){
-        String[] a = new String[] {null};
+    public static void main(String[] args) {
+        String[] a = new String[]{null};
         System.out.println(array2ExpStr(a, ","));
     }
 
@@ -1247,28 +1237,25 @@ public final class ArrayUtil{
 
     /**
      * 返回target在source中从fromIndex开始的位置,如果没有返回-1
-     * 
-     * @param source
-     *            数组
-     * @param target
-     *            数组
-     * @param fromIndex
-     *            开始位置
+     *
+     * @param source    数组
+     * @param target    数组
+     * @param fromIndex 开始位置
      * @return
      * @deprecated
      */
-    public static int indexOf(Object source, Object target){
+    public static int indexOf(Object source, Object target) {
         return indexOf(source, target, 0);
     }
 
     /**
-     * @deprecated
      * @param source
      * @param target
      * @param fromIndex
      * @return
+     * @deprecated
      */
-    public static int indexOf(Object source, Object target, int fromIndex){
+    public static int indexOf(Object source, Object target, int fromIndex) {
         return indexOf(source, 0, Integer.MAX_VALUE, target, 0,
                 Integer.MAX_VALUE, fromIndex);
     }
@@ -1276,7 +1263,7 @@ public final class ArrayUtil{
     /**
      * 返回target[targetOffset..targetCount]在数组source[sourceOffset..sourceCount]
      * 中从fromIndex开始的位置,如果没有返回-1
-     * 
+     *
      * @param source
      * @param sourceOffset
      * @param sourceCount
@@ -1285,10 +1272,10 @@ public final class ArrayUtil{
      * @param targetCount
      * @param fromIndex
      * @return
-     * @deprecated 如果数组source是基础类型,会在搜索过程中创建许多对象,降低效率,不推荐使用
+     * @deprecated 如果数组source是基础类型, 会在搜索过程中创建许多对象, 降低效率, 不推荐使用
      */
     public static int indexOf(Object source, int sourceOffset, int sourceCount,
-            Object target, int targetOffset, int targetCount, int fromIndex){
+                              Object target, int targetOffset, int targetCount, int fromIndex) {
         // 检查source和target对象
         if (source == null || target == null) return -1;
         if (!source.getClass().isArray()) {
@@ -1370,7 +1357,7 @@ public final class ArrayUtil{
                 int end = j + targetCount - 1;
                 for (int k = targetOffset + 1; j < end
                         && objectEquals(Array.get(source, j),
-                                Array.get(target, k)); j++, k++)
+                        Array.get(target, k)); j++, k++)
                     ;
 
                 if (j == end) {
@@ -1384,15 +1371,15 @@ public final class ArrayUtil{
 
     /**
      * 比较两个对象是否相等
-     * 
+     *
      * @param o1
      * @param o2
      * @return
      */
-    private static boolean objectEquals(Object o1, Object o2){
+    private static boolean objectEquals(Object o1, Object o2) {
         if (o1 == o2) return true;
         if (o1 == null) {
-            return o2 == null ? true : o2.equals(o1);
+            return o2 == null || o2.equals(o1);
         }
         return o1.equals(o2);
     }

@@ -8,19 +8,19 @@ import java.util.Set;
  * <pre>
  * 汉字转化为全拼
  * </pre>
- * 
+ *
  * <BR>
  * <DL>
  * <DT><B>JDK版本:</B></DT><BR>
  * <DD>1.5</DD>
  * </DL>
- * 
+ *
  * @author
  * @version 1.0
  * @see
  * @since 1.0
  */
-public class CnToSpell{
+public class CnToSpell {
     private static LinkedHashMap<String, Integer> spellMap = null;
 
     static {
@@ -31,14 +31,14 @@ public class CnToSpell{
         System.out.println("Chinese transfer Spell Done.");
     }
 
-    private CnToSpell(){
+    private CnToSpell() {
     }
 
-    private static void spellPut(String spell, int ascii){
+    private static void spellPut(String spell, int ascii) {
         spellMap.put(spell, new Integer(ascii));
     }
 
-    private static void initialize(){
+    private static void initialize() {
         spellPut("a", -20319);
         spellPut("ai", -20317);
         spellPut("an", -20304);
@@ -442,12 +442,11 @@ public class CnToSpell{
 
     /**
      * 获得单个汉字的Ascii.
-     * 
-     * @param cn
-     *            char 汉字字符
+     *
+     * @param cn char 汉字字符
      * @return int 错误返回 0,否则返回ascii
      */
-    public static int getCnAscii(char cn){
+    public static int getCnAscii(char cn) {
         byte[] bytes = (String.valueOf(cn)).getBytes();
         if (bytes == null || bytes.length > 2 || bytes.length <= 0) { // 错误
             return 0;
@@ -471,13 +470,12 @@ public class CnToSpell{
 
     /**
      * 根据ASCII码到SpellMap中查找对应的拼音
-     * 
-     * @param ascii
-     *            int 字符对应的ASCII
+     *
+     * @param ascii int 字符对应的ASCII
      * @return String 拼音,首先判断ASCII是否>0&<160,如果是返回对应的字符, <BR>
-     *         否则到SpellMap中查找,如果没有找到拼音,则返回null,如果找到则返回拼音.
+     * 否则到SpellMap中查找,如果没有找到拼音,则返回null,如果找到则返回拼音.
      */
-    public static String getSpellByAscii(int ascii){
+    public static String getSpellByAscii(int ascii) {
         if (ascii > 0 && ascii < 160) { // 单字符
             return String.valueOf((char) ascii);
         }
@@ -490,7 +488,6 @@ public class CnToSpell{
         Iterator<String> it = keySet.iterator();
 
         String spell0 = null;
-        ;
         String spell = null;
 
         int asciiRang0 = -20319;
@@ -510,12 +507,11 @@ public class CnToSpell{
 
     /**
      * 返回字符串的全拼,是汉字转化为全拼,其它字符不进行转换
-     * 
-     * @param cnStr
-     *            String 字符串
+     *
+     * @param cnStr String 字符串
      * @return String 转换成全拼后的字符串
      */
-    public static String getFullSpell(String cnStr){
+    public static String getFullSpell(String cnStr) {
         if (null == cnStr || "".equals(cnStr.trim())) {
             return cnStr;
         }
@@ -543,11 +539,11 @@ public class CnToSpell{
         return retuBuf.toString();
     }
 
-    public static String getFirstSpell(String cnStr){
+    public static String getFirstSpell(String cnStr) {
         return null;
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         String str = null;
         str = "谢海101普降喜雨";
         System.out.println("Spell=" + CnToSpell.getFullSpell(str));

@@ -1,5 +1,9 @@
 package org.codeyn.util;
 
+import org.codeyn.util.exception.ExceptionHandler;
+import org.codeyn.util.i18n.I18N;
+import org.codeyn.util.yn.StrUtil;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,23 +15,19 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.codeyn.util.exception.ExceptionHandler;
-import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StrUtil;
-
-public final class SysUtil{
+public final class SysUtil {
 
     private static Map<String, String> envmap = null;
 
-    private SysUtil(){}
+    private SysUtil() {
+    }
 
     /**
      * @return logic cpu count, one core a cpu in multi-core
      */
-    public static int getAvailableProcessors(){
+    public static int getAvailableProcessors() {
         Runtime rt = Runtime.getRuntime();
         int r = rt.availableProcessors();
         return r < 1 ? 1 : r;
@@ -36,7 +36,7 @@ public final class SysUtil{
     /**
      * Obtain environment variable of Option system
      */
-    public static Map<String, String> getenv(){
+    public static Map<String, String> getenv() {
         try {
             return new HashMap<String, String>(System.getenv());
         } catch (Throwable ex) {
@@ -44,7 +44,7 @@ public final class SysUtil{
         }
     }
 
-    private static Map<String, String> getenv_from_cmd(){
+    private static Map<String, String> getenv_from_cmd() {
         synchronized (SysUtil.class) {
             if (envmap != null) return envmap;
             Map<String, String> map = new HashMap<String, String>(20);
@@ -68,15 +68,15 @@ public final class SysUtil{
         }
     }
 
-    public static String getenv(String name, String defvalue){
+    public static String getenv(String name, String defvalue) {
         Map<String, String> env = getenv();
         if (env.containsKey(name)) {
-            return (String) env.get(name);
+            return env.get(name);
         }
         return defvalue;
     }
 
-    public static String getenvIgnoreCase(String name, String defvalue){
+    public static String getenvIgnoreCase(String name, String defvalue) {
         Map<String, String> env = getenv();
         Set<Map.Entry<String, String>> set = env.entrySet();
         Iterator<Map.Entry<String, String>> itr = set.iterator();
@@ -89,19 +89,19 @@ public final class SysUtil{
         return defvalue;
     }
 
-    public static String getenv(String name){
+    public static String getenv(String name) {
         return getenv(name, null);
     }
 
     /**
      * @return used memory, unit MB
      */
-    public static long getUsedMem_mb(){
+    public static long getUsedMem_mb() {
         Runtime rt = Runtime.getRuntime();
         return (rt.totalMemory() - rt.freeMemory()) / StrUtil.MB;
     }
 
-    public static String getMemInfo(){
+    public static String getMemInfo() {
         Runtime rt = Runtime.getRuntime();
         StringBuffer r = new StringBuffer(64);
         r.append("FREE=");
@@ -113,7 +113,7 @@ public final class SysUtil{
         return r.toString();
     }
 
-    public static void showMemInfo(){
+    public static void showMemInfo() {
         Runtime rt = Runtime.getRuntime();
         System.out.print(I18N.getString("com.esen.util.SysFunc.1", "空闲:"));
         System.out.print(StrUtil.formatSize(rt.freeMemory()));
@@ -126,14 +126,12 @@ public final class SysUtil{
     /**
      * 在所有活动线程堆栈中获取指定线程的当前状态，返回值wait为当前线程正处于等待中，
      * sleep为当前线程正处于睡眠中，run为当前线程正处于运行状态中
-     * 
-     * @param ast
-     *            所有活动线程的堆栈
-     * @param t
-     *            要获取状态的线程
+     *
+     * @param ast 所有活动线程的堆栈
+     * @param t   要获取状态的线程
      * @return
      */
-    public static String getThreadState(Map<Thread, StackTraceElement[]> ast, Thread t){
+    public static String getThreadState(Map<Thread, StackTraceElement[]> ast, Thread t) {
         StackTraceElement[] ste = ast.get(t);
         if (ste.length > 0 && ste[0].isNativeMethod()) {
             String s = ste[0].toString();
@@ -146,7 +144,7 @@ public final class SysUtil{
         return "run";
     }
 
-    public static String getThreadStateCaption(String state){
+    public static String getThreadStateCaption(String state) {
         // if ("wait".equals(state)) return "等待中";
         if ("wait".equals(state))
             return I18N.getString("com.esen.util.SysFunc.4", "等待中 ");
@@ -162,16 +160,16 @@ public final class SysUtil{
     /**
      * 打印输出所有的线程dump
      */
-    public static void printAllStackTraces(){
+    public static void printAllStackTraces() {
         Map<Thread, StackTraceElement[]> tste = Thread.getAllStackTraces();
         if (tste == null) {
             System.out.print(I18N.getString("com.esen.util.SysFunc.7", "需要JDK 1.5或其它高版本JDK的支持！"));
             return;
         }
-        for (Iterator<Map.Entry<Thread, StackTraceElement[]>> iter = tste.entrySet().iterator(); iter.hasNext();) {
+        for (Iterator<Map.Entry<Thread, StackTraceElement[]>> iter = tste.entrySet().iterator(); iter.hasNext(); ) {
             Map.Entry<Thread, StackTraceElement[]> entry = iter.next();
             Thread t = entry.getKey();
-            StackTraceElement[] ste = (StackTraceElement[]) entry.getValue();
+            StackTraceElement[] ste = entry.getValue();
             System.out.println("Thread: " + t.toString());
             for (int i = 0; i < ste.length; i++) {
                 System.out.print('\t');
@@ -180,13 +178,13 @@ public final class SysUtil{
         }
     }
 
-    public static void showUsedMem(){
+    public static void showUsedMem() {
         Runtime rt = Runtime.getRuntime();
         System.out.print(I18N.getString("com.esen.util.SysFunc.8", "使用内存="));
         System.out.println(StrUtil.formatSize(rt.totalMemory() - rt.freeMemory()));
     }
 
-    public static String formatBytes(long bts){
+    public static String formatBytes(long bts) {
         long bt = bts % 1024;
         long kb = (bts / 1024) % 1024;
         long mb = bts / (1024 * 1024);
@@ -194,7 +192,7 @@ public final class SysUtil{
                 + ((bt > 0) ? (bt + "BYTES") : "");
     }
 
-    public static boolean isClass(Object o, String cls){
+    public static boolean isClass(Object o, String cls) {
         if (o == null || cls == null) {
             throw new java.lang.NullPointerException();
         }
@@ -202,7 +200,7 @@ public final class SysUtil{
     }
 
     public static Object getSuperClassDeclaredField(Object o, String fld)
-            throws Exception{
+            throws Exception {
         if (o == null || fld == null) {
             throw new java.lang.NullPointerException();
         }
@@ -219,7 +217,7 @@ public final class SysUtil{
     }
 
     public static Object getSuperSuperClassDeclaredField(Object o, String fld)
-            throws Exception{
+            throws Exception {
         if (o == null || fld == null) {
             throw new java.lang.NullPointerException();
         }
@@ -235,7 +233,7 @@ public final class SysUtil{
         }
     }
 
-    public static String getSuperClasses(Object o) throws Exception{
+    public static String getSuperClasses(Object o) throws Exception {
         Class cls = o.getClass();
         StringBuffer sb = new StringBuffer(cls.getName());
         while (cls != null && !cls.getName().equals("Object")) {
@@ -248,13 +246,13 @@ public final class SysUtil{
         return sb.toString();
     }
 
-    public static String getDeclaredFields(Object o) throws Exception{
+    public static String getDeclaredFields(Object o) throws Exception {
         return o.getClass().getName() + "\r\n"
                 + _getDeclaredFields(0, o.getClass());
     }
 
     private static String _getDeclaredFields(int level, Class cls)
-            throws Exception{
+            throws Exception {
         if (cls == null) {
             return null;
         }
@@ -287,13 +285,13 @@ public final class SysUtil{
 
     /**
      * 返回类o中方法p的值，如果方法不存在，返回null。
-     * 
+     *
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
     public static Object getMethodValueIgnoreCase(Object o, String p,
-            Object defvalue) throws IllegalArgumentException,
-            IllegalAccessException{
+                                                  Object defvalue) throws IllegalArgumentException,
+            IllegalAccessException {
         if (p == null || p.length() == 0) {
             return defvalue;
         }
@@ -315,7 +313,7 @@ public final class SysUtil{
     /**
      * 获得o中的方法p，活略大小写，且方法是不带参数的。
      */
-    public static Method getMethodIgnoreCaseWithNoParams(Object o, String p){
+    public static Method getMethodIgnoreCaseWithNoParams(Object o, String p) {
         Class cls = o.getClass();
         Method[] methods = cls.getMethods();
         int point = 0;
@@ -331,7 +329,7 @@ public final class SysUtil{
     }
 
     public static Object getDeclaredField(Object o, String fld)
-            throws Exception{
+            throws Exception {
         if (o == null || fld == null) {
             throw new java.lang.NullPointerException();
         }
@@ -354,7 +352,7 @@ public final class SysUtil{
      * /bi_lib/branches/2.2/lib/oracle_ojdbc14
      * -1.0.0.jar!/oracle/jdbc/driver/OracleDriver.class 如果类不存在，那么返回null
      */
-    public static URL getClassUrl(String clsname){
+    public static URL getClassUrl(String clsname) {
         // get class
         String classname_resource = "/" + clsname.replace('.', '/') + ".class";
 
@@ -368,7 +366,7 @@ public final class SysUtil{
     /**
      * 判断当前jvm是否是64bit的jvm
      */
-    public static boolean is64bitJVM(){
+    public static boolean is64bitJVM() {
         // 参考util工程下的doc目录下的AIX5.3-IBMJDK-PPT.txt和WIN7-JROCKET1.6-PPT.txt
         String s = System.getProperty("sun.arch.data.model");// sun、jrocket都支持这个变量，ibm不支持
         if (s != null) {

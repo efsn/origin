@@ -7,8 +7,8 @@ import java.sql.SQLException;
  * @version 1.0
  * Created on 2014/8/24
  */
-public class DbPoolException extends SQLException{
-      public DbPoolException(String msg){
+public class DbPoolException extends SQLException {
+    public DbPoolException(String msg) {
         super(msg);
     }
 }

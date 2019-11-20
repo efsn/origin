@@ -7,5 +7,5 @@ import org.svip.db.sql.DML;
  * @version 1.0
  * Created on 2014/08/20
  */
-public final class MySqlDML implements DML{
+public final class MySqlDML implements DML {
 }

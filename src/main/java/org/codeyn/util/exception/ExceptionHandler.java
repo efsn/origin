@@ -1,11 +1,11 @@
 package org.codeyn.util.exception;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-
 import org.codeyn.util.yn.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * <p>
@@ -20,24 +20,23 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Company:
  * </p>
- * 
+ *
  * @author not attributable
  * @version 1.0
  */
 
-public final class ExceptionHandler{
-    
+public final class ExceptionHandler {
+
     private static final Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
-
-    private ExceptionHandler(){
-    }
-
     static private _ExceptionHandler handle = null;
+
+    private ExceptionHandler() {
+    }
 
     /**
      * 打印当前线程的堆栈信息
      */
-    static public void printCurrentStackTrace(String msg){
+    static public void printCurrentStackTrace(String msg) {
         try {
             throw new RuntimeException(msg);
         } catch (Exception ex) {
@@ -50,10 +49,10 @@ public final class ExceptionHandler{
 
     /**
      * 异常处理
-     * 
+     *
      * @param ex
      */
-    synchronized static public void handleException(Exception ex){
+    synchronized static public void handleException(Exception ex) {
         if (handle != null) {
             handle.handleException(ex);
         }
@@ -61,12 +60,12 @@ public final class ExceptionHandler{
 
     /**
      * 设置异常处理的接口，返回原来的接口。
-     * 
+     *
      * @param value
      * @return
      */
     synchronized static public _ExceptionHandler setExceptionHandler(
-            _ExceptionHandler value){
+            _ExceptionHandler value) {
         _ExceptionHandler old = handle;
         handle = value;
         return old;
@@ -74,20 +73,20 @@ public final class ExceptionHandler{
 
     /**
      * 获得异常处理接口。
-     * 
+     *
      * @return
      */
-    synchronized static public _ExceptionHandler getExceptionHandler(){
+    synchronized static public _ExceptionHandler getExceptionHandler() {
         return handle;
     }
 
     /**
-     * @deprecated 使用支持国际化的异常抛出方式 抛出一个新的异常，异常的堆栈信息于给定的ex一致，但message是指定的msg
      * @param ex
      * @param msg
      * @throws java.lang.Exception
+     * @deprecated 使用支持国际化的异常抛出方式 抛出一个新的异常，异常的堆栈信息于给定的ex一致，但message是指定的msg
      */
-    static public void rethrow(Exception ex, String msg) throws Exception{
+    static public void rethrow(Exception ex, String msg) throws Exception {
         Exception e = new Exception(msg, ex);
         e.setStackTrace(ex.getStackTrace());
         throw e;
@@ -95,36 +94,32 @@ public final class ExceptionHandler{
 
     /**
      * 抛出一个新的异常，异常的堆栈信息于给定的ex一致，但message是指定的msg
-     * 
+     *
      * @param ex
-     * @param key
-     *            异常信息的资源key
-     * @param defaultValue
-     *            异常信息的默认值
-     * @param params
-     *            参数
-     * @throws Exception
-     *             重新构造的异常
+     * @param key          异常信息的资源key
+     * @param defaultValue 异常信息的默认值
+     * @param params       参数
+     * @throws Exception 重新构造的异常
      */
     static public void rethrow(Exception ex, String key, String defaultValue,
-            Object[] params) throws Exception{
+                               Object[] params) throws Exception {
         Exception e = new Exception4I18N(key, defaultValue, ex);
         e.setStackTrace(ex.getStackTrace());
         throw e;
     }
 
     static public void rethrow(Exception ex, String key, String defaultValue)
-            throws Exception{
+            throws Exception {
         rethrow(ex, key, defaultValue, null);
     }
 
     /**
-     * @deprecated 使用支持国际化的异常抛出方式 抛出一个新的异常，异常的堆栈信息于给定的ex一致，但message是指定的msg
      * @param ex
      * @param msg
      * @throws java.lang.Exception
+     * @deprecated 使用支持国际化的异常抛出方式 抛出一个新的异常，异常的堆栈信息于给定的ex一致，但message是指定的msg
      */
-    static public void rethrowRuntimeException(Throwable ex, String msg){
+    static public void rethrowRuntimeException(Throwable ex, String msg) {
         if (ex == null) {
             throwRuntimeException(msg);
         }
@@ -174,17 +169,14 @@ public final class ExceptionHandler{
 
     /**
      * 抛出一个新的Runtime异常，异常的堆栈信息于给定的ex一致，但message是指定的msg
-     * 
+     *
      * @param ex
-     * @param key
-     *            异常信息的key
-     * @param defaultValue
-     *            异常信息的默认文字
-     * @param params
-     *            异常信息的格式化参数
+     * @param key          异常信息的key
+     * @param defaultValue 异常信息的默认文字
+     * @param params       异常信息的格式化参数
      */
     static public void rethrowRuntimeException(Throwable ex, String key,
-            String defaultValue, Object[] params){
+                                               String defaultValue, Object[] params) {
         if (ex == null) {
             throwRuntimeException(key, defaultValue, params);
         }
@@ -209,11 +201,11 @@ public final class ExceptionHandler{
     }
 
     static public void rethrowRuntimeException(Throwable ex, String key,
-            String defaultValue){
+                                               String defaultValue) {
         rethrowRuntimeException(ex, key, defaultValue, null);
     }
 
-    static public void rethrowRuntimeException(Throwable ex){
+    static public void rethrowRuntimeException(Throwable ex) {
         /**
          * 20110317 ISSUE:BI-4300
          * 当主题域或主题集对应的数据库连接池连不上时为何提示“java.lang.RuntimeException”？
@@ -249,10 +241,10 @@ public final class ExceptionHandler{
     }
 
     /**
-     * @deprecated 使用可以国际化的异常 抛出一个运行时异常
      * @param msg
+     * @deprecated 使用可以国际化的异常 抛出一个运行时异常
      */
-    public static void throwRuntimeException(String msg){
+    public static void throwRuntimeException(String msg) {
         /**
          * 由于系统中有很多地方rethrowRuntimeException的异常又被上层的函数再次rethrowRuntimeException，
          * 有时达到4~5此之多， 导致同一个异常在控制台可能输出4~5边，故不应该在这里log异常，而应该在需要的地方自己处理。
@@ -262,7 +254,7 @@ public final class ExceptionHandler{
     }
 
     public static void throwRuntimeException(String key, String defaultValue,
-            Object[] params){
+                                             Object[] params) {
         /**
          * 由于系统中有很多地方rethrowRuntimeException的异常又被上层的函数再次rethrowRuntimeException，
          * 有时达到4~5此之多， 导致同一个异常在控制台可能输出4~5边，故不应该在这里log异常，而应该在需要的地方自己处理。
@@ -271,7 +263,7 @@ public final class ExceptionHandler{
         throw new RuntimeException4I18N(key, defaultValue, params);
     }
 
-    public static void throwRuntimeException(String key, String defaultValue){
+    public static void throwRuntimeException(String key, String defaultValue) {
         /**
          * 由于系统中有很多地方rethrowRuntimeException的异常又被上层的函数再次rethrowRuntimeException，
          * 有时达到4~5此之多， 导致同一个异常在控制台可能输出4~5边，故不应该在这里log异常，而应该在需要的地方自己处理。
@@ -282,11 +274,11 @@ public final class ExceptionHandler{
 
     /**
      * 返回一个异常的根异常
-     * 
+     *
      * @param ex
      * @return
      */
-    static public Throwable getExceptionRoot(Throwable ex){
+    static public Throwable getExceptionRoot(Throwable ex) {
         Throwable r = ex;
         while (r != null) {
             if (r.getCause() == null) {

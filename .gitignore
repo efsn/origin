@@ -1,8 +1,32 @@
-/target/
-/.settings/
-/logs/
-/test-output/
-/.classpath
-/.project
-/bin/
+### Gradle ###
+.gradle/
+build
+!gradle/wrapper/gradle-wrapper.jar
 
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out
+logs
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### VS Code ###
+.vscode/
+.DS_Store

@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-public class Files{
-    
+public class Files {
+
     private Hashtable<Integer, File> files = new Hashtable<Integer, File>();
     private int count;
 
-    protected void addFile(File paramFile){
+    protected void addFile(File paramFile) {
         if (paramFile == null) {
             throw new IllegalArgumentException("newFile cannot be null");
         }
@@ -18,7 +18,7 @@ public class Files{
         count += 1;
     }
 
-    public File getFile(int paramInt){
+    public File getFile(int paramInt) {
         if (paramInt < 0) {
             throw new IllegalArgumentException("File's index cannot be a negative value");
         }
@@ -29,11 +29,11 @@ public class Files{
         return file;
     }
 
-    public int getCount(){
+    public int getCount() {
         return count;
     }
 
-    public long getSize() throws IOException{
+    public long getSize() throws IOException {
         long l = 0L;
         for (int i = 0; i < this.count; i++) {
             l += getFile(i).getSize();
@@ -41,11 +41,11 @@ public class Files{
         return l;
     }
 
-    public Collection<File> getCollection(){
+    public Collection<File> getCollection() {
         return files.values();
     }
 
-    public Enumeration<File> getEnumeration(){
+    public Enumeration<File> getEnumeration() {
         return files.elements();
     }
 }

@@ -8,5 +8,5 @@ package org.svip.db.sql;
  * @version 1.0
  * Created on 2014/08/20
  */
-public interface DCL extends SQL{
+public interface DCL extends SQL {
 }

@@ -1,29 +1,21 @@
 package template;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
- 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 public class Game2048 extends JFrame implements KeyListener {
-    private JPanel p;
-    private JTable table;
-    private JLabel label, scoreshow;
     Boolean hasBlank;
     String[][] params = new String[4][4];
     int score = 0;
- 
+    private JPanel p;
+    private JTable table;
+    private JLabel label, scoreshow;
+
     public Game2048() {
         this.setTitle("2048");
         hasBlank = true;
@@ -51,13 +43,17 @@ public class Game2048 extends JFrame implements KeyListener {
         this.addKeyListener(this);
         init();
     }
- 
+
+    public static void main(String[] args) {
+        new Game2048();
+    }
+
     public void init() {
         randomInsert();
         randomInsert();
         setTableValue();
     }
- 
+
     public void randomInsert() {
         while (hasBlank) {
             int x = (int) (Math.random() * 4);
@@ -72,7 +68,7 @@ public class Game2048 extends JFrame implements KeyListener {
             }
         }
     }
- 
+
     public Boolean hasBlank() {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -82,7 +78,7 @@ public class Game2048 extends JFrame implements KeyListener {
         }
         return false;
     }
- 
+
     public void setTableValue() {
         DefaultTableModel model = (DefaultTableModel) this.table.getModel();
         int rowcount = model.getRowCount();
@@ -94,44 +90,36 @@ public class Game2048 extends JFrame implements KeyListener {
         for (int i = 0; i < 4; i++) {
             model.addRow(params[i]);
         }
- 
+
         this.table.setModel(model);
         this.table.setFont(new Font("font", Font.PLAIN, 40));
- 
+
         for (int i = 0; i < 4; i++) {
             table.getColumn(model.getColumnName(i)).setCellRenderer(
                     new MyTableCellRenderrer());
         }
         scoreshow.setText(score + "");
     }
- 
+
     public String add(String a) {
         if (a != null) {
             return String.valueOf(Integer.valueOf(a) * 2);
         }
         return null;
     }
- 
+
     public Boolean compara(String a, String b) {
         if (a == null) {
-            if (b == null) {
-                return true;
-            } else {
-                return false;
-            }
+            return b == null;
         } else {
             if (b == null) {
                 return false;
             } else {
-                if (a.equals(b)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return a.equals(b);
             }
         }
     }
- 
+
     public void isGameOver() {
         if (hasBlank == false) {
             for (int i = 0; i < 3; i++) {
@@ -149,7 +137,7 @@ public class Game2048 extends JFrame implements KeyListener {
             }
         }
     }
- 
+
     public void up() {
         System.out.println("===向上走===");
         for (int j = 0; j < 4; j++) {
@@ -167,7 +155,7 @@ public class Game2048 extends JFrame implements KeyListener {
             upclear();
         }
     }
- 
+
     public void down() {
         System.out.println("===向下走===");
         for (int j = 0; j < 4; j++) {
@@ -179,14 +167,14 @@ public class Game2048 extends JFrame implements KeyListener {
                         params[i - 1][j] = null;
                         if (params[i][j] != null)
                             score += Integer.valueOf(params[i][j]);
- 
+
                     }
                 }
             }
             downclear();
         }
     }
- 
+
     public void left() {
         System.out.println("===向左走===");
         for (int i = 0; i < 4; i++) {
@@ -204,7 +192,7 @@ public class Game2048 extends JFrame implements KeyListener {
             leftclear();
         }
     }
- 
+
     public void right() {
         System.out.println("===向右走===");
         for (int i = 0; i < 4; i++) {
@@ -222,7 +210,7 @@ public class Game2048 extends JFrame implements KeyListener {
             rightclear();
         }
     }
- 
+
     public void upclear() {
         System.out.println("===向上清空空格===");
         for (int j = 0; j < 4; j++) {
@@ -236,7 +224,7 @@ public class Game2048 extends JFrame implements KeyListener {
             }
         }
     }
- 
+
     public void downclear() {
         System.out.println("===向上清空空格===");
         for (int j = 0; j < 4; j++) {
@@ -250,7 +238,7 @@ public class Game2048 extends JFrame implements KeyListener {
             }
         }
     }
- 
+
     public void leftclear() {
         System.out.println("===向左清空空格===");
         for (int i = 0; i < 4; i++) {
@@ -264,7 +252,7 @@ public class Game2048 extends JFrame implements KeyListener {
             }
         }
     }
- 
+
     public void rightclear() {
         System.out.println("===向右清空空格===");
         for (int i = 0; i < 4; i++) {
@@ -278,11 +266,11 @@ public class Game2048 extends JFrame implements KeyListener {
             }
         }
     }
- 
+
     @Override
     public void keyTyped(KeyEvent e) {
     }
- 
+
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
@@ -310,13 +298,13 @@ public class Game2048 extends JFrame implements KeyListener {
             setTableValue();
             isGameOver();
         }
- 
+
     }
- 
+
     @Override
     public void keyReleased(KeyEvent e) {
     }
- 
+
     public void showParams() {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -325,71 +313,67 @@ public class Game2048 extends JFrame implements KeyListener {
             System.out.println();
         }
     }
- 
-    public static void main(String[] args) {
-        new Game2048();
-    }
- 
+
     class MyTableCellRenderrer extends DefaultTableCellRenderer {
         // 设置单元格内容居中
         @Override
         public void setHorizontalAlignment(int alignment) {
             super.setHorizontalAlignment(SwingConstants.CENTER);
         }
- 
+
         // 设置单元格颜色
         @Override
         public Component getTableCellRendererComponent(JTable table,
-                Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
+                                                       Object value, boolean isSelected, boolean hasFocus, int row,
+                                                       int column) {
             Component comp = super.getTableCellRendererComponent(table, value,
                     isSelected, hasFocus, row, column);
             int v = 0;
             if (value != null && value != "")
                 v = Integer.valueOf(value.toString());
             switch (v) {
-            case 2:
-                setBackground(new Color(255, 239, 213));
-                break;
-            case 4:
-                setBackground(new Color(255, 228, 181));
-                break;
-            case 8:
-                setBackground(new Color(255, 218, 185));
-                break;
-            case 16:
-                setBackground(new Color(243, 177, 116));
-                break;
-            case 32:
-                setBackground(new Color(248, 149, 90));
-                break;
-            case 64:
-                setBackground(new Color(249, 94, 50));
-                break;
-            case 128:
-                setBackground(new Color(239, 207, 108));
-                break;
-            case 256:
-                setBackground(new Color(239, 207, 99));
-                break;
-            case 512:
-                setBackground(new Color(239, 203, 82));
-                break;
-            case 1024:
-                setBackground(new Color(239, 199, 57));
-                break;
-            case 2048:
-                setBackground(new Color(239, 195, 41));
-                break;
-            case 4096:
-                setBackground(new Color(255, 60, 57));
-                break;
-            default:
-                comp.setBackground(Color.LIGHT_GRAY);
-                break;
+                case 2:
+                    setBackground(new Color(255, 239, 213));
+                    break;
+                case 4:
+                    setBackground(new Color(255, 228, 181));
+                    break;
+                case 8:
+                    setBackground(new Color(255, 218, 185));
+                    break;
+                case 16:
+                    setBackground(new Color(243, 177, 116));
+                    break;
+                case 32:
+                    setBackground(new Color(248, 149, 90));
+                    break;
+                case 64:
+                    setBackground(new Color(249, 94, 50));
+                    break;
+                case 128:
+                    setBackground(new Color(239, 207, 108));
+                    break;
+                case 256:
+                    setBackground(new Color(239, 207, 99));
+                    break;
+                case 512:
+                    setBackground(new Color(239, 203, 82));
+                    break;
+                case 1024:
+                    setBackground(new Color(239, 199, 57));
+                    break;
+                case 2048:
+                    setBackground(new Color(239, 195, 41));
+                    break;
+                case 4096:
+                    setBackground(new Color(255, 60, 57));
+                    break;
+                default:
+                    comp.setBackground(Color.LIGHT_GRAY);
+                    break;
             }
             return comp;
         }
     }
- 
+
 }

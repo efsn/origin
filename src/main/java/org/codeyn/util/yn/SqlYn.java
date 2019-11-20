@@ -1,19 +1,19 @@
 package org.codeyn.util.yn;
 
+import org.apache.tomcat.dbcp.dbcp.ConnectionFactory;
+import org.codeyn.util.DoubleArray;
+import org.codeyn.util.MiniProperties;
+import org.codeyn.util.exception.RuntimeException4I18N;
+import org.codeyn.util.i18n.I18N;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.svip.db.definer.DbDefiner;
+import org.w3c.dom.Document;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -23,24 +23,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.tomcat.dbcp.dbcp.ConnectionFactory;
-import org.codeyn.util.DoubleArray;
-import org.codeyn.util.MiniProperties;
-import org.codeyn.util.exception.RuntimeException4I18N;
-import org.codeyn.util.i18n.I18N;
-import org.codeyn.util.yn.StrUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.svip.db.definer.DbDefiner;
-import org.w3c.dom.Document;
-
 /**
  * 此类定义一些关于JDBC数据库的通用的函数
  */
 
-public class SqlYn{
-
-    private static final Logger log = LoggerFactory.getLogger(SqlYn.class);
+public class SqlYn {
 
     public static final String[] KEYWORDS = {"ABORT", "ABS", "ABSOLUTE",
             "ACCESS", "ACTION", "ADA", "ADD", "ADMIN", "AFTER", "AGGREGATE",
@@ -150,8 +137,40 @@ public class SqlYn{
             "VALUES", "VARCHAR", "VARIABLE", "VARYING", "VERBOSE", "VERSION",
             "VIEW", "WAITFOR", "WHEN", "WHENEVER", "WHERE", "WHILE", "WITH",
             "WITHOUT", "WORK", "WRITE", "WRITETEXT", "YEAR", "ZONE"};
-
     public static final HashMap KEYWORDMAP;
+    private static final Logger log = LoggerFactory.getLogger(SqlYn.class);
+    // 匹配形如:insert into tbname values(?,?)的sql
+    /*
+     * private static final Pattern INSERT_ALLFIELD_REGEX = Pattern .compile(
+     * "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]+values[\\s]*\\([\\s]*\\?([\\s]*,[\\s]*\\?)*[\\s]*\\)[\\s]*$"
+     * , Pattern.CASE_INSENSITIVE);
+     */
+    private static final Pattern INSERT_ALLFIELD_REGEX = Pattern
+            .compile(
+                    "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]+values[\\s]*\\(",
+                    Pattern.CASE_INSENSITIVE);
+    // 匹配形如:insert into tbname (field1,field2)values(?,?)的sql
+    /*
+     * private static final Pattern INSERT_SOMEFIELD_REGEX = Pattern .compile(
+     * "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]*\\([\\s]*([^\\s,]+([\\s]*,[\\s]*[^\\s,]+[\\s]*)*)\\)[\\s]*values[\\s]*\\([\\s]*\\?([\\s]*,[\\s]*\\?)*[\\s]*\\)[\\s]*$"
+     * , Pattern.CASE_INSENSITIVE);
+     */
+    private static final Pattern INSERT_SOMEFIELD_REGEX = Pattern
+            .compile(
+                    "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]*\\([\\s]*([^\\(\\)]+)\\)[\\s]*values[\\s]*\\(",
+                    Pattern.CASE_INSENSITIVE);
+    // 匹配形如:update tbname set ... 的sql
+    private static final Pattern UPDATE_SQL_REGEX = Pattern.compile(
+            "^[\\s]*update[\\s]+([\\S]+)[\\s]+set([\\s]+[\\S].+)",
+            Pattern.CASE_INSENSITIVE);
+    /**
+     * 在匹配字段时需要注意字段两端有括号,如select Field1 from table where
+     * ((field2)=?,field3=?),这里获得字段时了需要从((field2)=?,field3=?)中取出字段field2,field3
+     */
+    private static final Pattern UPDATE_FIELD = Pattern
+            .compile(
+                    "[\\s,][\\(\\s]*([^\\s>=<,\\)]+)[\\s\\)]*((([\\s]*(>|=|<|(>=)|(<=)|(<>))[\\s]*)|([\\s]+like[\\s]+)))[\\?]",
+                    Pattern.CASE_INSENSITIVE);
 
     static {
         KEYWORDMAP = new HashMap();
@@ -160,17 +179,17 @@ public class SqlYn{
         }
     }
 
-    public static final boolean isKeyWord(String key){
+    public static final boolean isKeyWord(String key) {
         return KEYWORDMAP.containsKey(key.toUpperCase());
     }
 
     /**
      * 如果字段名是数据库关键字，则用 " 括起来； mysql 使用 `
-     * 
+     *
      * @param cname
      * @return
      */
-    public static final String getColumnName(Dialect dl, String cn){
+    public static final String getColumnName(Dialect dl, String cn) {
         if (cn == null) return null;
         if (dl.getDataBaseInfo().getDbtype() == SqlConst.DB_TYPE_GREENPLUM) {
             return cn;
@@ -187,7 +206,7 @@ public class SqlYn{
      * 返回一个在数据库中不存在的表名，以tableNamePreFix为前缀，tableNamePreFix可以为null
      */
     public static final String generateTableName(DbDefiner db, Connection con,
-            String tableNamePreFix) throws Exception{
+                                                 String tableNamePreFix) throws Exception {
         if (tableNamePreFix != null) {
             tableNamePreFix = tableNamePreFix.trim();
         }
@@ -213,10 +232,10 @@ public class SqlYn{
         return table;
     }
 
-    public static final char getType(int sqlType, boolean throwException){
+    public static final char getType(int sqlType, boolean throwException) {
         char r = getType(sqlType);
         if (r == 0 && throwException)
-        // throw new RuntimeException("不支持的字段类型 " + sqlType);
+            // throw new RuntimeException("不支持的字段类型 " + sqlType);
             throw new RuntimeException(I18N.getString(
                     "com.esen.jdbc.sqlfunc.unabletype", "不支持的字段类型 {0}"));
         return r;
@@ -224,11 +243,11 @@ public class SqlYn{
 
     /**
      * 将表达式变量类型转换成sql类型； 支持字符，数值，日期，CLOB，BLOB类型；
-     * 
+     *
      * @param returnType
      * @return
      */
-    public static int expType2SqlType(char returnType){
+    public static int expType2SqlType(char returnType) {
         switch (returnType) {
             case ExpUtil.TOSTR:
                 return Types.VARCHAR;
@@ -238,7 +257,7 @@ public class SqlYn{
                 return Types.INTEGER;
             case ExpUtil.TODAT:
                 return Types.DATE;
-                /** ISSEU:BI-7732 存在clob字段的表，用csv方式导入数据库报错 */
+            /** ISSEU:BI-7732 存在clob字段的表，用csv方式导入数据库报错 */
             case ExpUtil.TOBLOB:
                 return Types.BLOB;
             case ExpUtil.TOCLOB:
@@ -252,7 +271,7 @@ public class SqlYn{
         return returnType;
     }
 
-    public static final char getType(int sqlType){
+    public static final char getType(int sqlType) {
         /*
          * TYPE_STR = 'C'; TYPE_FLOAT = 'N'; TYPE_INT = 'I'; TYPE_LOGIC = 'L';
          * TYPE_DATE = 'D'; TYPE_MEMO = 'M'; TYPE_OLE = 'X';
@@ -314,11 +333,11 @@ public class SqlYn{
 
     /**
      * 此函数区分date，time，timestamp
-     * 
+     *
      * @param sqlType
      * @return
      */
-    public static final char getSubsectionType(int sqlType){
+    public static final char getSubsectionType(int sqlType) {
 
         switch (sqlType) {
             case Types.INTEGER:
@@ -336,9 +355,9 @@ public class SqlYn{
             case Types.VARCHAR:
             case Types.CHAR:
                 return DbDefiner.FIELD_TYPE_STR;
-                /**
-                 * 20090608 同getType方法的修改；
-                 */
+            /**
+             * 20090608 同getType方法的修改；
+             */
             case Types.TIMESTAMP:
             case 11:
                 return DbDefiner.FIELD_TYPE_TIMESTAMP;
@@ -371,7 +390,7 @@ public class SqlYn{
     }
 
     public static String[] readStrArray(ResultSet rs, int i)
-            throws SQLException{
+            throws SQLException {
         ArrayList dr = new ArrayList(1024 * 5);
         while (rs.next())
             dr.add(rs.getString(i));
@@ -380,7 +399,7 @@ public class SqlYn{
         return r;
     }
 
-    public static int[] readIntArray(ResultSet rs, int i) throws SQLException{
+    public static int[] readIntArray(ResultSet rs, int i) throws SQLException {
         DoubleArray dr = new DoubleArray(1024 * 5);
         while (rs.next())
             dr.add(rs.getDouble(i));
@@ -392,7 +411,7 @@ public class SqlYn{
     }
 
     public static double[] readDoubleArray(ResultSet rs, int i)
-            throws SQLException{
+            throws SQLException {
         DoubleArray dr = new DoubleArray(1024 * 5);
         while (rs.next())
             dr.add(rs.getDouble(i));
@@ -402,7 +421,7 @@ public class SqlYn{
     /**
      * 如果只有一列，那么返回一个对应类型的数组 如果有多列，那么返回一个object[]数组，每个元素对应一列
      */
-    public static Object readArrayFromRS(ResultSet rs) throws SQLException{
+    public static Object readArrayFromRS(ResultSet rs) throws SQLException {
         ResultSetMetaData rsmt = rs.getMetaData();
         if (rsmt.getColumnCount() == 1) {// 为了效率 特殊处理字段是1的情况
             char coltype = SqlYn.getType(rsmt.getColumnType(1));
@@ -425,7 +444,7 @@ public class SqlYn{
         }
     }
 
-    public static Object readMultiDimArray(ResultSet rs) throws SQLException{
+    public static Object readMultiDimArray(ResultSet rs) throws SQLException {
         ResultSetMetaData rsmt = rs.getMetaData();
         int columnCount = rsmt.getColumnCount();
         Object[] r = new Object[columnCount];
@@ -455,7 +474,7 @@ public class SqlYn{
                     // throw new UnsupportedOperationException("不支持的类型：" + t);
                     throw new UnsupportedOperationException(I18N.getString(
                             "com.esen.jdbc.sqlfunc.unsupportkind",
-                            "不支持的类型：{0}", new Object[] {String.valueOf(t)}));
+                            "不支持的类型：{0}", String.valueOf(t)));
             }
         }
 
@@ -500,17 +519,17 @@ public class SqlYn{
     /**
      * 根据一个链接获得dialect
      */
-    public final static Dialect createDialect(Connection con){
+    public final static Dialect createDialect(Connection con) {
         return DialectFactory.createDialect(con);
     }
 
     /**
      * 判断是不是一个调用存储过程的sql
-     * 
+     *
      * @param sql
      * @return
      */
-    public final static boolean isCallalbe(String sql){
+    public final static boolean isCallalbe(String sql) {
         if (sql == null || sql.length() == 0) {
             return false;
         }
@@ -524,13 +543,13 @@ public class SqlYn{
     /**
      * 判断输入的sql 是不是形如： select * from tbname 的形式，如果是，解析出tbname 如果有where条件将返回null;
      * 这个方法主用用于DataCopy中判断是否需要整表复制；
-     * 
+     * <p>
      * 20100330 支持dbo.tablename, user.dbo.tablename 形式的表名；
-     * 
+     *
      * @param sql
      * @return
      */
-    public final static String getTablename(String sql){
+    public final static String getTablename(String sql) {
         /*
          * Pattern p = Pattern.compile(
          * "^\\s*+select\\s+\\*\\s+from\\s+([a-z]+([\\.]?[a-z_0-9\\$]+)*)\\s*$",
@@ -559,7 +578,7 @@ public class SqlYn{
      * 判断是否是一个合法的变量名，表名，或者字段名 20100330 支持dbo.tablename, user.dbo.tablename
      * 形式的表名；
      */
-    public final static boolean isValidSymbol(String s){
+    public final static boolean isValidSymbol(String s) {
         if (s == null || s.length() == 0 || s.length() > 100) return false;
         Pattern p = Pattern.compile("[a-z]+([\\.]?[a-z_0-9\\$]+)*",
                 Pattern.CASE_INSENSITIVE);
@@ -570,7 +589,7 @@ public class SqlYn{
     /**
      * 判断一个sql是否是update xxx set xxx
      */
-    public final static boolean isUpdate(String sql){
+    public final static boolean isUpdate(String sql) {
         if (sql == null || sql.length() < 12) return false;
         /**
          * BI-5779 20110919 dw update语句中的表面可能带有schema前缀，原来的代码不能匹配这种表名，
@@ -585,7 +604,7 @@ public class SqlYn{
     /**
      * 判断一个sql是否是insert into
      */
-    public final static boolean isInsertInto(String sql){
+    public final static boolean isInsertInto(String sql) {
         if (sql == null || sql.length() < 12) return false;
         Pattern p = Pattern.compile("\\s*insert\\s+into\\s+\\w+.*",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -596,7 +615,7 @@ public class SqlYn{
     /**
      * 判断一个sql是否是delete from
      */
-    public final static boolean isDelete(String sql){
+    public final static boolean isDelete(String sql) {
         if (sql == null || sql.length() < 12) return false;
         Pattern p = Pattern.compile("\\s*delete\\s+from\\s+\\w+.*",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -607,7 +626,7 @@ public class SqlYn{
     /**
      * 判断一个sql是否是alter table
      */
-    public final static boolean isAlter(String sql){
+    public final static boolean isAlter(String sql) {
         if (sql == null || sql.length() < 12) return false;
         Pattern p = Pattern.compile("\\s*alter\\s+table\\s+\\w+.*",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -618,7 +637,7 @@ public class SqlYn{
     /**
      * 判断一个sql是否是select XXXX from XX
      */
-    public final static boolean isSelect(String sql){
+    public final static boolean isSelect(String sql) {
         if (sql == null || sql.length() < 15) return false;
         Pattern p = Pattern.compile("\\s*\\(*\\s*select\\s+.*\\s+from.+",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -629,7 +648,7 @@ public class SqlYn{
     /**
      * 判断一个sql是否是create xxxx 这里只是简单的判断是否以create开始,以后如果需要再完善
      */
-    public final static boolean isCreate(String sql){
+    public final static boolean isCreate(String sql) {
         if (sql == null || sql.length() < 7) return false;
         Pattern p = Pattern.compile("\\s*create\\s+.*",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -638,11 +657,11 @@ public class SqlYn{
 
     /**
      * 判断一个sql是否是drop xxx 这里只是简单的判断是否以drop开始，以后如果需要在完善
-     * 
+     *
      * @param sql
      * @return
      */
-    public final static boolean isDrop(String sql){
+    public final static boolean isDrop(String sql) {
         if (sql == null || sql.length() < 5) return false;
         Pattern p = Pattern.compile("\\s*drop\\s+.*", Pattern.CASE_INSENSITIVE
                 | Pattern.DOTALL);
@@ -651,11 +670,11 @@ public class SqlYn{
 
     /**
      * 判断一个sql是否是rename xxx 这里只是简单的判断是否以drop开始，以后如果需要在完善
-     * 
+     *
      * @param sql
      * @return
      */
-    public final static boolean isRename(String sql){
+    public final static boolean isRename(String sql) {
         if (sql == null || sql.length() < 5) return false;
         Pattern p = Pattern.compile("\\s*rename\\s+.*",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -664,11 +683,11 @@ public class SqlYn{
 
     /**
      * 将任意类型的对象转换成java.sql.Timestamp
-     * 
+     *
      * @param x
      * @return
      */
-    public final static Timestamp toSqlTimeStamp(Object x){
+    public final static Timestamp toSqlTimeStamp(Object x) {
         if (x == null || x instanceof Timestamp) return (Timestamp) x;
         if (x instanceof Date) {
             Date d = (Date) x;
@@ -680,7 +699,7 @@ public class SqlYn{
         return new Timestamp(cc.getTimeInMillis());
     }
 
-    public final static Time toSqlTime(Object x){
+    public final static Time toSqlTime(Object x) {
         if (x == null || x instanceof Time) return (Time) x;
         Calendar cc = StrUtil.parseCalendar(x, null);
         if (cc == null) return null;
@@ -690,11 +709,11 @@ public class SqlYn{
 
     /**
      * 将任意类型转换成java.sql.Date
-     * 
+     *
      * @param x
      * @return
      */
-    public final static Date toSqlDate(Object x){
+    public final static Date toSqlDate(Object x) {
         if (x == null || x instanceof Date) return (Date) x;
         if (x instanceof Timestamp) {
             Timestamp tp = (Timestamp) x;
@@ -707,12 +726,12 @@ public class SqlYn{
 
     /**
      * 将任意的类型转换成字符串类型； 包括：数字，字符，日期，clob,reader 其他：bolb,inputsteam 返回null
-     * 
+     *
      * @param x
      * @return
      * @throws SQLException
      */
-    public final static String toSqlVarchar(Object x) throws SQLException{
+    public final static String toSqlVarchar(Object x) throws SQLException {
         if (x == null || x instanceof String) return (String) x;
         if (x instanceof Integer || x instanceof Long || x instanceof Float
                 || x instanceof Double || x instanceof Date
@@ -730,7 +749,9 @@ public class SqlYn{
         return null;
     }
 
-    public static String reader2str(Reader rr) throws SQLException{
+    // 匹配形如:field1=?的sql(符号包括>,=,<,>=,<=,like)
+
+    public static String reader2str(Reader rr) throws SQLException {
         if (rr == null) return null;
         /*
          * StringBuffer sb; char[] cc = new char[1024 * 8]; sb = new
@@ -749,43 +770,6 @@ public class SqlYn{
         }
     }
 
-    // 匹配形如:insert into tbname values(?,?)的sql
-    /*
-     * private static final Pattern INSERT_ALLFIELD_REGEX = Pattern .compile(
-     * "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]+values[\\s]*\\([\\s]*\\?([\\s]*,[\\s]*\\?)*[\\s]*\\)[\\s]*$"
-     * , Pattern.CASE_INSENSITIVE);
-     */
-    private static final Pattern INSERT_ALLFIELD_REGEX = Pattern
-            .compile(
-                    "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]+values[\\s]*\\(",
-                    Pattern.CASE_INSENSITIVE);
-
-    // 匹配形如:insert into tbname (field1,field2)values(?,?)的sql
-    /*
-     * private static final Pattern INSERT_SOMEFIELD_REGEX = Pattern .compile(
-     * "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]*\\([\\s]*([^\\s,]+([\\s]*,[\\s]*[^\\s,]+[\\s]*)*)\\)[\\s]*values[\\s]*\\([\\s]*\\?([\\s]*,[\\s]*\\?)*[\\s]*\\)[\\s]*$"
-     * , Pattern.CASE_INSENSITIVE);
-     */
-    private static final Pattern INSERT_SOMEFIELD_REGEX = Pattern
-            .compile(
-                    "^[\\s]*insert[\\s]+into[\\s]+([^\\s,\\(\\)]+)[\\s]*\\([\\s]*([^\\(\\)]+)\\)[\\s]*values[\\s]*\\(",
-                    Pattern.CASE_INSENSITIVE);
-
-    // 匹配形如:update tbname set ... 的sql
-    private static final Pattern UPDATE_SQL_REGEX = Pattern.compile(
-            "^[\\s]*update[\\s]+([\\S]+)[\\s]+set([\\s]+[\\S].+)",
-            Pattern.CASE_INSENSITIVE);
-
-    // 匹配形如:field1=?的sql(符号包括>,=,<,>=,<=,like)
-    /**
-     * 在匹配字段时需要注意字段两端有括号,如select Field1 from table where
-     * ((field2)=?,field3=?),这里获得字段时了需要从((field2)=?,field3=?)中取出字段field2,field3
-     */
-    private static final Pattern UPDATE_FIELD = Pattern
-            .compile(
-                    "[\\s,][\\(\\s]*([^\\s>=<,\\)]+)[\\s\\)]*((([\\s]*(>|=|<|(>=)|(<=)|(<>))[\\s]*)|([\\s]+like[\\s]+)))[\\?]",
-                    Pattern.CASE_INSENSITIVE);
-
     /**
      * 根据带?号的insert或者update语句,获得select语句(查询出带?号的字段的值) eg:insert into tbname
      * (field1,field2)values(?,?) --> select field1,field2 from tbname insert
@@ -793,12 +777,11 @@ public class SqlYn{
      * field1=?,field2=?,field6=field7 where field3=? and field4=? and
      * field5>0--> select field1,field2,field3,field4 from tbname update tbname
      * set field1=?,field2=? --> select field1,field2 from tbname
-     * 
-     * @param sql
-     *            (带?号的sql,只能为insert和update语句)
+     *
+     * @param sql (带?号的sql,只能为insert和update语句)
      * @return ?号对应的字段的select语句
      */
-    public static final String getSelectSql(String sql){
+    public static final String getSelectSql(String sql) {
         /*
          * ESENBI-2425: modify by liujin 2014.11.07 将 sql 语句中的换行改为空格，方便 SQL
          * 语句处理。
@@ -864,7 +847,7 @@ public class SqlYn{
      * ;TDS=8.0;SendStringParametersAsUnicode=true jdbc:mysql://127.0.0.1/orcdb
      * jdbc:oracle:thin:@127.0.0.1:1521:orcdb
      */
-    public final static String getIpAddressFromUrl(String url){
+    public final static String getIpAddressFromUrl(String url) {
         Pattern p = Pattern
                 .compile("([1234567890]{1,3}\\.){3}[1234567890]{1,3}");
         Matcher mt = p.matcher(url);
@@ -898,11 +881,11 @@ public class SqlYn{
 
     /**
      * 20091221 检查jdbc的配置文件； 1)url参数中是否指定了编码参数； 2)日志级别是否设置过低；
-     * 
+     *
      * @param props
      * @return
      */
-    public static String checkJdbc(MiniProperties props){
+    public static String checkJdbc(MiniProperties props) {
         String ds3str = props.getProperty(PoolPropName.PROP_OTHERDATASOURCE);
         if (StrUtil.isNull(ds3str)) {
             ds3str = props.getProperty(PoolPropName.PROP_OTHERDATASOURCE3);
@@ -963,11 +946,11 @@ public class SqlYn{
 
     /**
      * 根据驱动类名来返回数据库的类型
-     * 
+     *
      * @param driverClassName
      * @return
      */
-    public static final String getDbType(String driverClassName){
+    public static final String getDbType(String driverClassName) {
         if (!StrUtil.isNull(driverClassName)) {
             if (driverClassName.startsWith("com.ibm.db2")) {
                 return SqlConst.DB_DB2;
@@ -1014,12 +997,11 @@ public class SqlYn{
 
     /**
      * 通过连接池对象判断是否是mdx服务器。 此方法不需要启动连接池，即使mdx服务器无法访问，也可以保证很快的判断此连接池是不是mdx服务器；
-     * 
-     * @param ConnectionFactory
-     *            conf 此参数如果为空，会出异常；
+     *
+     * @param ConnectionFactory conf 此参数如果为空，会出异常；
      * @return
      */
-    public static final boolean isMdx(ConnectionFactory conf){
+    public static final boolean isMdx(ConnectionFactory conf) {
         if (conf == null) {
             // throw new RuntimeException("连接池对像为空，无法判断是否是mdx服务器；");
             throw new RuntimeException(I18N.getString(
@@ -1037,23 +1019,22 @@ public class SqlYn{
 
     /**
      * 通过连接池参数url判断是否是mdx服务器。
-     * 
+     *
      * @param url
      * @return
      */
-    public static final boolean isMdx(String url){
+    public static final boolean isMdx(String url) {
         return url != null && url.startsWith("jdbc:olap2j");
     }
 
     /**
      * 通过连接池对象判断是否是Greenplum数据库。
      * 此方法不需要启动连接池，即使Greenplum服务器无法访问，也可以保证很快的判断此连接池是不是Greenplum服务器；
-     * 
-     * @param ConnectionFactory
-     *            conf 此参数如果为空，会出异常；
+     *
+     * @param ConnectionFactory conf 此参数如果为空，会出异常；
      * @return
      */
-    public static final boolean isGreenplum(ConnectionFactory conf){
+    public static final boolean isGreenplum(ConnectionFactory conf) {
         if (conf == null) {
             // throw new RuntimeException("连接池对像为空，无法判断是否是Greenplum服务器；");
             throw new RuntimeException(I18N.getString(
@@ -1071,23 +1052,22 @@ public class SqlYn{
 
     /**
      * 通过连接池url判断是否是Greenplum数据库。 可能驱动是 jdbc:postgresql 不只一种 此处可能有点误差
-     * 
+     *
      * @param url
      * @return
      */
-    public static final boolean isGreenplum(String url){
+    public static final boolean isGreenplum(String url) {
         return url != null && url.startsWith("jdbc:postgresql");
     }
 
     /**
      * 通过连接池对象判断是否是Netezza数据库。
      * 此方法不需要启动连接池，即使Netezza服务器无法访问，也可以保证很快的判断此连接池是不是Netezza服务器；
-     * 
-     * @param ConnectionFactory
-     *            conf 此参数如果为空，会出异常；
+     *
+     * @param ConnectionFactory conf 此参数如果为空，会出异常；
      * @return
      */
-    public static final boolean isNetezza(ConnectionFactory conf){
+    public static final boolean isNetezza(ConnectionFactory conf) {
         if (conf == null) {
             // throw new RuntimeException("连接池对像为空，无法判断是否是Netezza服务器；");
             throw new RuntimeException(I18N.getString(
@@ -1105,23 +1085,22 @@ public class SqlYn{
 
     /**
      * 通过连接池url判断是否是Netezza数据库。
-     * 
+     *
      * @param url
      * @return
      */
-    public static final boolean isNetezza(String url){
+    public static final boolean isNetezza(String url) {
         return url != null && url.startsWith("jdbc:netezza");
     }
 
     /**
      * 通过连接池对象判断是否是Gbase数据库。
      * 此方法不需要启动连接池，即使Gbase服务器无法访问，也可以保证很快的判断此连接池是不是Gbase服务器；
-     * 
-     * @param ConnectionFactory
-     *            conf 此参数如果为空，会出异常；
+     *
+     * @param ConnectionFactory conf 此参数如果为空，会出异常；
      * @return
      */
-    public static final boolean isGBase(ConnectionFactory conf){
+    public static final boolean isGBase(ConnectionFactory conf) {
         if (conf == null) {
             // throw new RuntimeException("连接池对像为空，无法判断是否是Netezza服务器；");
             throw new RuntimeException(I18N.getString(
@@ -1139,39 +1118,36 @@ public class SqlYn{
 
     /**
      * 通过连接池对象判断是否是Gbase数据库。
-     * 
+     *
      * @param url
      * @return
      */
-    public static final boolean isGBase(String url){
+    public static final boolean isGBase(String url) {
         return url != null && url.startsWith("jdbc:gbase");
     }
 
     /**
      * 判断两个连接是不是来自同一个数据库的同一个用户；
-     * 
+     *
      * @param srccon
      * @param destcon
      * @return
      */
     public static boolean compareConnection(Connection srccon,
-            Connection destcon){
+                                            Connection destcon) {
         DataBaseInfo db1 = DataBaseInfo.createInstance(srccon);
         DataBaseInfo db2 = DataBaseInfo.createInstance(destcon);
-        if (db1.getJdbcurl().equals(db2.getJdbcurl())
-                && db1.getUserName().equals(db2.getUserName())) {
-            return true;
-        }
-        return false;
+        return db1.getJdbcurl().equals(db2.getJdbcurl())
+                && db1.getUserName().equals(db2.getUserName());
     }
 
     /**
      * 返回连接池是否能够连接到数据库,可以返回true,否则返回false
-     * 
+     *
      * @param fct
      * @return
      */
-    public static final boolean canConnect(ConnectionFactory fct){
+    public static final boolean canConnect(ConnectionFactory fct) {
         if (fct == null) return false;
         try {
             testConnect(fct);
@@ -1184,12 +1160,12 @@ public class SqlYn{
 
     /**
      * 判断连接池是否能够连接到数据库,如果无法获取连接抛出异常
-     * 
+     *
      * @param fct
      * @return
      */
     public static final void testConnect(ConnectionFactory fct)
-            throws Exception{
+            throws Exception {
         if (fct == null)
             // throw new Exception("ConnectionFactory为空,无法获取连接。");
             throw new Exception(I18N.getString(
@@ -1209,15 +1185,14 @@ public class SqlYn{
 
     /**
      * 判断表或视图是否存在
-     * 
+     *
      * @param fct
      * @param table
-     * @param throwException
-     *            如果出现异常是否抛出
+     * @param throwException 如果出现异常是否抛出
      * @return
      */
     public static final boolean tableOrViewExist(ConnectionFactory fct,
-            String table, boolean throwException){
+                                                 String table, boolean throwException) {
         if (StrUtil.isNull(table)) return false;
         try {
             Connection con = fct.getConnection();
@@ -1238,7 +1213,7 @@ public class SqlYn{
     }
 
     public static final boolean tableOrViewExist(Connection con, DbDefiner dd,
-            String table, boolean throwException){
+                                                 String table, boolean throwException) {
         if (StrUtil.isNull(table)) return false;
         try {
             return dd.tableOrViewExists(con, table);
@@ -1254,7 +1229,7 @@ public class SqlYn{
 
     /**
      * 根据xml文件的配置创建一个数据库表,如果表已经存在,则修复之
-     * 
+     *
      * @param fct
      * @param table
      * @param c
@@ -1263,7 +1238,7 @@ public class SqlYn{
      * @throws Exception
      */
     public static final String createTable(ConnectionFactory fct, String table,
-            Class c, String xml) throws Exception{
+                                           Class c, String xml) throws Exception {
         if (StrUtil.isNull(table) || StrUtil.isNull(xml)) return null;
         DbDefiner dd = fct.getDbDefiner();
         Connection con = fct.getConnection();
@@ -1275,7 +1250,7 @@ public class SqlYn{
     }
 
     public static final String createTable(Connection con, DbDefiner dd,
-            String table, Class c, String xml) throws Exception{
+                                           String table, Class c, String xml) throws Exception {
         if (StrUtil.isNull(table) || StrUtil.isNull(xml)) return null;
         Document doc = null;
         InputStream in = c.getResourceAsStream(xml);
@@ -1293,26 +1268,24 @@ public class SqlYn{
     }
 
     public static final String createTable(ConnectionFactory fct, String table,
-            String xml) throws Exception{
+                                           String xml) throws Exception {
         return createTable(fct, table, SqlYn.class, xml);
     }
 
     public static final String createTable(Connection con, DbDefiner dd,
-            String table, String xml) throws Exception{
+                                           String table, String xml) throws Exception {
         return createTable(con, dd, table, SqlYn.class, xml);
     }
 
     /**
      * 删除表或视图,此函数会判断表或视图是否存在，如果存在，才调用drop方法。
-     * 
-     * @param fct
-     *            连接池
-     * @param table
-     *            表名或视图名
+     *
+     * @param fct   连接池
+     * @param table 表名或视图名
      * @throws Exception
      */
     public static final void dropTable(ConnectionFactory fct, String table)
-            throws Exception{
+            throws Exception {
         // 如果表为空或无效的表名,则不会作任何处理
         if (StrUtil.isNull(table) || !SqlYn.isValidSymbol(table)) {
             return;
@@ -1328,14 +1301,14 @@ public class SqlYn{
 
     /**
      * 此函数会判断表或视图是否存在，如果存在，才调用drop方法。
-     * 
+     *
      * @param con
      * @param dd
      * @param table
      * @throws Exception
      */
     public static void dropTable(Connection con, DbDefiner dd, String table)
-            throws Exception{
+            throws Exception {
         /**
          * 可能表或视图不存在或被前面的代码已经删除了，此时应该忽略他们。
          */
@@ -1358,20 +1331,17 @@ public class SqlYn{
 
     /**
      * 测试数据库连接 允许指定超时时间 这里的数据库连接超时不是在jdbc层面实现的，而是通过的Future的get方法来指定超时的时间
-     * 
-     * @param props
-     *            数据库连接池的相关属性
-     * @param pool
-     *            线程池对象
-     * @param millsec
-     *            超时时间 秒
+     *
+     * @param props   数据库连接池的相关属性
+     * @param pool    线程池对象
+     * @param millsec 超时时间 秒
      * @throws Exception
      */
     public static final void testDatasourceWithTimeout(
             final MiniProperties props, ThreadPool pool, long sec)
-            throws Exception{
-        Future f = pool.execute(new Callable<Exception>(){
-            public Exception call() throws Exception{
+            throws Exception {
+        Future f = pool.execute(new Callable<Exception>() {
+            public Exception call() throws Exception {
                 try {
                     SqlYn.testDataSource(props);
                     return null;
@@ -1394,11 +1364,11 @@ public class SqlYn{
 
     /**
      * 测试数据库连接，如果不成功则抛出异常。
-     * 
+     *
      * @throws Exception
      */
     public static final void testDataSource(MiniProperties props)
-            throws Exception{
+            throws Exception {
         if (props == null) {
             // throw new RuntimeException("测试失败,缺少JDBC连接属性.");
             throw new RuntimeException(I18N.getString(
@@ -1415,14 +1385,14 @@ public class SqlYn{
             // ").");
             throw new RuntimeException(I18N.getString(
                     "com.esen.jdbc.sqlfunc.testerr2", "测试失败,缺少参数({0}).",
-                    new Object[] {PoolPropName.PROP_URL}));
+                    new Object[]{PoolPropName.PROP_URL}));
         }
         if (StrFunc.isNull(driver)) {
             // throw new RuntimeException("测试失败,缺少参数(" +
             // PoolPropName.PROP_DRIVERCLASSNAME + ").");
             throw new RuntimeException(I18N.getString(
                     "com.esen.jdbc.sqlfunc.testerr2", "测试失败,缺少参数({0}).",
-                    new Object[] {PoolPropName.PROP_DRIVERCLASSNAME}));
+                    new Object[]{PoolPropName.PROP_DRIVERCLASSNAME}));
         }
         try {
             Class.forName(driver);
@@ -1430,7 +1400,7 @@ public class SqlYn{
             // throw new RuntimeException("测试失败,找不到驱动类库(" + driver + ").");
             throw new RuntimeException(I18N.getString(
                     "com.esen.jdbc.sqlfunc.testerr3", "测试失败,找不到驱动类库({0}).",
-                    new Object[] {driver}), ex);
+                    driver), ex);
         }
         url = DefaultConnectionFactory.convertDbUrl(url);
         java.sql.Connection _conn = null;
@@ -1442,8 +1412,7 @@ public class SqlYn{
             // RuntimeException("测试失败,无法获得数据库链接.\r\n"+e.toString()+"\r\n"+e.getMessage());
             throw new RuntimeException(I18N.getString(
                     "com.esen.jdbc.sqlfunc.testerr4",
-                    "测试失败,无法获得数据库链接.\r\n{0}\r\n{1}", new Object[] {
-                            e.toString(), e.getMessage()}), e);
+                    "测试失败,无法获得数据库链接.\r\n{0}\r\n{1}", e.toString(), e.getMessage()), e);
         }
         if (_conn == null) {
             // throw new RuntimeException("测试失败,无法获得数据库链接.");
@@ -1460,14 +1429,14 @@ public class SqlYn{
 
     /**
      * 删除存储过程
-     * 
+     *
      * @param conn
      * @param Name
      * @return
      * @throws Exception
      */
     public static boolean dropProcedure(Connection conn, String Name)
-            throws Exception{
+            throws Exception {
         if (conn == null) {
             // 无法获取连接
             throw new Exception(I18N.getString(
@@ -1486,20 +1455,16 @@ public class SqlYn{
 
     /**
      * 创建存储过程，用于执行比较复杂的sql，数据库连接需要自己释放
-     * 
-     * @param conn
-     *            数据库连接
-     * @param Name
-     *            存储过程名称
-     * @param sql
-     *            过程内容
-     * @param progress
-     *            进度
+     *
+     * @param conn     数据库连接
+     * @param Name     存储过程名称
+     * @param sql      过程内容
+     * @param progress 进度
      * @return
      * @throws Exception
      */
     public static boolean createProcedure(Connection conn, String Name,
-            String sql) throws Exception{
+                                          String sql) throws Exception {
         sql = " CREATE OR REPLACE PROCEDURE " + Name + " AS\n BEGIN\n"
                 + sql.replaceAll("\r\n", "\n") + "\nEND " + Name + " ; ";
         conn.setAutoCommit(false);
@@ -1518,16 +1483,14 @@ public class SqlYn{
 
     /**
      * 执行指定的存储过程（无参数/已拼接为字符串）
-     * 
-     * @param conn
-     *            数据库连接
-     * @param procedure
-     *            存储过程"{call name}"
+     *
+     * @param conn      数据库连接
+     * @param procedure 存储过程"{call name}"
      * @return count 影响的数据条数
      * @throws Exception
      */
     public static int execute_procedure(Connection conn, String procedure)
-            throws Exception{
+            throws Exception {
         conn.setAutoCommit(false);
         CallableStatement cstmt = null;
         try {

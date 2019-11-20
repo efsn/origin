@@ -1,25 +1,23 @@
 package org.codeyn.util.yn;
 
+import org.codeyn.util.YnByteArrayOutStream;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-
-import org.codeyn.util.YnByteArrayOutStream;
-
-public class ImageUtil{
+public class ImageUtil {
     /**
      * 将图片转为jpg
-     * 
-     * @param data
-     *            图片的二进制数据
+     *
+     * @param data 图片的二进制数据
      * @return
      * @throws IOException
      */
-    public static byte[] toJpg(byte data[]) throws IOException{
+    public static byte[] toJpg(byte[] data) throws IOException {
         ByteArrayInputStream is = new ByteArrayInputStream(data);
         MemoryCacheImageInputStream mis = new MemoryCacheImageInputStream(is);
         BufferedImage bi = ImageIO.read(mis);
@@ -30,7 +28,7 @@ public class ImageUtil{
         return os.toByteArray();
     }
 
-    public static byte[] readFile(String fileName) throws IOException{
+    public static byte[] readFile(String fileName) throws IOException {
         FileInputStream is = new FileInputStream(fileName);
         byte[] b = null;
         try {

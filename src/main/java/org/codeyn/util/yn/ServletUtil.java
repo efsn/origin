@@ -1,5 +1,15 @@
 package org.codeyn.util.yn;
 
+import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.codeyn.util.exception.ExceptionHandler;
+import org.codeyn.util.file.FileUtil;
+
+import javax.servlet.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -7,34 +17,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.jsp.JspWriter;
-
-import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.codeyn.util.exception.ExceptionHandler;
-import org.codeyn.util.file.FileUtil;
+import java.util.*;
 
 /**
  * 此类提供一些服务器端Web相关的Servlet和Jsp开发过程中常用的通用函数，但不包括Struts相关的 1.处理异常，错误信息
  * 2.处理HTTP协议中的相关数据 3.包装一些JS输出到客户端
- * 
  */
-public abstract class ServletUtil{
+public abstract class ServletUtil {
     /**
      * ISSUE:BI-4354 在上下两栏的workspace中进行删除主题域的操作后，该选项卡没有自动消失
      * 原因：closeCurrentWindow由于没有指定参数
@@ -44,16 +33,20 @@ public abstract class ServletUtil{
     public static final String SCRIPT_CLOSE_WINDOW = "<script>var _ws=getWorkspace();\n_ws?_ws.closeCurrentPage(null,window):autoCloseBrowser();</script>";
 
     public static final String SCRIPT_REFRESH_LEFT_TREE = "<script>refreshLeftTree();</script>";
+    public static final String GLOBAL_EXCEPTION = "ESENSOFT.Global_Exception";
+    public static final String GLOBAL_MESSAGE = "ESENSOFT.Global_Message";
+    private static String[] mobileUserAgents = new String[]{"iphone", "ipad",
+            "android"};
 
     /**
      * 返回客户端环境 返回的形式类似： CPU类型 浏览器类型 (x86) Mozilla/4.0 (compatible; MSIE 7.0;
      * Windows NT 5.1; .NET CLR 2.0.50727; .NET CLR 3.0.04506.648; .NET CLR
      * 3.5.21022)
-     * 
+     *
      * @param req
      * @return
      */
-    public static final String getUserAgent(HttpServletRequest req){
+    public static final String getUserAgent(HttpServletRequest req) {
         return "(" + StrUtil.null2default(req.getHeader("UA-CPU"), "Other")
                 + ") " + SecurityYn.checkXSSParam(req.getHeader("User-Agent"));
     }
@@ -75,7 +68,7 @@ public abstract class ServletUtil{
      * 但是设置之后无法用jdbc连接oracle了，oracle报ORA-12705: Cannot access NLS data
      * files....， 所以这里将从HttpServletRequest类获取日期信息的函数包装一下，如果出现异常了，那么自己从字符串分析出日期信息
      */
-    public static final long getDateHeader(HttpServletRequest req, String s){
+    public static final long getDateHeader(HttpServletRequest req, String s) {
         try {
             return req.getDateHeader(s);
         } catch (IllegalArgumentException e) {
@@ -97,28 +90,27 @@ public abstract class ServletUtil{
     /**
      * 在页面中打印输出指定模板的内容，该模板只能够是非Jsp的文件。 在jsp中可以通过<%@ include file=""
      * %>方法引用，具体用那种方式看各自的使用习愦
-     * 
+     *
      * @param req
      * @param out
-     * @param templet
-     *            模板文件名
+     * @param templet 模板文件名
      * @throws Exception
      */
     public static final void getTemplet(HttpServletRequest req, JspWriter out,
-            String templet) throws Exception{
+                                        String templet) throws Exception {
         out.println(getTemplet(req, templet));
     }
 
     /**
      * 返回指定模板的内容
-     * 
+     *
      * @param req
      * @param templet
      * @return
      * @throws Exception
      */
     public static final String getTemplet(HttpServletRequest req, String templet)
-            throws Exception{
+            throws Exception {
         InputStream in = req.getSession().getServletContext()
                 .getResourceAsStream(templet);
         if (in == null) return null;
@@ -133,19 +125,18 @@ public abstract class ServletUtil{
 
     /**
      * 获取一个Html页面的输出流
-     * 
+     *
      * @param req
      * @param res
      * @param html
-     * @param defjsheader
-     *            通过参数defjsheader来控制是否缺省将公共的脚本引入，因为有时候只是非常简单的
-     *            页面输出，不必引入脚本，引用后反而是增加了浏览器的负担
+     * @param defjsheader 通过参数defjsheader来控制是否缺省将公共的脚本引入，因为有时候只是非常简单的
+     *                    页面输出，不必引入脚本，引用后反而是增加了浏览器的负担
      * @return
      * @throws Exception
      */
     public static PrintWriter getHtmlOutputStream(HttpServletRequest req,
-            HttpServletResponse res, String html, boolean defjsheader)
-            throws Exception{
+                                                  HttpServletResponse res, String html, boolean defjsheader)
+            throws Exception {
         res.setContentType("text/html; charset=UTF-8");
         PrintWriter out = res.getWriter();
         out.print("<html><head>");
@@ -166,7 +157,7 @@ public abstract class ServletUtil{
 
     /**
      * 获取一个Html页面的输出流
-     * 
+     *
      * @param req
      * @param res
      * @param html
@@ -174,18 +165,18 @@ public abstract class ServletUtil{
      * @throws Exception
      */
     public static PrintWriter getHtmlOutputStream(HttpServletRequest req,
-            HttpServletResponse res, String html) throws Exception{
+                                                  HttpServletResponse res, String html) throws Exception {
         return getHtmlOutputStream(req, res, html, true);
     }
 
     public static PrintWriter getHtmlOutputStream(HttpServletRequest req,
-            HttpServletResponse res) throws Exception{
+                                                  HttpServletResponse res) throws Exception {
         return getHtmlOutputStream(req, res, null);
     }
 
     // 输出指定的Javascript脚本
     public static void outJavascript(PrintWriter out, String js)
-            throws Exception{
+            throws Exception {
         if (StrUtil.isNull(js)) return;
         out.println("<script>");
         out.println(js);
@@ -193,29 +184,29 @@ public abstract class ServletUtil{
     }
 
     // 关闭workspace里的当前页面
-    public static void closeWindowScript(HttpServletRequest req){
+    public static void closeWindowScript(HttpServletRequest req) {
         req.setAttribute("closeWindowScript", SCRIPT_CLOSE_WINDOW);
     }
 
-    public static String getCloseWindowScript(HttpServletRequest req){
+    public static String getCloseWindowScript(HttpServletRequest req) {
         String script = (String) req.getAttribute("closeWindowScript");
         return (StrUtil.isNull(script) ? "" : script);
     }
 
-    public static void reloadTopWindowScript(HttpServletRequest req){
+    public static void reloadTopWindowScript(HttpServletRequest req) {
         reloadScript(req, "top");
     }
 
-    public static void reloadParentWindowScript(HttpServletRequest req){
+    public static void reloadParentWindowScript(HttpServletRequest req) {
         reloadScript(req, "parent");
     }
 
-    public static void reloadWindowScript(HttpServletRequest req){
+    public static void reloadWindowScript(HttpServletRequest req) {
         reloadScript(req, null);
     }
 
     // 重新载入页面,istop表示是否重新载入顶部页面
-    public static void reloadScript(HttpServletRequest req, String object){
+    public static void reloadScript(HttpServletRequest req, String object) {
         StringBuffer js = new StringBuffer("<script>\n");
         // object如果没有指定，则表示为当前window对象
         js.append("var _java_isWindow_ = ").append(StrUtil.isNull(object))
@@ -228,47 +219,43 @@ public abstract class ServletUtil{
         req.setAttribute("reloadWindowScript", js.toString());
     }
 
-    public static String getReloadScript(HttpServletRequest req){
+    public static String getReloadScript(HttpServletRequest req) {
         String script = (String) req.getAttribute("reloadWindowScript");
         return (StrUtil.isNull(script) ? "" : script);
     }
 
     // 重新载入页面,istop表示是否重新载入顶部页面
-    public static void refreshLeftTreeScript(HttpServletRequest req){
+    public static void refreshLeftTreeScript(HttpServletRequest req) {
         req.setAttribute("refreshLeftTreeScript", SCRIPT_REFRESH_LEFT_TREE);
     }
 
-    public static String getRefreshLeftTreeScript(HttpServletRequest req){
+    public static String getRefreshLeftTreeScript(HttpServletRequest req) {
         String script = (String) req.getAttribute("refreshLeftTreeScript");
         return (StrUtil.isNull(script) ? "" : script);
     }
 
-    public static final String GLOBAL_EXCEPTION = "ESENSOFT.Global_Exception";
-
-    public static final String GLOBAL_MESSAGE = "ESENSOFT.Global_Message";
-
-    public static final void setMessage(HttpServletRequest request, String msg){
+    public static final void setMessage(HttpServletRequest request, String msg) {
         request.setAttribute(GLOBAL_MESSAGE, msg);
     }
 
-    public static final String getMessage(HttpServletRequest request){
+    public static final String getMessage(HttpServletRequest request) {
         return (String) request.getAttribute(GLOBAL_MESSAGE);
     }
 
-    public static final boolean hasMessage(HttpServletRequest request){
+    public static final boolean hasMessage(HttpServletRequest request) {
         return getMessage(request) != null;
     }
 
     public static final void setException(HttpServletRequest request,
-            Throwable ex){
+                                          Throwable ex) {
         request.setAttribute(GLOBAL_EXCEPTION, ex);
     }
 
-    public static final Exception getException(HttpServletRequest request){
+    public static final Exception getException(HttpServletRequest request) {
         return (Exception) request.getAttribute(GLOBAL_EXCEPTION);
     }
 
-    public static final String getExceptionMessage(HttpServletRequest request){
+    public static final String getExceptionMessage(HttpServletRequest request) {
         Exception ex = getException(request);
         if (ex == null) return "";
         /*
@@ -278,25 +265,25 @@ public abstract class ServletUtil{
         return StrUtil.isNull(msg) ? "" : msg.replaceAll("\r\n", "<br>");
     }
 
-    public static final String exception2str(HttpServletRequest request){
+    public static final String exception2str(HttpServletRequest request) {
         Exception ex = getException(request);
         return ex == null ? "" : StrUtil.null2blank(StrUtil.exception2str(ex));
     }
 
-    public static final boolean hasException(HttpServletRequest request){
+    public static final boolean hasException(HttpServletRequest request) {
         return getException(request) != null;
     }
 
     /**
      * 向前端显示一个简单的错误提示内容，该方法适用于向隐藏框架中执行操作时出现异常后给前端进行提示
-     * 
+     *
      * @param req
      * @param res
      * @param e
      * @throws Exception
      */
     public static final void showError(HttpServletRequest req,
-            HttpServletResponse res, Throwable e) throws Exception{
+                                       HttpServletResponse res, Throwable e) throws Exception {
         getHtmlOutputStream(req, res,
                 "<script>alert(\"" + StrUtil.exceptionMsg2str(e)
                         + "\");</script>", false);
@@ -306,7 +293,7 @@ public abstract class ServletUtil{
     /**
      * 获得客户端的实际ip地址,如果是127.0.0.1,也要转换为实际的地址 主要用在日志中,记录日志的生成机器
      */
-    public static String getRemoteAddress(HttpServletRequest req){
+    public static String getRemoteAddress(HttpServletRequest req) {
         // 当通过apache反向代理访问bi时，所有的RemoteAddress都是反向代理服务器的IP，我们此时只能种http头中的x-forwarded-for获取到客户端真正的IP
         // host = 192.168.1.30:8080
         // accept = */*
@@ -354,12 +341,12 @@ public abstract class ServletUtil{
 
     /**
      * 获取指定的参数，如果参数中有escape=true，则将指定的参数进行解码
-     * 
+     *
      * @param req
      * @param nm
      * @return
      */
-    public static final String getParameter(HttpServletRequest req, String nm){
+    public static final String getParameter(HttpServletRequest req, String nm) {
         // edit by zqj 2013.5.6 安全改造：Log Forging
         String rs = SecurityYn.checkLogDesc(req, nm);
         if (!StrUtil.isNull(rs)
@@ -370,7 +357,7 @@ public abstract class ServletUtil{
     }
 
     public static final String[] getParameterValues(HttpServletRequest req,
-            String nm){
+                                                    String nm) {
         String[] rs = req.getParameterValues(nm);
         /**
          * 为空则直接返回空 20130121 by kangx
@@ -390,7 +377,7 @@ public abstract class ServletUtil{
     /**
      * 返回web请求req对应的参数，如果没有参数，那么返回null 否则返回形如:?a=1&b=2 这样的字符串
      */
-    public static final String getQueryString(HttpServletRequest req){
+    public static final String getQueryString(HttpServletRequest req) {
         String r = req.getQueryString();
         if (r != null && r.length() > 0) {
             return "?" + r;
@@ -423,7 +410,7 @@ public abstract class ServletUtil{
      * 其他请假加上contextPath后再sendRedirect
      */
     public static final void sendRedirect(HttpServletRequest req,
-            HttpServletResponse res, String url) throws IOException{
+                                          HttpServletResponse res, String url) throws IOException {
         String lwurl = url.toLowerCase();
         // edit by zqj 2013.5.6 安全改造：Header Manipulation
         if (lwurl.startsWith("http://") || lwurl.startsWith("https://"))
@@ -439,14 +426,14 @@ public abstract class ServletUtil{
         } else
             res.sendRedirect(SecurityYn.checkHttpHeader(null,
                     req.getContextPath() + "/" + url));// edit by zqj 2013.5.6
-                                                       // 安全改造：Header
-                                                       // Manipulation
+        // 安全改造：Header
+        // Manipulation
     }
 
     /**
      * 判断上传的文件是否是zip文件 判断方法:如果上传文件的后缀是以".zip"结尾,则是zip文件
      */
-    public static boolean isZipFile(FileItem item){
+    public static boolean isZipFile(FileItem item) {
         return ".zip".equalsIgnoreCase(FileUtil.extractFileExt(item.getName()));
     }
 
@@ -457,8 +444,8 @@ public abstract class ServletUtil{
      * 设置传输编码Content-transfer-Encoding=binary
      */
     public static final void setDownloadHeader(HttpServletResponse res,
-            String contentType, String charset, String contentDisposition,
-            String filename){
+                                               String contentType, String charset, String contentDisposition,
+                                               String filename) {
         /**
          * 去掉不需要的http头，包括cache设置，下载文件不需要这些信息
          */
@@ -516,7 +503,7 @@ public abstract class ServletUtil{
      * HTTPSERVLETRESPONSE:RESET() DOES NOT CAUSE PREVIOUSLY ADDED HEADERS TO BE
      * REMOVED
      */
-    public static final void resetResponse(HttpServletResponse res){
+    public static final void resetResponse(HttpServletResponse res) {
         res.setHeader("P3P", null);
         res.setHeader("Pragma", null);
         res.setHeader("Cache-Control", null);
@@ -531,7 +518,7 @@ public abstract class ServletUtil{
      * 返回request的URI，不含参数（即？后面的内容），不含contextpath，以/开头
      */
     public static String getRequestURI_withoutContextPath(
-            HttpServletRequest httpRequest){
+            HttpServletRequest httpRequest) {
         String r = httpRequest.getRequestURI();
         // update by zhuzht 20130506 安全改造File Disclosure
         r = SecurityYn.filterUrl(r);
@@ -555,7 +542,7 @@ public abstract class ServletUtil{
     /**
      * 取得服务器的web应用目录(contextpath)，返回的值总是前后有/,如果contextpath为空,则返回/。
      */
-    public static String getContextPath(HttpServletRequest httpRequest){
+    public static String getContextPath(HttpServletRequest httpRequest) {
         String ctxpath = httpRequest.getContextPath();
         if (ctxpath == null || ctxpath.length() == 0) {
             return "/";
@@ -573,15 +560,15 @@ public abstract class ServletUtil{
      * 大部分情况下其实value都是一个单个的字符串
      * 此函数将HttpServletRequest的getParameterMap方法返回的map中的中的value参数转换为String对象
      * ，如果value原来是长度大于1的 数组，那么转换为逗号连接的字符串
-     * 
+     *
      * @param httpRequest
      * @return
      */
-    public static Map conventRequestToMap(HttpServletRequest httpRequest){
+    public static Map conventRequestToMap(HttpServletRequest httpRequest) {
         // request中获取的参数为Map<String,String[]>
         Map params = httpRequest.getParameterMap();
         Map map = new HashMap(params.size());
-        for (Iterator iter = params.keySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = params.keySet().iterator(); iter.hasNext(); ) {
             Object name = iter.next();
             String[] values = (String[]) params.get(name);
             map.put(name, ArrayUtil.array2Str(values, ","));
@@ -591,14 +578,14 @@ public abstract class ServletUtil{
 
     /**
      * 对目录进行编码，忽略/，例如：public/portals/中文/
-     * 
+     *
      * @param url
      * @param enc
      * @return
      * @throws UnsupportedEncodingException
      */
     public static String encodeURL(String url, String enc)
-            throws UnsupportedEncodingException{
+            throws UnsupportedEncodingException {
         if (url == null || url.length() == 0) return url;
         StringBuffer rs = new StringBuffer((int) (url.length() * 1.3) + 5);
         int j = 0;
@@ -624,22 +611,21 @@ public abstract class ServletUtil{
     }
 
     public static String encodeURL(String url)
-            throws UnsupportedEncodingException{
+            throws UnsupportedEncodingException {
         return encodeURL(url, "UTF-8");
     }
 
     /**
      * 当页面装入完成时,调用此方法,会隐藏页面中正在装入的提示信息
-     * 
+     *
      * @param out
-     * @deprecated 
-     *             请使用标签库：jspwaitmsg，jspwaitmsg标签会自动隐藏等待信息的，如果非要手工隐藏可以设置autohide=
-     *             false，并直接执行js函数hideJspWaitingDomMsg();
      * @param includeScriptTag
      * @throws IOException
+     * @deprecated 请使用标签库：jspwaitmsg，jspwaitmsg标签会自动隐藏等待信息的，如果非要手工隐藏可以设置autohide=
+     * false，并直接执行js函数hideJspWaitingDomMsg();
      */
     public static final void printHideJspWaitingDom(JspWriter out,
-            boolean includeScriptTag) throws IOException{
+                                                    boolean includeScriptTag) throws IOException {
         if (includeScriptTag) out.println("<script>");
         out.println("hideJspWaitingDomMsg();");// 来自TagLib_WaitMsg.printJspWaitingDom的输出
         if (includeScriptTag) out.println("</script>");
@@ -649,12 +635,12 @@ public abstract class ServletUtil{
      * 跳转到url指定的页面，执行跳转操作时应尽可能使用该方法。
      */
     public static String forwardPage(final HttpServletRequest req,
-            final HttpServletResponse res, final String url) throws Exception{
+                                     final HttpServletResponse res, final String url) throws Exception {
         /*
          * 当Struts处理上传请求时，会将HttpServletRequest对象包装为MultipartRequestWrapper，
          * 但是当RequestDispatcher执行forward时，可能会抛出ClassCastException异常
          * （tomcat是没有该问题的，但是weblogic的RequestDispatcher实现类会出问题）。
-         * 
+         *
          * 为了避免该问题，在执行forard的时候，在forward前，
          * 获取MultipartRequestWrapper保存的HttpServletRequest对象，对其进行forward操作。
          * 参考页面：https
@@ -669,18 +655,17 @@ public abstract class ServletUtil{
 
     /**
      * 将jsp的结果或者html内容包含到指定区域内进行显示
-     * 
+     *
      * @param req
      * @param res
-     * @param src
-     *            要包含的页面，可以是jsp或者html
+     * @param src 要包含的页面，可以是jsp或者html
      * @param out
      * @throws ServletException
      * @throws IOException
      */
     public static void includeJspResult(ServletRequest req,
-            ServletResponse res, String src, JspWriter out)
-            throws ServletException, IOException{
+                                        ServletResponse res, String src, JspWriter out)
+            throws ServletException, IOException {
         out.print("<!-- start[include ");
         out.print(src);
         out.print("] -->");
@@ -695,11 +680,11 @@ public abstract class ServletUtil{
 
     /**
      * 将string的数组返回给客户端js使用 var hiddenparams = <%=hiddenparams%>;
-     * 
+     *
      * @param array
      * @return
      */
-    public static String array2json(String[] array){
+    public static String array2json(String[] array) {
         StringBuffer json = new StringBuffer();
         json.append("[");
         if (array != null && array.length > 0) {
@@ -718,11 +703,11 @@ public abstract class ServletUtil{
 
     /**
      * 将一个<String,String>的map返回给客户端js使用 var paramsmap = new Map(<%=paramsmap%>);
-     * 
+     *
      * @param map
      * @return
      */
-    public static String map2json(Map map){
+    public static String map2json(Map map) {
         StringBuffer json = new StringBuffer();
         json.append("\"");
         if (map != null && map.size() > 0) {
@@ -739,17 +724,14 @@ public abstract class ServletUtil{
         return json.toString();
     }
 
-    private static String[] mobileUserAgents = new String[] {"iphone", "ipad",
-            "android"};
-
     /**
      * 判断是否是移动设备访问
-     * 
+     *
      * @param req
      * @return
      * @throws Exception
      */
-    public static boolean isMobileDevice(HttpServletRequest req){
+    public static boolean isMobileDevice(HttpServletRequest req) {
         String userAgent = req.getHeader("user-agent");
         if (!StrUtil.isNull(userAgent)) {
             userAgent = userAgent.toLowerCase();
@@ -764,11 +746,11 @@ public abstract class ServletUtil{
 
     /**
      * 判断是否为ajax请求,根据header里面"X_REQUESTED_WITH"属性是否为"XMLHttpRequest"
-     * 
+     *
      * @param req
      * @return
      */
-    public static final boolean isAjaxRequest(HttpServletRequest req){
+    public static final boolean isAjaxRequest(HttpServletRequest req) {
 
         /**
          * X_REQUESTED_WITH: XMLHttpRequest
@@ -782,11 +764,11 @@ public abstract class ServletUtil{
      * 先从request中检查lang参数有没值， 没有，则读取cookie "esensoft.user.language"的值，
      * 再没有，则读取request.getLocale()值(浏览器accept-language值)
      * 然后检查是否支持的语言，不支持时，返回Locale.ENGLISH. 最后将locale写入cookie.
-     * 
+     *
      * @param req
      * @return
      */
-    public static Locale getPureposeLocale(HttpServletRequest req){
+    public static Locale getPureposeLocale(HttpServletRequest req) {
         String langStr = req.getParameter("lang");
         if (StrUtil.isNull(langStr)) {
             Cookie[] cookies = req.getCookies();
@@ -810,26 +792,26 @@ public abstract class ServletUtil{
  * 能够正确的显示在指定区域内
  */
 class HttpServletResponseWrapper4includeJspResult extends
-        HttpServletResponseWrapper{
+        HttpServletResponseWrapper {
 
     private PrintWriter out;
 
     public HttpServletResponseWrapper4includeJspResult(
-            HttpServletResponse response){
+            HttpServletResponse response) {
         super(response);
     }
 
     public HttpServletResponseWrapper4includeJspResult(
-            HttpServletResponse response, JspWriter out){
+            HttpServletResponse response, JspWriter out) {
         super(response);
         this.out = new PrintWriter(out);
     }
 
-    public PrintWriter getWriter() throws IOException{
+    public PrintWriter getWriter() throws IOException {
         return out;
     }
 
-    public ServletOutputStream getOutputStream() throws IOException{
+    public ServletOutputStream getOutputStream() throws IOException {
         throw new UnsupportedOperationException();
     }
 }

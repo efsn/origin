@@ -1,131 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
-	default-lazy-init="true" default-init-method="init"
-	default-destroy-method="destroy">
+       default-lazy-init="true" default-init-method="init"
+       default-destroy-method="destroy">
 
-	<mvc:annotation-driven />
-	<context:component-scan
-		base-package="com.esen.xui,com.esen.weblib,com.esen.platform.action" />
-	<mvc:interceptors>
-		<bean class="com.esen.platform.web.PlatformHandlerInterceptor"></bean>
-	</mvc:interceptors>
-	
-	<!-- <mvc:interceptors>
-		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
-			<property name="paramName" value="lang" />
-		</bean>
-	</mvc:interceptors> -->
+    <mvc:annotation-driven/>
+    <context:component-scan
+            base-package="com.esen.xui,com.esen.weblib,com.esen.platform.action"/>
+    <mvc:interceptors>
+        <bean class="com.esen.platform.web.PlatformHandlerInterceptor"></bean>
+    </mvc:interceptors>
 
-	<bean id="localeResolver" class="com.esen.platform.i18n.PlatformCookieLocaleResolver">
-		<property name="cookieName" value="esen.user.lang" />
-		<property name="cookieMaxAge" value="259200" />
-	</bean>
+    <!-- <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="lang" />
+        </bean>
+    </mvc:interceptors> -->
 
-	<bean id="menutag" class="com.esen.platform.freemarker.tag.MenuTag"/>
+    <bean id="localeResolver" class="com.esen.platform.i18n.PlatformCookieLocaleResolver">
+        <property name="cookieName" value="esen.user.lang"/>
+        <property name="cookieMaxAge" value="259200"/>
+    </bean>
 
-	
-	<bean id="ftltag" class="com.esen.platform.freemarker.tag.FTLTag"/>
-
-	<util:properties id="freemarkerStaticModelsProps" location="classpath:/config/freemarker/freemarkerstatic.properties" />
-	<bean id="freemarkerStaticModels" class="com.esen.platform.freemarker.FreemarkerStaticModels"
-		factory-method="getInstance">
-		<property name="staticModels" ref="freemarkerStaticModelsProps" />
-	</bean>
-
-	<!-- freemarker的配置 -->
-	<bean id="freemarkerConfig"
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-		<property name="freemarkerVariables">
-			<map>
-				<entry key="menu" value-ref="menutag" />
-				<entry key="ftl" value-ref="ftltag" />					
-			</map>
-		</property>
-		<property name="templateLoaderPath" value="/" />
-		<property name="defaultEncoding" value="utf-8" />
-		<property name="freemarkerSettings">
-			<props>
-				<!-- 可配值参考Configurable类,debug,html_debug,ignore,rethrow,不区分大小写 -->
-				<prop key="template_exception_handler">html_debug</prop>
-				<prop key="template_update_delay">10</prop>
-				<prop key="locale">zh_CN</prop>
-				<prop key="datetime_format">yyyy-MM-dd</prop>
-				<prop key="date_format">yyyy-MM-dd</prop>
-				<prop key="number_format">#.##</prop>
-				<prop key="auto_include">/esmain/commonftl/defaultVariable.ftl</prop>
-				<prop key="auto_import">/esmain/commonftl/comm.ftl as comm</prop>
-			</props>
-		</property>
-	</bean>
-	<!-- FreeMarker视图解析 。在这里配置后缀名ftl和视图解析器。。 -->
-	<bean id="freeMarkerViewResolver"
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
-
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"></property>
-
-		<property name="suffix" value=".ftl" />
-		<property name="contentType" value="text/html;charset=utf-8" />
-		<property name="exposeRequestAttributes" value="true" />
-		<property name="exposeSessionAttributes" value="true" />
-		<property name="exposeSpringMacroHelpers" value="true" />
-		<property name="allowRequestOverride" value="true"/>
-		<property name="allowSessionOverride" value="true"/>
-		<property name="requestContextAttribute" value="request" />
-		<property name="attributesMap" ref="freemarkerStaticModels" />
-	</bean>
+    <bean id="menutag" class="com.esen.platform.freemarker.tag.MenuTag"/>
 
 
-	<bean id="viewResolver"
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/"></property>
-		<property name="suffix" value=".jsp"></property>
-	</bean>
-	<mvc:view-controller path="/jsrunner.do" view-name="/xui/testframe/jsrunner" />
-	<mvc:view-controller path="/xuirunner.do"
-		view-name="/xui/testframe/xuirunner" />
-	<mvc:view-controller path="/esmain/test/testtree.do"
-		view-name="/esmain/test/main/testtreepage" />
-	<mvc:view-controller path="/esmain/sysmgr.do"
-		view-name="/esmain/sysmgr/sysmgrtreepage" />
-	<mvc:view-controller path="/esmain/portal/portalmanager_portal.do"
-		view-name="/esmain/portal/portalmanager_portal" />
-	<mvc:view-controller path="/esmain/portal/portalmanager_source.do"
-		view-name="/esmain/portal/portalmanager_source" />
-	<mvc:view-controller path="/esmain/portal/portalmanager_widget.do"
-		view-name="/esmain/portal/portalmanager_widget" />
-	<mvc:view-controller path="/esmain/portal/portalmanager_login.do"
-		view-name="/esmain/portal/portalmanager_login" />
-	<!-- 公共平台计划任务 -->
-	<mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_program.do"
-		view-name="/esmain/sysmgr/schedule/jsp/exttool_program" />
-	<mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_schlist.do"
-		view-name="/esmain/sysmgr/schedule/jsp/exttool_schlist" />
-	<mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_script.do"
-		view-name="/esmain/sysmgr/schedule/jsp/exttool_script" />
-	<mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_sql.do"
-		view-name="/esmain/sysmgr/schedule/jsp/exttool_sql" />
-	<mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_backup.do"
-		view-name="/esmain/sysmgr/schedule/jsp/exttool_backup" />
-	<!-- uitest:仅供ui测试使用，后期需要删除 -->
-	<mvc:view-controller path="/esmain/uitest/test1.do"
-		view-name="/esmain/uitest/test1" />
-	<mvc:view-controller path="/esmain/uitest/test2.do"
-		view-name="/esmain/uitest/test2" />
-	<mvc:view-controller path="/esmain/uitest/test3.do"
-		view-name="/esmain/uitest/test3" />
-	<!-- uitest:结束 -->
-	<mvc:view-controller path="/esmain/portal/portalmanager_widget.do"
-		view-name="/esmain/portal/portalmanager_widget" />
-	<!-- 引入其他产品的XML文件，文件通配符为 servletContext-*.xml -->
-	<import resource="classpath*:config/servletContext_*.xml" />
+    <bean id="ftltag" class="com.esen.platform.freemarker.tag.FTLTag"/>
+
+    <util:properties id="freemarkerStaticModelsProps"
+                     location="classpath:/config/freemarker/freemarkerstatic.properties"/>
+    <bean id="freemarkerStaticModels" class="com.esen.platform.freemarker.FreemarkerStaticModels"
+          factory-method="getInstance">
+        <property name="staticModels" ref="freemarkerStaticModelsProps"/>
+    </bean>
+
+    <!-- freemarker的配置 -->
+    <bean id="freemarkerConfig"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="menu" value-ref="menutag"/>
+                <entry key="ftl" value-ref="ftltag"/>
+            </map>
+        </property>
+        <property name="templateLoaderPath" value="/"/>
+        <property name="defaultEncoding" value="utf-8"/>
+        <property name="freemarkerSettings">
+            <props>
+                <!-- 可配值参考Configurable类,debug,html_debug,ignore,rethrow,不区分大小写 -->
+                <prop key="template_exception_handler">html_debug</prop>
+                <prop key="template_update_delay">10</prop>
+                <prop key="locale">zh_CN</prop>
+                <prop key="datetime_format">yyyy-MM-dd</prop>
+                <prop key="date_format">yyyy-MM-dd</prop>
+                <prop key="number_format">#.##</prop>
+                <prop key="auto_include">/esmain/commonftl/defaultVariable.ftl</prop>
+                <prop key="auto_import">/esmain/commonftl/comm.ftl as comm</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- FreeMarker视图解析 。在这里配置后缀名ftl和视图解析器。。 -->
+    <bean id="freeMarkerViewResolver"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"></property>
+
+        <property name="suffix" value=".ftl"/>
+        <property name="contentType" value="text/html;charset=utf-8"/>
+        <property name="exposeRequestAttributes" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="allowRequestOverride" value="true"/>
+        <property name="allowSessionOverride" value="true"/>
+        <property name="requestContextAttribute" value="request"/>
+        <property name="attributesMap" ref="freemarkerStaticModels"/>
+    </bean>
+
+
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+    <mvc:view-controller path="/jsrunner.do" view-name="/xui/testframe/jsrunner"/>
+    <mvc:view-controller path="/xuirunner.do"
+                         view-name="/xui/testframe/xuirunner"/>
+    <mvc:view-controller path="/esmain/test/testtree.do"
+                         view-name="/esmain/test/main/testtreepage"/>
+    <mvc:view-controller path="/esmain/sysmgr.do"
+                         view-name="/esmain/sysmgr/sysmgrtreepage"/>
+    <mvc:view-controller path="/esmain/portal/portalmanager_portal.do"
+                         view-name="/esmain/portal/portalmanager_portal"/>
+    <mvc:view-controller path="/esmain/portal/portalmanager_source.do"
+                         view-name="/esmain/portal/portalmanager_source"/>
+    <mvc:view-controller path="/esmain/portal/portalmanager_widget.do"
+                         view-name="/esmain/portal/portalmanager_widget"/>
+    <mvc:view-controller path="/esmain/portal/portalmanager_login.do"
+                         view-name="/esmain/portal/portalmanager_login"/>
+    <!-- 公共平台计划任务 -->
+    <mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_program.do"
+                         view-name="/esmain/sysmgr/schedule/jsp/exttool_program"/>
+    <mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_schlist.do"
+                         view-name="/esmain/sysmgr/schedule/jsp/exttool_schlist"/>
+    <mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_script.do"
+                         view-name="/esmain/sysmgr/schedule/jsp/exttool_script"/>
+    <mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_sql.do"
+                         view-name="/esmain/sysmgr/schedule/jsp/exttool_sql"/>
+    <mvc:view-controller path="/esmain/sysmgr/schedule/jsp/exttool_backup.do"
+                         view-name="/esmain/sysmgr/schedule/jsp/exttool_backup"/>
+    <!-- uitest:仅供ui测试使用，后期需要删除 -->
+    <mvc:view-controller path="/esmain/uitest/test1.do"
+                         view-name="/esmain/uitest/test1"/>
+    <mvc:view-controller path="/esmain/uitest/test2.do"
+                         view-name="/esmain/uitest/test2"/>
+    <mvc:view-controller path="/esmain/uitest/test3.do"
+                         view-name="/esmain/uitest/test3"/>
+    <!-- uitest:结束 -->
+    <mvc:view-controller path="/esmain/portal/portalmanager_widget.do"
+                         view-name="/esmain/portal/portalmanager_widget"/>
+    <!-- 引入其他产品的XML文件，文件通配符为 servletContext-*.xml -->
+    <import resource="classpath*:config/servletContext_*.xml"/>
 </beans>

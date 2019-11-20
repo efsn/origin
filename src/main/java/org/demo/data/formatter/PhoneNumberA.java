@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.demo.data.formatter;
 
@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PhoneNumberA{
-    
+public @interface PhoneNumberA {
+
 }

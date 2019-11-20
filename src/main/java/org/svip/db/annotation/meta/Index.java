@@ -1,20 +1,20 @@
 package org.svip.db.annotation.meta;
 
+import org.svip.db.enumeration.mysql.DbType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.svip.db.enumeration.mysql.DbType;
-
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Index{
-    public String name();
+public @interface Index {
+    String name();
 
-    public String[] column();
+    String[] column();
 
-    public DbType mode() default DbType.HASH;
+    DbType mode() default DbType.HASH;
 
-    public DbType type() default DbType.IDX_NORMAL;
+    DbType type() default DbType.IDX_NORMAL;
 }

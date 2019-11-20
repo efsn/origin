@@ -1,10 +1,9 @@
 package org.codeyn.util.i18n;
 
 /**
- * 
  * 该类将数字格式化处理为大写或者小写的汉字数字字符串。。
  */
-public class HanziFormat{
+public class HanziFormat {
 
     private final static String[] digit_s = {"○", "一", "二", "三", "四", "五", "六",
             "七", "八", "九"};
@@ -12,10 +11,10 @@ public class HanziFormat{
     private final static String[] digit_t = {"零", "壹", "贰", "叁", "肆", "伍", "陆",
             "柒", "捌", "玖"};
 
-    private static final String unit_s[] = {"", "十", "百", "千", "万", "十", "百",
+    private static final String[] unit_s = {"", "十", "百", "千", "万", "十", "百",
             "千", "亿", "十", "百", "千", "兆", "十", "百", "千"};
 
-    private static final String unit_t[] = {"", "拾", "佰", "仟", "万", "拾", "佰",
+    private static final String[] unit_t = {"", "拾", "佰", "仟", "万", "拾", "佰",
             "仟", "亿", "拾", "佰", "仟", "兆", "拾", "佰", "仟"};
 
     private final static long[] mask = {1L, 10L, 100L, 1000L, 10000L, 100000L,
@@ -26,23 +25,21 @@ public class HanziFormat{
 
     /**
      * 将长整型数字转换为汉字大写数字字符串。 例如：HanziFormat.toHanZiTr(1253654) --> "壹佰贰拾伍万叁仟陆佰伍拾肆"
-     * 
-     * @param x
-     *            需要转换的数字，该数字包含的位数不能超过15，否则会出现转换异常。
+     *
+     * @param x 需要转换的数字，该数字包含的位数不能超过15，否则会出现转换异常。
      * @return 数字转换后的汉字字符串。
      */
-    public static String toHanZiTr(long x){
+    public static String toHanZiTr(long x) {
         return toHanZi(x, digit_t, unit_t);
     }
 
     /**
      * 将长整型数字转换为汉字小写数字字符串。 例如：HanziFormat.toHanZiSi(1253654) --> "一百二十五万三千六百五十四"
-     * 
-     * @param x
-     *            需要转换的数字，该数字包含的位数不能超过15，否则会出现转换异常。
+     *
+     * @param x 需要转换的数字，该数字包含的位数不能超过15，否则会出现转换异常。
      * @return 数字转换后的汉字字符串。
      */
-    public static String toHanZiSi(long x){
+    public static String toHanZiSi(long x) {
         String[] digit = digit_s;
         String[] unit = unit_s;
 
@@ -104,7 +101,7 @@ public class HanziFormat{
     /**
      * 将数字转换为汉字
      */
-    private static String toHanZi(long x, String[] digit, String[] unit){
+    private static String toHanZi(long x, String[] digit, String[] unit) {
 
         if (x == 0) {
             return digit[0];
@@ -160,12 +157,11 @@ public class HanziFormat{
 
     /**
      * 见数字转换为繁体汉字表示的货币数字写法，会四舍五入到小数点后两位（也就是到分）。
-     * 
-     * @param val
-     *            需要转换为繁体汉字表示的数字。
+     *
+     * @param val 需要转换为繁体汉字表示的数字。
      * @return 转换好的繁体汉字货币数字字符串，包含货币单位：元、角、分等。
      */
-    public static String toRMB(double val){
+    public static String toRMB(double val) {
 
         StringBuffer rmb = new StringBuffer(40);
         long fraction, integer;
@@ -190,7 +186,6 @@ public class HanziFormat{
                 rmb.append("角");
             }
             if (integer == 0 && jiao == 0) { // 零元后不写零几分
-                rmb.append("");
             }
             if (fen != 0) {
                 rmb.append(digit_t[fen]);

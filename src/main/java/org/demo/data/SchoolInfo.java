@@ -1,18 +1,18 @@
 package org.demo.data;
 
-public class SchoolInfo{
+public class SchoolInfo {
     private String name;
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return name;
     }
 }

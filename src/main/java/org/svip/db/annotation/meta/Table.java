@@ -7,14 +7,14 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Table{
-    public Index[] index() default {};
+public @interface Table {
+    Index[] index() default {};
 
-    public Foreign[] foreign() default {};
+    Foreign[] foreign() default {};
 
-    public Trigger[] trigger() default {};
+    Trigger[] trigger() default {};
 
-    public String engine() default "InnoDB";
+    String engine() default "InnoDB";
 
-    public String charset() default "UTF8";
+    String charset() default "UTF8";
 }

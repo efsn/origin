@@ -1,15 +1,15 @@
 package template.bean;
 
-import java.util.Date;
-
 import org.svip.db.annotation.meta.Column;
 import org.svip.db.annotation.meta.Constraint;
 import org.svip.db.annotation.meta.Index;
 import org.svip.db.annotation.meta.Table;
 import org.svip.db.enumeration.mysql.DbType;
 
+import java.util.Date;
+
 @Table(index = {@Index(name = "usernameIdx", column = "username")})
-public class User{
+public class User {
 
     @Column(type = DbType.INT,
             length = 11,
@@ -36,59 +36,59 @@ public class User{
     @Column(type = DbType.DATETIME, constraint = @Constraint(nullAble = false))
     private Date updateDate;
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username){
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getMobilePhone(){
+    public String getMobilePhone() {
         return mobilePhone;
     }
 
-    public void setMobilePhone(String mobilePhone){
+    public void setMobilePhone(String mobilePhone) {
         this.mobilePhone = mobilePhone;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email){
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public Date getCreateDate(){
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate){
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
-    public Date getUpdateDate(){
+    public Date getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate){
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
 

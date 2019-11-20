@@ -1,27 +1,5 @@
 package org.codeyn.util.yn;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.CharArrayReader;
-import java.io.CharArrayWriter;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import org.codeyn.util.exception.ExceptionHandler;
 import org.codeyn.util.i18n.I18N;
 import org.codeyn.util.io.MyByteArrayOutputStream;
@@ -29,27 +7,35 @@ import org.codeyn.util.io.file.MyByteArrayInputStream;
 import org.codeyn.util.io.file.UnicodeReader;
 import org.codeyn.util.zip.gzip.GzipInStm;
 
+import java.io.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 /**
  * Stream in or out tools
- * 
+ *
  * @author Codeyn
  * @version 1.0
  */
-public final class StrmUtil{
+public final class StrmUtil {
 
     public static final byte[] NULLBYTE = new byte[0];
+    /**
+     * 从一个流中复制指定的长度的类容到另一个流中,如果从源流中不能再读入数据则返回复制了的数据的字节数
+     */
+    private static final int BUF_SIZE = 1024 * 8;
 
-    private StrmUtil(){
+    private StrmUtil() {
     }
 
     /**
      * Obtain the reader of file, auto-guess charset
-     * 
+     *
      * @param filePath
      * @return {@link Reader}
      * @throws IOException
      */
-    public static Reader toReader(String filePath) throws IOException{
+    public static Reader toReader(String filePath) throws IOException {
         return toReader(filePath, null);
     }
 
@@ -57,16 +43,14 @@ public final class StrmUtil{
      * Obtain the <code>Reader</code> of file, if charset is null, guess the
      * charset, else charset is <code>UTF8</code>, can also process BOM tag,
      * almost used to read cvs file
-     * 
-     * @param filePath
-     *            If is directory return <code>null</code>
-     * @param charset
-     *            <code>nullable</code>
+     *
+     * @param filePath If is directory return <code>null</code>
+     * @param charset  <code>nullable</code>
      * @return implements of {@link InputStreamReader}
      * @throws IOException
      */
     public static Reader toReader(String filePath, String charset)
-            throws IOException{
+            throws IOException {
         File f = new File(filePath);
         if (!f.exists() || !f.isFile()) return null;
         if (StrUtil.isNull(charset)) charset = StrUtil.UTF8;
@@ -116,62 +100,54 @@ public final class StrmUtil{
 
     /**
      * 读取一个以零字符结尾的字符串
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param in
      * @return
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
-    static public final String readString(InputStream in) throws IOException{
+    static public final String readString(InputStream in) throws IOException {
         return readString(in, 50, 50);
     }
 
     /**
      * 使用指定编码读取一个以零字符结尾的字符串
-     * 
+     *
      * @param in
-     * @param charset
-     *            设定编码
+     * @param charset 设定编码
      * @return
      * @throws IOException
      */
     static public final String readString(InputStream in, String charset)
-            throws IOException{
+            throws IOException {
         return readString(in, 50, 50, charset);
     }
 
     /**
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
-     * @param in
-     *            读取的流
-     * @param bufsize
-     *            读取的字节的大小
-     * @param step
-     *            每次读取多少个字节
+     * @param in      读取的流
+     * @param bufsize 读取的字节的大小
+     * @param step    每次读取多少个字节
      * @return
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     static public final String readString(InputStream in, int bufsize, int step)
-            throws IOException{
+            throws IOException {
         return readString(in, bufsize, step, null);
     }
 
     /**
      * 使用指定编码读取流中的信息，以byte数组形式读取，可以设置byte数组读取的位置
-     * 
-     * @param in
-     *            读取的流
-     * @param bufsize
-     *            读取的字节的大小
-     * @param step
-     *            每次读取多少个字节
-     * @param charset
-     *            编码
+     *
+     * @param in      读取的流
+     * @param bufsize 读取的字节的大小
+     * @param step    每次读取多少个字节
+     * @param charset 编码
      * @return
      * @throws IOException
      */
     static public final String readString(InputStream in, int bufsize,
-            int step, String charset) throws IOException{
+                                          int step, String charset) throws IOException {
         int rd = in.read();
         if (rd == -1) return null;
         byte r = (byte) rd;
@@ -196,19 +172,16 @@ public final class StrmUtil{
 
     /**
      * 从流中读字符时，应该指定编码 TODO 增加encoding参数。
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
-     * @param in
-     *            读取的流
-     * @param bufsize
-     *            读取的字节的大小
-     * @param rate
-     *            读取的尺度
+     *
+     * @param in      读取的流
+     * @param bufsize 读取的字节的大小
+     * @param rate    读取的尺度
      * @return
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     static public final String readString(InputStream in, int bufsize,
-            double rate) throws IOException{
+                                          double rate) throws IOException {
         int rd = in.read();
         if (rd == -1) return null;
         byte r = (byte) rd;
@@ -232,15 +205,14 @@ public final class StrmUtil{
 
     /**
      * 向流里写一个以零字符结尾的字符串
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param out
-     * @param s
-     *            写入的字符串
+     * @param s   写入的字符串
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     static public final void writeString(OutputStream out, String s)
-            throws IOException{
+            throws IOException {
         if (s == null) {
             out.write(0);
             return;
@@ -251,7 +223,7 @@ public final class StrmUtil{
     }
 
     static public final String readPassword(OutputStream out, InputStream in)
-            throws IOException{
+            throws IOException {
         int rd = in.read();
         if (rd == -1) return null;
         byte r = (byte) rd;
@@ -282,7 +254,7 @@ public final class StrmUtil{
      * 将对象obj序列化到输出流o中，obj必须是支持序列化的
      */
     public static void writeObject(OutputStream o, Object obj)
-            throws IOException{
+            throws IOException {
         ObjectOutputStream oo = new ObjectOutputStream(o);
         try {
             oo.writeObject(obj);
@@ -292,7 +264,7 @@ public final class StrmUtil{
     }
 
     public static Object readObject(InputStream o) throws IOException,
-            ClassNotFoundException{
+            ClassNotFoundException {
         ObjectInputStream oo = new ObjectInputStream(o);
         try {
             return oo.readObject();
@@ -304,7 +276,7 @@ public final class StrmUtil{
     /**
      * 从文件中反序列化对象并返回，如果出现异常转换为runtime异常抛出
      */
-    public static Object file2obj(String fn){
+    public static Object file2obj(String fn) {
         try {
             InputStream f = new BufferedInputStream(new FileInputStream(fn));
             try {
@@ -319,7 +291,7 @@ public final class StrmUtil{
     }
 
     public static Object stm2obj(InputStream f) throws IOException,
-            ClassNotFoundException{
+            ClassNotFoundException {
         ObjectInputStream oo = new ObjectInputStream(f);
         try {
             return oo.readObject();
@@ -331,7 +303,7 @@ public final class StrmUtil{
     /**
      * 将对象o序列化到文件fn中，如果出现异常转换为runtime异常抛出
      */
-    public static void obj2file(String fn, Object o){
+    public static void obj2file(String fn, Object o) {
         try {
             OutputStream fo = new BufferedOutputStream(new FileOutputStream(fn));
             try {
@@ -344,29 +316,29 @@ public final class StrmUtil{
         }
     }
 
-    public static void obj2stm(Object o, OutputStream fo) throws IOException{
+    public static void obj2stm(Object o, OutputStream fo) throws IOException {
         ObjectOutputStream oo = new ObjectOutputStream(fo);
         try {
             oo.writeObject(o);
         } catch (Exception e) {
             ExceptionHandler.rethrowRuntimeException(e, I18N.getString(
                     "com.esen.util.stmfunc.exp", "在序列化对象【{0}】时发生异常：{1}",
-                    new Object[] {o.getClass(), StrUtil.exceptionMsg2str(e)}));
+                    o.getClass(), StrUtil.exceptionMsg2str(e)));
         }
         oo.close();
     }
 
     /**
      * read fix length bytes from inputstream
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param in
      * @param fix
      * @return
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     public static final String readFix(InputStream in, int fix)
-            throws IOException{
+            throws IOException {
         if (fix <= 0) return null;
         byte[] bb = new byte[fix];
         stmTryRead(in, bb, fix);
@@ -375,14 +347,14 @@ public final class StrmUtil{
 
     /**
      * read fix length bytes from inputstream
-     * 
+     *
      * @param in
      * @param fix
      * @return
      * @throws IOException
      */
     public static final String readFix(InputStream in, int fix, String charset)
-            throws IOException{
+            throws IOException {
         if (fix <= 0) return null;
         byte[] bb = new byte[fix];
         stmTryRead(in, bb, fix);
@@ -391,27 +363,26 @@ public final class StrmUtil{
 
     /**
      * 从流中读取一行,采用操作系统默认编码对字节编码
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param in
      * @return
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
-    public static final String readLine(InputStream in) throws IOException{
+    public static final String readLine(InputStream in) throws IOException {
         return readLine(in, null);
     }
 
     /**
      * 从流中读取一行
-     * 
+     *
      * @param in
-     * @param charset
-     *            以charset对编码为字符串,如果为空,则采用操作系统默认编码
+     * @param charset 以charset对编码为字符串,如果为空,则采用操作系统默认编码
      * @return
      * @throws IOException
      */
     public static final String readLine(InputStream in, String charset)
-            throws IOException{
+            throws IOException {
         int rd = in.read();
         if (rd == -1) return null;
         byte r = (byte) rd;
@@ -438,34 +409,34 @@ public final class StrmUtil{
 
     /**
      * 向流里写一行，即以回车换行为结尾
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param out
      * @param s
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     public static final void writeLine(OutputStream out, String s)
-            throws IOException{
+            throws IOException {
         writeFix(out, s);
         out.write('\r');
         out.write('\n');
     }
 
     /**
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      * @param out
      * @param s
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     public static final void writeFix(OutputStream out, String s)
-            throws IOException{
+            throws IOException {
         if (s == null || s.length() == 0) return;
         byte[] b = s.getBytes();
         out.write(b);
     }
 
     public static final void writeLine(OutputStream out, String s,
-            String charsetName) throws IOException{
+                                       String charsetName) throws IOException {
         writeFix(out, s, charsetName);
         out.write('\r');
         out.write('\n');
@@ -475,7 +446,7 @@ public final class StrmUtil{
      * 按指定编码写字符串的内容,如果编码为null这使用系统缺省编码
      */
     public static final void writeFix(OutputStream out, String s,
-            String charsetName) throws IOException{
+                                      String charsetName) throws IOException {
         if (s == null || s.length() == 0) return;
         byte[] b = charsetName != null ? s.getBytes(charsetName) : s.getBytes();
         out.write(b);
@@ -483,7 +454,7 @@ public final class StrmUtil{
 
     // write fix length string to outputstream
     public static final void writeFix(OutputStream out, String s, int fix)
-            throws IOException{
+            throws IOException {
         if (fix <= 0) return;
         byte[] b = s.getBytes();
         if (b.length < fix) throw new IOException();
@@ -492,29 +463,29 @@ public final class StrmUtil{
 
     /**
      * 读取行，直到读到某行为止,以操作系统默认编码对字节编码
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param br
      * @param ln
      * @return
      * @throws Exception
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     public static final String readLinesUntil(InputStream br, String ln)
-            throws Exception{
+            throws Exception {
         return readLinesUntil(br, ln, null);
     }
 
     /**
      * 读取行，直到读到某行为止 以指定编码解码,如果为空,则以系统默认编码解码 此问题主要是解决读取npf文件时必须以gbk解码的问题
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param br
      * @param ln
      * @return
      * @throws Exception
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     public static final String readLinesUntil(InputStream br, String ln,
-            String charset) throws Exception{
+                                              String charset) throws Exception {
         StringBuffer result = new StringBuffer();
         String s = readLine(br, charset);
         while ((s != null) && !s.equals(ln)) {
@@ -526,21 +497,20 @@ public final class StrmUtil{
     }
 
     /**
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      * @param br
      * @param ln
      * @throws Exception
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
     public static final void skipLinesUntil(InputStream br, String ln)
-            throws Exception{
+            throws Exception {
         String s = readLine(br);
         while ((s != null) && !s.equals(ln)) {
             s = readLine(br);
         }
     }
 
-    public static final int readInt(InputStream i) throws IOException,
-            EOFException{
+    public static final int readInt(InputStream i) throws IOException {
         InputStream in = i;
         int ch1 = in.read();
         int ch2 = in.read();
@@ -550,24 +520,24 @@ public final class StrmUtil{
         return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     }
 
-    public static final long readLong(InputStream i) throws IOException{
+    public static final long readLong(InputStream i) throws IOException {
         return ((long) (readInt(i)) << 32) + (readInt(i) & 0xFFFFFFFFL);
     }
 
-    public static final double readDouble(InputStream i) throws IOException{
+    public static final double readDouble(InputStream i) throws IOException {
         return Double.longBitsToDouble(readLong(i));
     }
 
-    public static final float readFloat(InputStream i) throws IOException{
+    public static final float readFloat(InputStream i) throws IOException {
         return Float.intBitsToFloat(readInt(i));
     }
 
     public static final void writeDouble(OutputStream o, double v)
-            throws IOException{
+            throws IOException {
         writeLong(o, Double.doubleToLongBits(v));
     }
 
-    public static final void writeInt(OutputStream o, int v) throws IOException{
+    public static final void writeInt(OutputStream o, int v) throws IOException {
         OutputStream out = o;
         out.write((v >>> 24) & 0xFF);
         out.write((v >>> 16) & 0xFF);
@@ -576,12 +546,12 @@ public final class StrmUtil{
     }
 
     public static final void writeFloat(OutputStream o, float v)
-            throws IOException{
+            throws IOException {
         writeInt(o, Float.floatToIntBits(v));
     }
 
     public static final void writeLong(OutputStream o, long v)
-            throws IOException{
+            throws IOException {
         OutputStream out = o;
         out.write((int) (v >>> 56) & 0xFF);
         out.write((int) (v >>> 48) & 0xFF);
@@ -594,7 +564,7 @@ public final class StrmUtil{
     }
 
     public static final int stmCopyFrom(String fn, OutputStream out)
-            throws IOException{
+            throws IOException {
         InputStream in = new FileInputStream(fn);
         try {
             return stmTryCopyFrom(in, out);
@@ -603,13 +573,8 @@ public final class StrmUtil{
         }
     }
 
-    /**
-     * 从一个流中复制指定的长度的类容到另一个流中,如果从源流中不能再读入数据则返回复制了的数据的字节数
-     */
-    private static final int BUF_SIZE = 1024 * 8;
-
     public static final long stmCopyFrom(InputStream in, OutputStream out,
-            long sz) throws IOException{
+                                         long sz) throws IOException {
         byte[] buf = new byte[BUF_SIZE];
         long rst = 0;
         int r;
@@ -627,7 +592,7 @@ public final class StrmUtil{
     /**
      * 将流中的所有信息读出并以byte数组的形式返回
      */
-    public static final byte[] stm2bytes(InputStream in) throws IOException{
+    public static final byte[] stm2bytes(InputStream in) throws IOException {
         if (in instanceof MyByteArrayInputStream) {
             MyByteArrayInputStream min = (MyByteArrayInputStream) in;
             byte[] r = new byte[min.available()];
@@ -645,23 +610,23 @@ public final class StrmUtil{
 
     /**
      * 将流中的所有信息读出并以字符串的形式返回
-     * 
-     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
+     *
      * @param in
      * @return
      * @throws IOException
+     * @deprecated 此函数使用系统的编码，不稳定，应该指定明确的编码
      */
-    static public final String stm2Str(InputStream in) throws IOException{
+    static public final String stm2Str(InputStream in) throws IOException {
         return new String(stm2bytes(in));
     }
 
     static public final String stm2Str(InputStream in, String charsetName)
-            throws IOException{
+            throws IOException {
         return new String(stm2bytes(in), charsetName);
     }
 
     static public final int stmTryCopyFrom(InputStream in, OutputStream out)
-            throws IOException{
+            throws IOException {
         if (in instanceof MyByteArrayInputStream) {
             MyByteArrayInputStream min = (MyByteArrayInputStream) in;
             out.write(min.getBuf(), min.getPos(), min.available());
@@ -679,14 +644,14 @@ public final class StrmUtil{
 
     /**
      * 将流reader的内容拷贝到writer中
-     * 
+     *
      * @param reader
      * @param writer
      * @return
      * @throws IOException
      */
     static public final int stmTryCopyFrom(Reader reader, Writer writer)
-            throws IOException{
+            throws IOException {
         char[] buffer = new char[BUF_SIZE];
         int mark = 0;
         int size = 0;
@@ -698,7 +663,7 @@ public final class StrmUtil{
     }
 
     static public final long stmTryCopyFrom(InputStream in, RandomAccessFile out)
-            throws IOException{
+            throws IOException {
         if (in instanceof MyByteArrayInputStream) {
             MyByteArrayInputStream min = (MyByteArrayInputStream) in;
             out.write(min.getBuf(), min.getPos(), min.available());
@@ -717,7 +682,7 @@ public final class StrmUtil{
     /**
      * 判断给定的流是否是gzip格式的流，如果in是markSupported的，那么此函数不会改变in的当前位置。
      */
-    static public final boolean isGzipStm(InputStream in) throws IOException{
+    static public final boolean isGzipStm(InputStream in) throws IOException {
         boolean ms = in.markSupported();
         if (ms) in.mark(10);
         int b1 = in.read();
@@ -728,10 +693,10 @@ public final class StrmUtil{
 
     /**
      * 将bytes用gzip压缩并返回压缩后的byte，byte如果是null则触发空指针异常
-     * 
+     *
      * @throws IOException
      */
-    static public final byte[] gzipBytes(byte[] bytes) throws IOException{
+    static public final byte[] gzipBytes(byte[] bytes) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         GZIPOutputStream gout = new GZIPOutputStream(out);
         try {
@@ -744,10 +709,10 @@ public final class StrmUtil{
 
     /**
      * 将bytes用gzip解压缩并返回解压缩后的byte，byte如果是null则触发空指针异常
-     * 
+     *
      * @throws IOException
      */
-    static public final byte[] ungzipBytes(byte[] bytes) throws IOException{
+    static public final byte[] ungzipBytes(byte[] bytes) throws IOException {
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         GZIPInputStream gin = new GZIPInputStream(in);
         try {
@@ -759,10 +724,10 @@ public final class StrmUtil{
 
     /**
      * 将in中的类容用gzip压缩并返回压缩后的byte，in如果是null则触发空指针异常
-     * 
+     *
      * @throws IOException
      */
-    static public final byte[] gzipStm(InputStream in) throws IOException{
+    static public final byte[] gzipStm(InputStream in) throws IOException {
         MyByteArrayOutputStream out = new MyByteArrayOutputStream(
                 in.available() > 1 ? in.available() : 1024);
         GZIPOutputStream gout = new GZIPOutputStream(out);
@@ -776,14 +741,14 @@ public final class StrmUtil{
 
     /**
      * 将in中的类容用gzip解压缩并返回解压缩后的byte，in如果是null则触发空指针异常
-     * 
+     *
      * @throws IOException
      */
-    static public final byte[] ungzipStm(InputStream in) throws IOException{
+    static public final byte[] ungzipStm(InputStream in) throws IOException {
         return ungzipBytes(stm2bytes(in));
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         java.io.FileOutputStream fs = null;
         try {
             fs = new java.io.FileOutputStream("c:/1.txt");
@@ -796,18 +761,18 @@ public final class StrmUtil{
     }
 
     public static final int stmTryRead(InputStream in, byte[] bb)
-            throws IOException{
+            throws IOException {
         if ((in == null) || (bb == null) || (bb.length == 0)) return 0;
         return stmTryRead(in, bb, bb.length);
     }
 
     public static final int stmTryRead(InputStream in, byte[] bb, int len)
-            throws IOException{
+            throws IOException {
         return stmTryRead(in, bb, 0, len);
     }
 
     public static int stmTryRead(InputStream in, byte[] bb, int off, int len)
-            throws IOException{
+            throws IOException {
         int r;
         int l = 0;
         int t = off;
@@ -823,13 +788,13 @@ public final class StrmUtil{
 
     /**
      * 返回一个没有压缩过的流，由调用处关闭连接，必须关闭，否则可能会出现异常。
-     * 
+     *
      * @param in
      * @return
      * @throws IOException
      */
     public static final InputStream getUnGZIPStm(InputStream in)
-            throws IOException{
+            throws IOException {
         if (in == null) {
             return null;
         }
@@ -849,12 +814,12 @@ public final class StrmUtil{
              * BufferedInputStream(in); } in.mark(10); byte[] bs = new byte[3];
              * in.read(bs); in.reset(); byte[] rs = StmFunc.stm2bytes(in);
              * System.out.println(rs.length + "(" + new String(rs) + ")");
-             * 
+             *
              * 最后输出的结果为3(123)
-             * 
+             *
              * 在1.4中in.markSupported()返回true,1.5中是返回false
              * 在1.4中最后输出是3(),1.5中返回的是6(abc123)
-             * 
+             *
              * 这里对GZIPInputStream进行封装,在外部调用可以直接调用mark,不用再次封装
              * 此问题是在weblogic81下载入主题表时发现的,载入时出现的异常为:invalid distance too far back
              */
@@ -865,13 +830,13 @@ public final class StrmUtil{
 
     /**
      * 返回一个压缩过的流,由调用处关闭连接,必须关闭,否则可能会出现异常
-     * 
+     *
      * @param in
      * @return
      * @throws IOException
      */
     public static final InputStream getGZIPStm(InputStream in)
-            throws IOException{
+            throws IOException {
         if (in == null) {
             return null;
         }
@@ -890,7 +855,7 @@ public final class StrmUtil{
     }
 
     // reader
-    public static Reader str2reader(String str){
+    public static Reader str2reader(String str) {
         if (str == null) {
             return null;
         }
@@ -898,27 +863,27 @@ public final class StrmUtil{
     }
 
     public static String reader2str(Reader reader, boolean needCloseStm)
-            throws IOException{
+            throws IOException {
         if (reader == null) {
             return null;
         }
         return new String(reader2chars(reader, needCloseStm));
     }
 
-    public static String reader2str(Reader reader) throws IOException{
+    public static String reader2str(Reader reader) throws IOException {
         return reader2str(reader, true);
     }
 
     /**
      * 将Reader中的信息读出,并以char数组的形式返回
-     * 
+     *
      * @param reader
      * @param needCloseStm
      * @return
      * @throws IOException
      */
     public static char[] reader2chars(Reader reader, boolean needCloseStm)
-            throws IOException{
+            throws IOException {
         CharArrayWriter writer = new CharArrayWriter();
         reader2writer(reader, writer);
         if (needCloseStm) reader.close();
@@ -926,7 +891,7 @@ public final class StrmUtil{
     }
 
     public static int reader2writer(Reader reader, Writer writer)
-            throws IOException{
+            throws IOException {
         char[] buf = new char[BUF_SIZE];
         int sz = 0;
         int r;
@@ -938,7 +903,7 @@ public final class StrmUtil{
     }
 
     public static final int readerTryRead(Reader reader, char[] cc, int len)
-            throws IOException{
+            throws IOException {
         int r;
         int t = 0;
         while ((r = reader.read(cc, t, len - t)) >= 0) {
@@ -951,7 +916,7 @@ public final class StrmUtil{
     }
 
     public static int readerTryRead(Reader reader, char[] cc)
-            throws IOException{
+            throws IOException {
         if (reader == null || cc == null || cc.length == 0) {
             return 0;
         }
@@ -960,15 +925,13 @@ public final class StrmUtil{
 
     /**
      * 跳过指定字节读取文件
-     * 
-     * @param in
-     *            输入的流
-     * @param len
-     *            跳过的字节长度
+     *
+     * @param in  输入的流
+     * @param len 跳过的字节长度
      * @return
      * @throws IOException
      */
-    public static long skip(InputStream in, long len) throws IOException{
+    public static long skip(InputStream in, long len) throws IOException {
         if (len <= 0) {
             return 0;
         }
@@ -984,7 +947,7 @@ public final class StrmUtil{
     }
 
     static public final void writeInt(final Writer writer, int i)
-            throws IOException{
+            throws IOException {
         // 原来用write(String.valueOf(i));，但是连续写入很多整形时，很耗费内存
         if (i < 0) writer.write('-');
         i = Math.abs(i);
@@ -1004,7 +967,7 @@ public final class StrmUtil{
      * 将escape内容直接编码到writer中，避免浪费内存，类似StrFunc.escape函数，但此函数的实现不会产生临时对象
      */
     public static int escape(final CharSequence s, Writer out)
-            throws IOException{
+            throws IOException {
         if (s == null || s.length() == 0) {
             return 0;
         }
@@ -1013,7 +976,7 @@ public final class StrmUtil{
         for (int i = 0; i < len; i++) {
             char ch = s.charAt(i);
             if (StrUtil.needEscape(ch)) {
-                out.write((char) ch);
+                out.write(ch);
                 r++;
             } else if (ch <= 0x007F) { // other ASCII : map to %XX
                 out.write('%');

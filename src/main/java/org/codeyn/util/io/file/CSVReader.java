@@ -1,35 +1,34 @@
 package org.codeyn.util.io.file;
 
 /**
- Copyright 2005 Bytecode Pty Ltd.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- 读取csv格式文件；
- 标准格式如下：
- 1.每条记录占一行
- 2.以逗号为分隔符
- 3.逗号前后的空格会被忽略
- 4.字段中包含有逗号，该字段必须用双引号括起来
- 5.字段中包含有换行符，该字段必须用双引号括起来
- 6.字段前后包含有空格，该字段必须用双引号括起来
- 7.字段中的双引号用两个双引号表示
- 8.字段中如果有双引号，该字段必须用双引号括起来
- 9.第一条记录，可以是字段名
-
- 这里进行了扩展，分隔符(separator)可以指定，双引号也可以用指定的字符(quote)替换；
- 如果有空行，或者全是空格、不可见字符等，不忽略该行；
-
+ * Copyright 2005 Bytecode Pty Ltd.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * <p>
+ * 读取csv格式文件；
+ * 标准格式如下：
+ * 1.每条记录占一行
+ * 2.以逗号为分隔符
+ * 3.逗号前后的空格会被忽略
+ * 4.字段中包含有逗号，该字段必须用双引号括起来
+ * 5.字段中包含有换行符，该字段必须用双引号括起来
+ * 6.字段前后包含有空格，该字段必须用双引号括起来
+ * 7.字段中的双引号用两个双引号表示
+ * 8.字段中如果有双引号，该字段必须用双引号括起来
+ * 9.第一条记录，可以是字段名
+ * <p>
+ * 这里进行了扩展，分隔符(separator)可以指定，双引号也可以用指定的字符(quote)替换；
+ * 如果有空行，或者全是空格、不可见字符等，不忽略该行；
  */
 
 import java.io.BufferedReader;
@@ -40,63 +39,55 @@ import java.util.List;
 
 /**
  * A very simple CSV reader released under a commercial-friendly license.
- * 
+ *
  * @author Glen Smith
- * 
+ *
  */
-public class CSVReader{
-
-    private BufferedReader br;
-
-    private boolean hasNext = true;
-
-    private char separator;
-
-    private char quotechar;
-
-    private int skipLines;
-
-    private boolean linesSkiped;
+public class CSVReader {
 
     /** The default separator to use if none is supplied to the constructor. */
     public static final char DEFAULT_SEPARATOR = ',';
-
     /**
      * The default quote character to use if none is supplied to the
      * constructor.
      */
     public static final char DEFAULT_QUOTE_CHARACTER = '"';
-
     /**
      * The default line to start reading.
      */
     public static final int DEFAULT_SKIP_LINES = 0;
+    private BufferedReader br;
+    private boolean hasNext = true;
+    private char separator;
+    private char quotechar;
+    private int skipLines;
+    private boolean linesSkiped;
 
     /**
      * Constructs CSVReader using a comma for the separator.
-     * 
+     *
      * @param reader
      *            the reader to an underlying CSV source.
      */
-    public CSVReader(Reader reader){
+    public CSVReader(Reader reader) {
         this(reader, DEFAULT_SEPARATOR);
     }
 
     /**
      * Constructs CSVReader with supplied separator.
-     * 
+     *
      * @param reader
      *            the reader to an underlying CSV source.
      * @param separator
      *            the delimiter to use for separating entries.
      */
-    public CSVReader(Reader reader, char separator){
+    public CSVReader(Reader reader, char separator) {
         this(reader, separator, DEFAULT_QUOTE_CHARACTER);
     }
 
     /**
      * Constructs CSVReader with supplied separator and quote char.
-     * 
+     *
      * @param reader
      *            the reader to an underlying CSV source.
      * @param separator
@@ -104,13 +95,13 @@ public class CSVReader{
      * @param quotechar
      *            the character to use for quoted elements
      */
-    public CSVReader(Reader reader, char separator, char quotechar){
+    public CSVReader(Reader reader, char separator, char quotechar) {
         this(reader, separator, quotechar, DEFAULT_SKIP_LINES);
     }
 
     /**
      * Constructs CSVReader with supplied separator and quote char.
-     * 
+     *
      * @param reader
      *            the reader to an underlying CSV source.
      * @param separator
@@ -120,7 +111,7 @@ public class CSVReader{
      * @param line
      *            the line number to skip for start reading
      */
-    public CSVReader(Reader reader, char separator, char quotechar, int line){
+    public CSVReader(Reader reader, char separator, char quotechar, int line) {
         this.br = reader instanceof BufferedReader ? (BufferedReader) reader
                 : new BufferedReader(reader);
         this.separator = separator;
@@ -131,14 +122,14 @@ public class CSVReader{
     /**
      * Reads the entire file into a List with each element being a String[] of
      * tokens.
-     * 
+     *
      * @return a List of String[], with each String[] representing a line of the
      *         file.
-     * 
+     *
      * @throws IOException
      *             if bad things happen during the read
      */
-    public List<String[]> readAll() throws IOException{
+    public List<String[]> readAll() throws IOException {
         List<String[]> allElements = new ArrayList<String[]>();
         while (hasNext) {
             String[] nextLineAsTokens = readNext();
@@ -149,14 +140,14 @@ public class CSVReader{
 
     /**
      * Reads the next line from the buffer and converts to a string array.
-     * 
+     *
      * @return a string array with each comma-separated element as a separate
      *         entry.
-     * 
+     *
      * @throws IOException
      *             if bad things happen during the read
      */
-    public String[] readNext() throws IOException{
+    public String[] readNext() throws IOException {
 
         String nextLine = getNextLine();
         return hasNext ? parseLine(nextLine) : null;
@@ -164,12 +155,12 @@ public class CSVReader{
 
     /**
      * Reads the next line from the file.
-     * 
+     *
      * @return the next line from the file without trailing newline
      * @throws IOException
      *             if bad things happen during the read
      */
-    private String getNextLine() throws IOException{
+    private String getNextLine() throws IOException {
         if (!this.linesSkiped) {
             for (int i = 0; i < skipLines; i++) {
                 br.readLine();
@@ -185,14 +176,14 @@ public class CSVReader{
 
     /**
      * Parses an incoming String and returns an array of elements.
-     * 
+     *
      * @param nextLine
      *            the string to parse
      * @return the comma-tokenized list of elements, or null if nextLine is null
      * @throws IOException
      *             if bad things happen during the read
      */
-    private String[] parseLine(String nextLine) throws IOException{
+    private String[] parseLine(String nextLine) throws IOException {
 
         if (nextLine == null) {
             return null;
@@ -219,16 +210,16 @@ public class CSVReader{
                     // escape another quote.
                     // do a 1-char lookahead:
                     if (inQuotes // we are in quotes, therefore there can be
-                                 // escaped quotes in here.
+                            // escaped quotes in here.
                             && nextLine.length() > (i + 1) // there is indeed
-                                                           // another character
-                                                           // to check.
+                            // another character
+                            // to check.
                             && nextLine.charAt(i + 1) == quotechar) { // ..and
-                                                                      // that
-                                                                      // char.
-                                                                      // is a
-                                                                      // quote
-                                                                      // also.
+                        // that
+                        // char.
+                        // is a
+                        // quote
+                        // also.
                         // we have two quote chars in a row == one quote char,
                         // so consume them both and
                         // put one on the token. we do *not* exit the quoted
@@ -241,22 +232,22 @@ public class CSVReader{
                         // a,bc"d"ef,g
                         if (i > 2 // not on the begining of the line
                                 && nextLine.charAt(i - 1) != this.separator // not
-                                                                            // at
-                                                                            // the
-                                                                            // begining
-                                                                            // of
-                                                                            // an
-                                                                            // escape
-                                                                            // sequence
+                                // at
+                                // the
+                                // begining
+                                // of
+                                // an
+                                // escape
+                                // sequence
                                 && nextLine.length() > (i + 1)
                                 && nextLine.charAt(i + 1) != this.separator // not
-                                                                            // at
-                                                                            // the
-                                                                            // end
-                                                                            // of
-                                                                            // an
-                                                                            // escape
-                                                                            // sequence
+                            // at
+                            // the
+                            // end
+                            // of
+                            // an
+                            // escape
+                            // sequence
                         ) {
                             sb.append(c);
                         }
@@ -270,18 +261,18 @@ public class CSVReader{
             }
         } while (inQuotes);
         tokensOnThisLine.add(sb.toString());
-        return (String[]) tokensOnThisLine.toArray(new String[tokensOnThisLine
+        return tokensOnThisLine.toArray(new String[tokensOnThisLine
                 .size()]);
 
     }
 
     /**
      * Closes the underlying reader.
-     * 
+     *
      * @throws IOException
      *             if the close fails
      */
-    public void close() throws IOException{
+    public void close() throws IOException {
         br.close();
     }
 

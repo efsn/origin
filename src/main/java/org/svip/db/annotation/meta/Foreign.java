@@ -7,14 +7,14 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Foreign{
-    public String name() default "";
+public @interface Foreign {
+    String name() default "";
 
-    public String column() default "";
+    String column() default "";
 
-    public String refTable() default "";
+    String refTable() default "";
 
-    public String refColumn() default "";
+    String refColumn() default "";
 
-    public String database() default "";
+    String database() default "";
 }

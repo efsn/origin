@@ -46,204 +46,203 @@ import java.io.InputStream;
  */
 public class Base64InputStream extends FilterInputStream {
 
-  private static final int WOULD_BLOCK = -2;
+    private static final int WOULD_BLOCK = -2;
 
-  //
-  // decoding table
-  //
-  private static int[] table = new int[256];
+    //
+    // decoding table
+    //
+    private static int[] table = new int[256];
 
-  // one-time initialization of decoding table
-  static {
-    int i;
-    for (i = 0; i < 256; ++i) {
-      table[i] = -1;
-    }
-    int c;
-    for (c = 'A', i = 0; c <= 'Z'; ++c, ++i) {
-      table[c] = i;
-    }
-    for (c = 'a'; c <= 'z'; ++c, ++i) {
-      table[c] = i;
-    }
-    for (c = '0'; c <= '9'; ++c, ++i) {
-      table[c] = i;
-    }
-    table['+'] = 62;
-    table['/'] = 63;
-  }
-
-  // prev is the previous significant character read from the in stream.
-  // Significant characters are those that are part of the encoded data,
-  // as opposed to whitespace.
-  private int prev, savedPrev;
-
-  // state is the current state of our state machine. The states are 1-5.
-  // State 5 represents end-of-file, which occurs when we read the last
-  // character from the input stream, or a base64 padding character ('=').
-  // States 1-4 indicate which character of the current 4-character block we
-  // are looking for. After state 4 we wrap back to state 1. The state
-  // is not advanced when we read an insignificant character (such as
-  // whitespace).
-  private int state = 1, savedState;
-
-  public Base64InputStream(InputStream in) {
-    super(in);
-  }
-
-  public long skip(long n) throws IOException {
-    long count = 0;
-    while ((count < n) && (read() != -1)) {
-      ++count;
-    }
-    return count;
-  }
-
-  /**
-   * param block Whether or not to block waiting for input.
-   */
-  private int read(boolean block) throws IOException {
-    int cur, ret = 0;
-    boolean done = false;
-    while (!done) {
-      if (in.available() < 1 && !block) {
-        return WOULD_BLOCK;
-      }
-      cur = in.read();
-      switch (state) {
-        case 1:
-          if (cur == -1) {
-            // end of file
-            state = 5;
-            return -1;
-          }
-          if (cur == '=') {
-            state = 5;
-            throw new IOException("Invalid pad character");
-          }
-          if (table[cur] != -1) {
-            prev = cur;
-            state = 2;
-          }
-          break;
-        case 2:
-          if (cur == -1) {
-            state = 5;
-            throw new EOFException("Unexpected end-of-file");
-          }
-          if (cur == '=') {
-            state = 5;
-            throw new IOException("Invalid pad character");
-          }
-          if (table[cur] != -1) {
-            ret = (table[prev] << 2) | ((table[cur] & 0x30) >> 4);
-            prev = cur;
-            state = 3;
-            done = true;
-          }
-          break;
-        case 3:
-          if (cur == -1) {
-            state = 5;
-            throw new EOFException("Unexpected end-of-file");
-          }
-          if (cur == '=') {
-            // pad character
-            state = 5;
-            return -1;
-          }
-          if (table[cur] != -1) {
-            ret = ((table[prev] & 0x0f) << 4) | ((table[cur] & 0x3c) >> 2);
-            prev = cur;
-            state = 4;
-            done = true;
-          }
-          break;
-        case 4:
-          if (cur == -1) {
-            state = 5;
-            throw new EOFException("Unexpected end-of-file");
-          }
-          if (cur == '=') {
-            // pad character
-            state = 5;
-            return -1;
-          }
-          if (table[cur] != -1) {
-            ret = ((table[prev] & 0x03) << 6) | table[cur];
-            state = 1;
-            done = true;
-          }
-          break;
-        case 5:
-          // end of file
-          return -1;
-          //break;
-        default:
-          throw new IOException("");
-      }
-    }
-    return ret;
-  }
-
-  public int read() throws IOException {
-    return read(true);
-  }
-
-  public int read(byte[] b, int off, int len) throws IOException {
-    int count = 0;
-
-    if (len < 0) {
-      throw new IndexOutOfBoundsException("len is negative");
-    }
-    if (off < 0) {
-      throw new IndexOutOfBoundsException("off is negative");
-    }
-
-    while (count < len) {
-      int cur = read(count == 0);
-      if (cur == -1) {
-        // end-of-file
-        if (count == 0) {
-          return -1;
+    // one-time initialization of decoding table
+    static {
+        int i;
+        for (i = 0; i < 256; ++i) {
+            table[i] = -1;
         }
-        else {
-          return count;
+        int c;
+        for (c = 'A', i = 0; c <= 'Z'; ++c, ++i) {
+            table[c] = i;
         }
-      }
-      if (cur == WOULD_BLOCK) {
+        for (c = 'a'; c <= 'z'; ++c, ++i) {
+            table[c] = i;
+        }
+        for (c = '0'; c <= '9'; ++c, ++i) {
+            table[c] = i;
+        }
+        table['+'] = 62;
+        table['/'] = 63;
+    }
+
+    // prev is the previous significant character read from the in stream.
+    // Significant characters are those that are part of the encoded data,
+    // as opposed to whitespace.
+    private int prev, savedPrev;
+
+    // state is the current state of our state machine. The states are 1-5.
+    // State 5 represents end-of-file, which occurs when we read the last
+    // character from the input stream, or a base64 padding character ('=').
+    // States 1-4 indicate which character of the current 4-character block we
+    // are looking for. After state 4 we wrap back to state 1. The state
+    // is not advanced when we read an insignificant character (such as
+    // whitespace).
+    private int state = 1, savedState;
+
+    public Base64InputStream(InputStream in) {
+        super(in);
+    }
+
+    public long skip(long n) throws IOException {
+        long count = 0;
+        while ((count < n) && (read() != -1)) {
+            ++count;
+        }
         return count;
-      }
-      b[off + (count++)] = (byte) cur;
     }
-    return count;
-  }
 
-  public int available() throws IOException {
-    // We really don't know how much is left. in.available() could all
-    // be whitespace.
-    return 0;
-  }
+    /**
+     * param block Whether or not to block waiting for input.
+     */
+    private int read(boolean block) throws IOException {
+        int cur, ret = 0;
+        boolean done = false;
+        while (!done) {
+            if (in.available() < 1 && !block) {
+                return WOULD_BLOCK;
+            }
+            cur = in.read();
+            switch (state) {
+                case 1:
+                    if (cur == -1) {
+                        // end of file
+                        state = 5;
+                        return -1;
+                    }
+                    if (cur == '=') {
+                        state = 5;
+                        throw new IOException("Invalid pad character");
+                    }
+                    if (table[cur] != -1) {
+                        prev = cur;
+                        state = 2;
+                    }
+                    break;
+                case 2:
+                    if (cur == -1) {
+                        state = 5;
+                        throw new EOFException("Unexpected end-of-file");
+                    }
+                    if (cur == '=') {
+                        state = 5;
+                        throw new IOException("Invalid pad character");
+                    }
+                    if (table[cur] != -1) {
+                        ret = (table[prev] << 2) | ((table[cur] & 0x30) >> 4);
+                        prev = cur;
+                        state = 3;
+                        done = true;
+                    }
+                    break;
+                case 3:
+                    if (cur == -1) {
+                        state = 5;
+                        throw new EOFException("Unexpected end-of-file");
+                    }
+                    if (cur == '=') {
+                        // pad character
+                        state = 5;
+                        return -1;
+                    }
+                    if (table[cur] != -1) {
+                        ret = ((table[prev] & 0x0f) << 4) | ((table[cur] & 0x3c) >> 2);
+                        prev = cur;
+                        state = 4;
+                        done = true;
+                    }
+                    break;
+                case 4:
+                    if (cur == -1) {
+                        state = 5;
+                        throw new EOFException("Unexpected end-of-file");
+                    }
+                    if (cur == '=') {
+                        // pad character
+                        state = 5;
+                        return -1;
+                    }
+                    if (table[cur] != -1) {
+                        ret = ((table[prev] & 0x03) << 6) | table[cur];
+                        state = 1;
+                        done = true;
+                    }
+                    break;
+                case 5:
+                    // end of file
+                    return -1;
+                //break;
+                default:
+                    throw new IOException("");
+            }
+        }
+        return ret;
+    }
 
-  public boolean markSupported() {
-    return in.markSupported();
-  }
+    public int read() throws IOException {
+        return read(true);
+    }
 
-  public void mark(int readlimit) {
-    in.mark(readlimit);
-    savedPrev = prev;
-    savedState = state;
-  }
+    public int read(byte[] b, int off, int len) throws IOException {
+        int count = 0;
 
-  public void close() throws IOException {
-    in.close();
-  }
+        if (len < 0) {
+            throw new IndexOutOfBoundsException("len is negative");
+        }
+        if (off < 0) {
+            throw new IndexOutOfBoundsException("off is negative");
+        }
 
-  public void reset() throws IOException {
-    in.reset();
-    prev = savedPrev;
-    state = savedState;
-  }
+        while (count < len) {
+            int cur = read(count == 0);
+            if (cur == -1) {
+                // end-of-file
+                if (count == 0) {
+                    return -1;
+                } else {
+                    return count;
+                }
+            }
+            if (cur == WOULD_BLOCK) {
+                return count;
+            }
+            b[off + (count++)] = (byte) cur;
+        }
+        return count;
+    }
+
+    public int available() throws IOException {
+        // We really don't know how much is left. in.available() could all
+        // be whitespace.
+        return 0;
+    }
+
+    public boolean markSupported() {
+        return in.markSupported();
+    }
+
+    public void mark(int readlimit) {
+        in.mark(readlimit);
+        savedPrev = prev;
+        savedState = state;
+    }
+
+    public void close() throws IOException {
+        in.close();
+    }
+
+    public void reset() throws IOException {
+        in.reset();
+        prev = savedPrev;
+        state = savedState;
+    }
 
   /*public static void main(String args[]) throws Exception {
 

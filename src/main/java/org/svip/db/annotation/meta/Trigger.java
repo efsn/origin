@@ -7,17 +7,17 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Trigger{
-    public String name();
+public @interface Trigger {
+    String name();
 
     /**
      * Before or after
      */
-    public boolean before() default true;
+    boolean before() default true;
 
-    public boolean insert() default false;
+    boolean insert() default false;
 
-    public boolean update() default false;
+    boolean update() default false;
 
-    public boolean delete() default false;
+    boolean delete() default false;
 }

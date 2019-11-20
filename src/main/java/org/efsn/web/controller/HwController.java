@@ -1,13 +1,13 @@
 package org.efsn.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.support.WebContentGenerator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Codeyn
@@ -17,19 +17,19 @@ import org.springframework.web.servlet.support.WebContentGenerator;
 
 @Controller
 @RequestMapping("/hello.do")
-public class HwController extends WebContentGenerator implements LastModified, Response{
-    
+public class HwController extends WebContentGenerator implements LastModified, Response {
+
     private long lastModified;
 
     @Override
-    public ModelAndView res(HttpServletRequest request, HttpServletResponse response) throws Exception{
+    public ModelAndView res(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.getWriter().write("<a href='http://www.baidu.com'>this</a>");
         return null;
     }
 
     @Override
-    public long getLastModified(HttpServletRequest request){
-        if(lastModified == 0){
+    public long getLastModified(HttpServletRequest request) {
+        if (lastModified == 0) {
             lastModified = System.currentTimeMillis();
         }
         return lastModified;

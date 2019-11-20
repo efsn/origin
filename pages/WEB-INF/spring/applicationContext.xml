@@ -1,106 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop" 
-	xmlns:task="http://www.springframework.org/schema/task"
-	xmlns:util="http://www.springframework.org/schema/util" 
-	xmlns:cache="http://www.springframework.org/schema/cache"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:jaxws="http://cxf.apache.org/jaxws"  
-	xmlns:cxf="http://cxf.apache.org/core"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
 	http://www.springframework.org/schema/context 
 	http://www.springframework.org/schema/context/spring-context-3.2.xsd
-	http://www.springframework.org/schema/task 
-	http://www.springframework.org/schema/task/spring-task-3.2.xsd
+
+
 	http://www.springframework.org/schema/util 
 	http://www.springframework.org/schema/util/spring-util.xsd
-	http://www.springframework.org/schema/aop 
-	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+
+
 	http://www.springframework.org/schema/cache 
-	http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
-	http://cxf.apache.org/jaxws 
-	http://cxf.apache.org/schemas/jaxws.xsd
-	http://cxf.apache.org/core 
-	http://cxf.apache.org/schemas/core.xsd"
-	default-lazy-init="true" default-init-method="init"
-	default-destroy-method="destroy">
-	
-	<context:annotation-config />
-	<context:component-scan base-package="com.esen.platform" />
-	
-	<!--使用Apache CXF的Web Service配置文件，以下三个为固定配置文件(不需要创建)-->  
-	<import resource="classpath:META-INF/cxf/cxf.xml" />  
-	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />  
-	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />  
-	
-	<!--
-		这里是配置一个Webservice实例的对象,CXF 实现一个webservice服务器很简单.
-		1.定义一个接口,并且在对象上标记成@WebServcie,这个就是对外提供的webservice接口
-		2.编写这个接口的实现类
-		3.在appliectionContext_Xxx.xml里面注册实现类,如下:
-				 id:javabean的id
-		implementor:实现类路径
-			address:访问接口
-		<jaxws:endpoint id="hello" implementor="com.esen.weblib.ws.impl.HelloWorldImpl" 
-			address="/hello">  
-		</jaxws:endpoint> 
-		-->
-	<cache:annotation-driven cache-manager="cacheManager" />
-	<!-- <util:properties id="mailSettings" location="classpath:/config/mail/mail-config.properties" /> -->
+	http://www.springframework.org/schema/cache/spring-cache-3.2.xsd"
+       default-lazy-init="true" default-init-method="init"
+       default-destroy-method="destroy">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.esen.platform"/>
+
+    <!--使用Apache CXF的Web Service配置文件，以下三个为固定配置文件(不需要创建)-->
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+
+    <!--
+        这里是配置一个Webservice实例的对象,CXF 实现一个webservice服务器很简单.
+        1.定义一个接口,并且在对象上标记成@WebServcie,这个就是对外提供的webservice接口
+        2.编写这个接口的实现类
+        3.在appliectionContext_Xxx.xml里面注册实现类,如下:
+                 id:javabean的id
+        implementor:实现类路径
+            address:访问接口
+        <jaxws:endpoint id="hello" implementor="com.esen.weblib.ws.impl.HelloWorldImpl"
+            address="/hello">
+        </jaxws:endpoint>
+        -->
+    <cache:annotation-driven cache-manager="cacheManager"/>
+    <!-- <util:properties id="mailSettings" location="classpath:/config/mail/mail-config.properties" /> -->
 
 
-	<bean id="cacheManagerFactory"
-		class="com.esen.platform.factory.MultiEhCacheManagerFactoryBean">
-		<property name="configLocations">
-			<list>
-				<value>classpath*:/config/ehcache_config_*.xml</value>
-			</list>
-		</property>
-		<property name="shared" value="true" />
-		<property name="cacheManagerName" value="Es-Global-CacheManager"></property>
-	</bean>
+    <bean id="cacheManagerFactory"
+          class="com.esen.platform.factory.MultiEhCacheManagerFactoryBean">
+        <property name="configLocations">
+            <list>
+                <value>classpath*:/config/ehcache_config_*.xml</value>
+            </list>
+        </property>
+        <property name="shared" value="true"/>
+        <property name="cacheManagerName" value="Es-Global-CacheManager"></property>
+    </bean>
 
-	<!-- 声明cacheManager -->
-	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" lazy-init="false">
-		<property name="cacheManager" ref="cacheManagerFactory"></property>
-	</bean>
-	
-	<!-- 定义门户资源树过滤器的Bean -->
-	<bean id="portalResTreeFilter" class="com.esen.platform.portal.PortalResourceTreeFilterDefault" lazy-init="true">
-	</bean>
-	<!-- 定义门户宏表达式编译和解析的Bean -->
-	<bean id="portalMacroExpEvaluateHelper" class="com.esen.platform.exp.ServerExpEvaluateHelper" lazy-init="true">
-	</bean>
-	<bean id="portalMacroExpCompilerHelper" class="com.esen.platform.exp.ServerExpCompilerHelper" lazy-init="true">
-	</bean>
-	<!-- 
-		cxf提示 "Cannot create a secure XMLInputFactory",
-		需要在java.lang.System.setProperties("org.apache.cxf.stax.allowInsecureParser","true") 
-		这里调用spring的方法执行一下
-		-->
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject">
-			<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-				<property name="targetClass" value="java.lang.System" />
-				<property name="targetMethod" value="getProperties" />
-			</bean>
-		</property>
-		<property name="targetMethod" value="putAll" />
-		<property name="arguments">
-			<util:properties>
-				<prop key="org.apache.cxf.stax.allowInsecureParser">true</prop>
-			</util:properties>
-		</property>
-	</bean>
-	<!-- 自定义门户资源树Bean -->
-	<!-- 
-		<bean id="portalResTree" class="com.esen.platform.portal.PortalResourceTreeXXXImpl" lazy-init="true">
-		</bean>
-		-->
+    <!-- 声明cacheManager -->
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" lazy-init="false">
+        <property name="cacheManager" ref="cacheManagerFactory"></property>
+    </bean>
 
-	<!-- 引入其他产品的XML文件，文件通配符为 applicationContext-*.xml -->
-	<import resource="classpath*:config/applicationContext_*.xml" />
+    <!-- 定义门户资源树过滤器的Bean -->
+    <bean id="portalResTreeFilter" class="com.esen.platform.portal.PortalResourceTreeFilterDefault" lazy-init="true">
+    </bean>
+    <!-- 定义门户宏表达式编译和解析的Bean -->
+    <bean id="portalMacroExpEvaluateHelper" class="com.esen.platform.exp.ServerExpEvaluateHelper" lazy-init="true">
+    </bean>
+    <bean id="portalMacroExpCompilerHelper" class="com.esen.platform.exp.ServerExpCompilerHelper" lazy-init="true">
+    </bean>
+    <!--
+        cxf提示 "Cannot create a secure XMLInputFactory",
+        需要在java.lang.System.setProperties("org.apache.cxf.stax.allowInsecureParser","true")
+        这里调用spring的方法执行一下
+        -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject">
+            <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+                <property name="targetClass" value="java.lang.System"/>
+                <property name="targetMethod" value="getProperties"/>
+            </bean>
+        </property>
+        <property name="targetMethod" value="putAll"/>
+        <property name="arguments">
+            <util:properties>
+                <prop key="org.apache.cxf.stax.allowInsecureParser">true</prop>
+            </util:properties>
+        </property>
+    </bean>
+    <!-- 自定义门户资源树Bean -->
+    <!--
+        <bean id="portalResTree" class="com.esen.platform.portal.PortalResourceTreeXXXImpl" lazy-init="true">
+        </bean>
+        -->
+
+    <!-- 引入其他产品的XML文件，文件通配符为 applicationContext-*.xml -->
+    <import resource="classpath*:config/applicationContext_*.xml"/>
 </beans> 
