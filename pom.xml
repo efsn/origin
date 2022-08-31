@@ -11,11 +11,10 @@
     <properties>
         <java-version>1.6</java-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <org.slf4j-version>1.6.1</org.slf4j-version>
-        <logback-version>0.9.28</logback-version>
         <org.springframework-version>5.3.18</org.springframework-version>
-        <junit-version>4.8.2</junit-version>
+        <org.slf4j-version>1.6.1</org.slf4j-version>
+        <logback-version>1.2.0</logback-version>
+        <junit-version>4.13.1</junit-version>
         <json-version>20080701</json-version>
         <logging-version>1.2</logging-version>
         <!-- 	<poi-version>3.9</poi-version> -->
@@ -111,7 +110,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.19</version>
+            <version>1.21</version>
         </dependency>
 
         <dependency>
@@ -130,7 +129,7 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.1.0</version>
+            <version>3.5.6</version>
         </dependency>
 
         <dependency>
